@@ -1,0 +1,124 @@
+Create a comprehensive Multi-Vendor QR Menu Generator Admin Panel for restaurant management platform in Pakistan market.
+
+📋 Core Requirements:
+1. Authentication & Security
+
+Login System: Email/password with 2FA
+Role Management: Super Admin, Admin, Support roles
+Session Management: Auto logout, password policies
+Security: CSRF protection, input validation
+
+2. Dashboard Overview
+
+Key Metrics Cards:
+
+Total Active Restaurants
+Monthly Revenue (PKR)
+New Signups This Month
+Support Tickets Pending
+
+
+Revenue Chart: Monthly/yearly revenue trends
+Quick Actions: Add restaurant, view reports
+Recent Activity: Latest restaurant signups, payments
+
+3. Restaurant Management
+Restaurant Listing:
+
+Searchable table with filters
+Restaurant name, owner, plan, status, signup date
+Actions: View, Edit, Suspend, Delete
+
+Add/Edit Restaurant:
+
+Restaurant details (name, address, phone, email)
+Owner information
+Subscription plan selection
+Account status (Active/Inactive/Suspended)
+Notes section for internal use
+
+4. Subscription & Billing
+Plan Management:
+
+Create/edit subscription plans
+Pricing in PKR
+Feature limitations per plan
+Trial period settings
+
+Billing Dashboard:
+
+Monthly recurring revenue
+Payment status tracking
+Failed payments alerts
+Invoice generation
+
+5. Menu & QR Code Management
+
+Menu Templates: Pre-designed templates
+QR Code Styles: Different design options
+Bulk Operations: Mass updates, exports
+Analytics: Most used templates, QR scans
+
+6. Support System
+Ticket Management:
+
+Support ticket queue
+Priority levels (High, Medium, Low)
+Status tracking (Open, In Progress, Resolved)
+Internal notes and communication
+
+Help Documentation:
+
+FAQ management
+Video tutorials upload
+Restaurant onboarding guides
+
+7. Analytics & Reports
+Business Intelligence:
+
+Revenue reports (daily/monthly/yearly)
+Restaurant growth metrics
+Feature usage statistics
+Geographic distribution
+
+Export Functions:
+
+CSV/Excel reports
+Date range selections
+Custom report builder
+
+8. System Settings
+
+General Settings: Company info, contact details
+Payment Gateways: JazzCash, EasyPaisa, bank transfers
+Email Templates: Welcome emails, notifications
+Localization: Urdu/English language support
+
+
+🎨 Design Specifications:
+UI/UX Requirements:
+
+Modern Design: Clean, professional interface
+Responsive: Works on desktop, tablet, mobile
+Dark/Light Theme: Toggle option
+Navigation: Sidebar menu with collapsible sections
+Color Scheme: Professional blue/green theme
+
+Technology Stack:
+
+Frontend: React.js with modern hooks
+Styling: Tailwind CSS or Bootstrap 5
+Charts: Chart.js or Recharts
+Icons: Lucide React or Font Awesome
+State Management: React Context or Redux
+
+
+📊 Database Structure Needed:
+Key Tables:
+
+Restaurants: ID, name, owner_info, plan_id, status, created_at
+Subscription_Plans: ID, name, price, features, duration
+Payments: ID, restaurant_id, amount, status, date
+Support_Tickets: ID, restaurant_id, subject, status, priority
+Menu_Templates: ID, name, design_data, category
+Admin_Users: ID, name, email, role, permissions
