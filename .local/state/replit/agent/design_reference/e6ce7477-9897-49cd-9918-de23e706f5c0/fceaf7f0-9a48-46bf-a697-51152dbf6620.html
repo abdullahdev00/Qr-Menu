@@ -1,0 +1,1465 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Menu Generator - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: {
+                        50: '#e3f2fd',
+                        100: '#bbdefb',
+                        500: '#2196f3',
+                        600: '#1976d2',
+                        700: '#1565c0'
+                    },
+                    secondary: {
+                        50: '#e0f2f1',
+                        100: '#b2dfdb',
+                        500: '#4caf50',
+                        600: '#00796b',
+                        700: '#00695c'
+                    },
+                    success: '#4caf50',
+                    warning: '#ff9800',
+                    error: '#f44336'
+                },
+                fontFamily: {
+                    'sans': ['Inter', 'sans-serif']
+                }
+            }
+        },
+        darkMode: 'class'
+    };
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-sans">
+    <!-- @COMPONENT: AuthenticationModal -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-md mx-4">
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <div class="mx-auto w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-qrcode text-white text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">QR Menu Admin</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Restaurant Management Platform</p>
+                </div>
+                
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+                        <input type="email" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="admin@example.com" data-bind="auth.email">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                        <input type="password" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="••••••••" data-bind="auth.password">
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-primary-600 hover:text-primary-500">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition-colors" data-event="click:handleLogin">
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+                        Demo Credentials: admin@demo.com / password123
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AuthenticationModal -->
+
+    <!-- @COMPONENT: MainLayout -->
+    <div id="mainApp" class="hidden min-h-screen">
+        <!-- @COMPONENT: Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 z-40 w-64 h-screen transition-transform -translate-x-full lg:translate-x-0 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700">
+            <div class="h-full px-3 py-4 overflow-y-auto">
+                <!-- Logo -->
+                <div class="flex items-center mb-8 px-3">
+                    <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center mr-3">
+                        <i class="fas fa-qrcode text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900 dark:text-white">QR Menu</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="space-y-2">
+                    <a href="#" class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-chart-line w-5 h-5"></i>
+                        <span class="ml-3">Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="restaurants">
+                        <i class="fas fa-store w-5 h-5"></i>
+                        <span class="ml-3">Restaurants</span>
+                        <span class="ml-auto bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full" data-bind="restaurant.count">24</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="subscriptions">
+                        <i class="fas fa-credit-card w-5 h-5"></i>
+                        <span class="ml-3">Subscriptions</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="menus">
+                        <i class="fas fa-utensils w-5 h-5"></i>
+                        <span class="ml-3">Menu Templates</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="qrcodes">
+                        <i class="fas fa-qrcode w-5 h-5"></i>
+                        <span class="ml-3">QR Codes</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="support">
+                        <i class="fas fa-headset w-5 h-5"></i>
+                        <span class="ml-3">Support</span>
+                        <span class="ml-auto bg-warning text-white text-xs font-medium px-2.5 py-0.5 rounded-full" data-bind="support.pending">3</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="analytics">
+                        <i class="fas fa-chart-bar w-5 h-5"></i>
+                        <span class="ml-3">Analytics</span>
+                    </a>
+                    <a href="#" class="nav-item" data-section="settings">
+                        <i class="fas fa-cog w-5 h-5"></i>
+                        <span class="ml-3">Settings</span>
+                    </a>
+                </nav>
+
+                <!-- Bottom Actions -->
+                <div class="absolute bottom-4 left-3 right-3">
+                    <div class="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-3 mb-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-primary-900 dark:text-primary-100">Storage Used</span>
+                            <span class="text-xs text-primary-600 dark:text-primary-400">78%</span>
+                        </div>
+                        <div class="w-full bg-primary-200 rounded-full h-2">
+                            <div class="bg-primary-600 h-2 rounded-full" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" data-event="click:handleLogout">
+                        <i class="fas fa-sign-out-alt w-4 h-4"></i>
+                        <span class="ml-3">Sign Out</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- @COMPONENT: Header -->
+        <header class="lg:ml-64 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button id="sidebarToggle" class="lg:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="ml-4 lg:ml-0">
+                            <h1 class="text-xl font-semibold text-gray-900 dark:text-white" id="pageTitle">Dashboard</h1>
+                            <p class="text-sm text-gray-500 dark:text-gray-400" id="pageSubtitle">Welcome back, Super Admin</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- Theme Toggle -->
+                        <button id="themeToggle" class="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-moon dark:hidden"></i>
+                            <i class="fas fa-sun hidden dark:block"></i>
+                        </button>
+                        
+                        <!-- Notifications -->
+                        <button class="relative p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 h-4 w-4 bg-error text-white text-xs rounded-full flex items-center justify-center" data-bind="notifications.count">2</span>
+                        </button>
+                        
+                        <!-- User Menu -->
+                        <div class="relative">
+                            <button class="flex items-center space-x-2 p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">SA</span>
+                                </div>
+                                <span class="hidden md:block text-sm font-medium text-gray-900 dark:text-white" data-bind="user.name">Super Admin</span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- @END_COMPONENT: Header -->
+
+        <!-- @COMPONENT: MainContent -->
+        <main class="lg:ml-64 p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section active">
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Restaurants</p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white" data-bind="metrics.restaurants">247</p>
+                                <p class="text-sm text-success"><i class="fas fa-arrow-up"></i> 12% from last month</p>
+                            </div>
+                            <div class="p-3 bg-primary-100 dark:bg-primary-900/20 rounded-lg">
+                                <i class="fas fa-store text-primary-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Monthly Revenue</p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white" data-bind="metrics.revenue">PKR 1,24,500</p>
+                                <p class="text-sm text-success"><i class="fas fa-arrow-up"></i> 8% from last month</p>
+                            </div>
+                            <div class="p-3 bg-secondary-100 dark:bg-secondary-900/20 rounded-lg">
+                                <i class="fas fa-chart-line text-secondary-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">New Signups</p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white" data-bind="metrics.signups">23</p>
+                                <p class="text-sm text-success"><i class="fas fa-arrow-up"></i> 5% from last month</p>
+                            </div>
+                            <div class="p-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
+                                <i class="fas fa-user-plus text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Tickets</p>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white" data-bind="metrics.tickets">7</p>
+                                <p class="text-sm text-error"><i class="fas fa-arrow-up"></i> 3 urgent</p>
+                            </div>
+                            <div class="p-3 bg-red-100 dark:bg-red-900/20 rounded-lg">
+                                <i class="fas fa-headset text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts and Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Revenue Chart -->
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Revenue Trend</h3>
+                            <select class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 dark:bg-gray-700 dark:text-white">
+                                <option>Last 12 months</option>
+                                <option>Last 6 months</option>
+                                <option>Last 3 months</option>
+                            </select>
+                        </div>
+                        <canvas id="revenueChart" height="100"></canvas>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Recent Activity</h3>
+                        <div class="space-y-4">
+                            <!-- @MAP: recentActivity.map(activity => ( -->
+                            <div class="flex items-start space-x-3" data-mock="true">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-store text-primary-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-900 dark:text-white font-medium">New restaurant registered</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Karachi Food Corner - Basic Plan</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">2 minutes ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3" data-mock="true">
+                                <div class="w-8 h-8 bg-secondary-100 dark:bg-secondary-900/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-credit-card text-secondary-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-900 dark:text-white font-medium">Payment received</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">PKR 2,500 - Premium Plan</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">1 hour ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3" data-mock="true">
+                                <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-headset text-yellow-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-900 dark:text-white font-medium">Support ticket closed</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">QR Code Generation Issue</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">3 hours ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3" data-mock="true">
+                                <div class="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-qrcode text-green-600 text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-900 dark:text-white font-medium">QR code generated</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Lahore Desi Restaurant</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">5 hours ago</p>
+                                </div>
+                            </div>
+                            <!-- @END_MAP -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <button class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-colors group" data-event="click:showAddRestaurant">
+                            <div class="text-center">
+                                <i class="fas fa-plus text-2xl text-gray-400 group-hover:text-primary-500 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-primary-500">Add Restaurant</p>
+                            </div>
+                        </button>
+                        
+                        <button class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-secondary-500 hover:bg-secondary-50 dark:hover:bg-secondary-900/10 transition-colors group" data-event="click:showBulkExport">
+                            <div class="text-center">
+                                <i class="fas fa-download text-2xl text-gray-400 group-hover:text-secondary-500 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-secondary-500">Export Data</p>
+                            </div>
+                        </button>
+                        
+                        <button class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors group" data-event="click:showReports">
+                            <div class="text-center">
+                                <i class="fas fa-chart-bar text-2xl text-gray-400 group-hover:text-yellow-500 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-yellow-500">View Reports</p>
+                            </div>
+                        </button>
+                        
+                        <button class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors group" data-event="click:showSettings">
+                            <div class="text-center">
+                                <i class="fas fa-cog text-2xl text-gray-400 group-hover:text-purple-500 mb-2"></i>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 group-hover:text-purple-500">Settings</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restaurants Section -->
+            <div id="restaurants-section" class="section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <!-- Header -->
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Restaurant Management</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Manage all registered restaurants and their subscriptions</p>
+                            </div>
+                            <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors" data-event="click:showAddRestaurant">
+                                <i class="fas fa-plus"></i>
+                                <span>Add Restaurant</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters and Search -->
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                        <div class="flex flex-col lg:flex-row gap-4">
+                            <div class="flex-1">
+                                <div class="relative">
+                                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" placeholder="Search restaurants..." class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white" data-bind="search.query">
+                                </div>
+                            </div>
+                            <select class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="filter.status">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                            <select class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="filter.plan">
+                                <option value="">All Plans</option>
+                                <option value="basic">Basic</option>
+                                <option value="premium">Premium</option>
+                                <option value="enterprise">Enterprise</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Restaurant Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-900/50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Restaurant</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Owner</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- @MAP: restaurants.map(restaurant => ( -->
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50" data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-store text-primary-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Karachi Food Corner</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">karachi-food-corner</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-white">Muhammad Ali</div>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">ali@foodcorner.pk</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-secondary-100 text-secondary-800 rounded-full">Premium</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-success text-white rounded-full">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        Jan 15, 2024
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary-600 hover:text-primary-700" data-event="click:viewRestaurant">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editRestaurant">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-warning hover:text-yellow-700" data-event="click:suspendRestaurant">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
+                                            <button class="text-error hover:text-red-700" data-event="click:deleteRestaurant">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50" data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-store text-primary-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Lahore Desi Restaurant</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">lahore-desi</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-white">Fatima Khan</div>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">fatima@desi.pk</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Basic</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-success text-white rounded-full">Active</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        Jan 12, 2024
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary-600 hover:text-primary-700" data-event="click:viewRestaurant">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editRestaurant">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-warning hover:text-yellow-700" data-event="click:suspendRestaurant">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
+                                            <button class="text-error hover:text-red-700" data-event="click:deleteRestaurant">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50" data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center mr-3">
+                                                <i class="fas fa-store text-primary-600"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">Islamabad Pizza Palace</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">pizza-palace</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-white">Ahmed Hassan</div>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">ahmed@palace.pk</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">Enterprise</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-warning text-white rounded-full">Suspended</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        Jan 8, 2024
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary-600 hover:text-primary-700" data-event="click:viewRestaurant">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editRestaurant">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-success hover:text-green-700" data-event="click:activateRestaurant">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="text-error hover:text-red-700" data-event="click:deleteRestaurant">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- @END_MAP -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                            Showing 1 to 10 of 247 restaurants
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white" data-event="click:previousPage">Previous</button>
+                            <button class="px-3 py-1 text-sm bg-primary-600 text-white rounded">1</button>
+                            <button class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white">2</button>
+                            <button class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white">3</button>
+                            <button class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-white" data-event="click:nextPage">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscriptions Section -->
+            <div id="subscriptions-section" class="section hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Plan Cards -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" data-mock="true">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Basic Plan</h3>
+                            <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editPlan">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-gray-900 dark:text-white">PKR 1,500</span>
+                            <span class="text-gray-500 dark:text-gray-400">/month</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Up to 50 menu items</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> QR code generation</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Basic analytics</li>
+                            <li class="flex items-center"><i class="fas fa-times text-error mr-2"></i> Custom branding</li>
+                        </ul>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500 dark:text-gray-400">Active subscribers:</span>
+                            <span class="font-medium text-gray-900 dark:text-white" data-bind="plans.basic.subscribers">156</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-2 border-primary-500 p-6 relative" data-mock="true">
+                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                            <span class="bg-primary-600 text-white px-3 py-1 rounded-full text-xs font-medium">Most Popular</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Premium Plan</h3>
+                            <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editPlan">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-gray-900 dark:text-white">PKR 3,500</span>
+                            <span class="text-gray-500 dark:text-gray-400">/month</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Unlimited menu items</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Custom QR designs</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Advanced analytics</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Custom branding</li>
+                        </ul>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500 dark:text-gray-400">Active subscribers:</span>
+                            <span class="font-medium text-gray-900 dark:text-white" data-bind="plans.premium.subscribers">78</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" data-mock="true">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Enterprise Plan</h3>
+                            <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editPlan">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-gray-900 dark:text-white">PKR 7,500</span>
+                            <span class="text-gray-500 dark:text-gray-400">/month</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Everything in Premium</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Multi-location support</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> API access</li>
+                            <li class="flex items-center"><i class="fas fa-check text-success mr-2"></i> Priority support</li>
+                        </ul>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500 dark:text-gray-400">Active subscribers:</span>
+                            <span class="font-medium text-gray-900 dark:text-white" data-bind="plans.enterprise.subscribers">13</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing Overview -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
+                        <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors" data-event="click:exportTransactions">
+                            <i class="fas fa-download mr-2"></i>Export
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-900/50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Restaurant</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Payment Method</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- @MAP: transactions.map(transaction => ( -->
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Karachi Food Corner</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-secondary-100 text-secondary-800 rounded-full">Premium</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">PKR 3,500</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">JazzCash</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-success text-white rounded-full">Paid</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jan 15, 2024</td>
+                                </tr>
+                                
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Lahore Desi Restaurant</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Basic</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">PKR 1,500</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">EasyPaisa</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-success text-white rounded-full">Paid</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jan 12, 2024</td>
+                                </tr>
+                                
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Pizza Palace</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">Enterprise</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">PKR 7,500</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Bank Transfer</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-warning text-white rounded-full">Pending</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jan 10, 2024</td>
+                                </tr>
+                                <!-- @END_MAP -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Templates Section -->
+            <div id="menus-section" class="section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Menu Templates</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Pre-designed templates for restaurant menus</p>
+                    </div>
+                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors" data-event="click:addTemplate">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Template</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- @MAP: templates.map(template => ( -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" data-mock="true">
+                        <!-- Modern Restaurant Menu Template Preview -->
+                        <div class="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 p-4">
+                            <div class="h-full bg-white dark:bg-gray-800 rounded-lg shadow-inner p-3 text-xs">
+                                <div class="text-center mb-2">
+                                    <div class="h-2 bg-primary-500 rounded mb-1"></div>
+                                    <div class="h-1 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mx-auto"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="flex justify-between">
+                                        <div class="h-1 bg-gray-400 dark:bg-gray-500 rounded w-1/2"></div>
+                                        <div class="h-1 bg-gray-300 dark:bg-gray-600 rounded w-1/4"></div>
+                                    </div>
+                                    <div class="h-1 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                                    <div class="flex justify-between">
+                                        <div class="h-1 bg-gray-400 dark:bg-gray-500 rounded w-1/2"></div>
+                                        <div class="h-1 bg-gray-300 dark:bg-gray-600 rounded w-1/4"></div>
+                                    </div>
+                                    <div class="h-1 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-gray-900 dark:text-white">Modern Restaurant</h3>
+                                <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Popular</span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Clean design perfect for modern restaurants and cafes</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Used by <span data-bind="template.usage.modern">89</span> restaurants</span>
+                                <div class="flex space-x-2">
+                                    <button class="text-primary-600 hover:text-primary-700" data-event="click:previewTemplate">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editTemplate">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" data-mock="true">
+                        <!-- Traditional Menu Template Preview -->
+                        <div class="aspect-[3/4] bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900 dark:to-amber-800 p-4">
+                            <div class="h-full bg-white dark:bg-gray-800 rounded-lg shadow-inner p-3 text-xs border-2 border-amber-200 dark:border-amber-700">
+                                <div class="text-center mb-2">
+                                    <div class="h-2 bg-amber-600 rounded mb-1"></div>
+                                    <div class="h-1 bg-amber-300 rounded w-2/3 mx-auto"></div>
+                                </div>
+                                <div class="space-y-1 border-t border-amber-200 dark:border-amber-700 pt-2">
+                                    <div class="flex justify-between">
+                                        <div class="h-1 bg-gray-600 dark:bg-gray-400 rounded w-1/2"></div>
+                                        <div class="h-1 bg-amber-400 rounded w-1/4"></div>
+                                    </div>
+                                    <div class="h-1 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-gray-900 dark:text-white">Traditional Desi</h3>
+                                <span class="text-xs text-amber-600 bg-amber-100 px-2 py-1 rounded-full">Local</span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Traditional design for Pakistani restaurants</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Used by <span data-bind="template.usage.traditional">67</span> restaurants</span>
+                                <div class="flex space-x-2">
+                                    <button class="text-primary-600 hover:text-primary-700" data-event="click:previewTemplate">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editTemplate">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" data-mock="true">
+                        <!-- Minimal Menu Template Preview -->
+                        <div class="aspect-[3/4] bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-700 p-4">
+                            <div class="h-full bg-white dark:bg-gray-800 rounded-lg shadow-inner p-3 text-xs border border-gray-100 dark:border-gray-700">
+                                <div class="text-center mb-3">
+                                    <div class="h-1 bg-gray-800 dark:bg-gray-200 rounded w-1/2 mx-auto"></div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="h-1 bg-gray-800 dark:bg-gray-200 rounded w-1/3"></div>
+                                    <div class="h-px bg-gray-300 dark:bg-gray-600"></div>
+                                    <div class="flex justify-between">
+                                        <div class="h-1 bg-gray-600 dark:bg-gray-400 rounded w-2/5"></div>
+                                        <div class="h-1 bg-gray-400 dark:bg-gray-500 rounded w-1/5"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-gray-900 dark:text-white">Minimal Clean</h3>
+                                <span class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full">Simple</span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Minimalist design focusing on content</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Used by <span data-bind="template.usage.minimal">45</span> restaurants</span>
+                                <div class="flex space-x-2">
+                                    <button class="text-primary-600 hover:text-primary-700" data-event="click:previewTemplate">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editTemplate">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" data-mock="true">
+                        <!-- Fast Food Menu Template Preview -->
+                        <div class="aspect-[3/4] bg-gradient-to-br from-red-50 to-yellow-50 dark:from-red-900 dark:to-yellow-900 p-4">
+                            <div class="h-full bg-white dark:bg-gray-800 rounded-lg shadow-inner p-3 text-xs">
+                                <div class="text-center mb-2">
+                                    <div class="h-2 bg-red-500 rounded mb-1"></div>
+                                    <div class="h-1 bg-yellow-400 rounded w-3/4 mx-auto"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-1">
+                                    <div class="bg-red-100 dark:bg-red-900/30 rounded p-1">
+                                        <div class="h-3 bg-red-200 dark:bg-red-800 rounded mb-1"></div>
+                                        <div class="h-1 bg-red-400 rounded"></div>
+                                    </div>
+                                    <div class="bg-yellow-100 dark:bg-yellow-900/30 rounded p-1">
+                                        <div class="h-3 bg-yellow-200 dark:bg-yellow-800 rounded mb-1"></div>
+                                        <div class="h-1 bg-yellow-400 rounded"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-medium text-gray-900 dark:text-white">Fast Food</h3>
+                                <span class="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">Colorful</span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Vibrant design perfect for fast food chains</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Used by <span data-bind="template.usage.fastfood">34</span> restaurants</span>
+                                <div class="flex space-x-2">
+                                    <button class="text-primary-600 hover:text-primary-700" data-event="click:previewTemplate">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editTemplate">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_MAP -->
+                </div>
+            </div>
+
+            <!-- QR Codes Section -->
+            <div id="qrcodes-section" class="section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">QR Code Generator</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Generate and customize QR codes for restaurant menus</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
+                        <!-- QR Code Generator Form -->
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Restaurant</label>
+                                <select class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="qr.restaurant">
+                                    <option>Select Restaurant</option>
+                                    <option>Karachi Food Corner</option>
+                                    <option>Lahore Desi Restaurant</option>
+                                    <option>Islamabad Pizza Palace</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Menu URL</label>
+                                <input type="url" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" placeholder="https://menu.example.com/restaurant-123" data-bind="qr.url">
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Size</label>
+                                    <select class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="qr.size">
+                                        <option>Small (200x200)</option>
+                                        <option selected>Medium (400x400)</option>
+                                        <option>Large (600x600)</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Format</label>
+                                    <select class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="qr.format">
+                                        <option>PNG</option>
+                                        <option>JPG</option>
+                                        <option>SVG</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Style</label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <button class="border-2 border-primary-500 bg-primary-50 dark:bg-primary-900/20 rounded-lg p-3 text-center" data-bind="qr.style" data-value="classic">
+                                        <div class="w-8 h-8 bg-black mx-auto mb-2 grid grid-cols-3 gap-px">
+                                            <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                            <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+                                            <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                        </div>
+                                        <span class="text-xs font-medium">Classic</span>
+                                    </button>
+                                    
+                                    <button class="border border-gray-300 dark:border-gray-600 hover:border-primary-500 rounded-lg p-3 text-center" data-bind="qr.style" data-value="rounded">
+                                        <div class="w-8 h-8 bg-black mx-auto mb-2 grid grid-cols-3 gap-px">
+                                            <div class="bg-white rounded"></div><div class="bg-black rounded"></div><div class="bg-white rounded"></div>
+                                            <div class="bg-black rounded"></div><div class="bg-white rounded"></div><div class="bg-black rounded"></div>
+                                            <div class="bg-white rounded"></div><div class="bg-black rounded"></div><div class="bg-white rounded"></div>
+                                        </div>
+                                        <span class="text-xs font-medium">Rounded</span>
+                                    </button>
+                                    
+                                    <button class="border border-gray-300 dark:border-gray-600 hover:border-primary-500 rounded-lg p-3 text-center" data-bind="qr.style" data-value="dots">
+                                        <div class="w-8 h-8 bg-black mx-auto mb-2 grid grid-cols-3 gap-px">
+                                            <div class="bg-white rounded-full"></div><div class="bg-black rounded-full"></div><div class="bg-white rounded-full"></div>
+                                            <div class="bg-black rounded-full"></div><div class="bg-white rounded-full"></div><div class="bg-black rounded-full"></div>
+                                            <div class="bg-white rounded-full"></div><div class="bg-black rounded-full"></div><div class="bg-white rounded-full"></div>
+                                        </div>
+                                        <span class="text-xs font-medium">Dots</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Foreground Color</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="color" value="#000000" class="w-12 h-10 border border-gray-300 dark:border-gray-600 rounded" data-bind="qr.foreground">
+                                        <input type="text" value="#000000" class="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white text-sm" data-bind="qr.foregroundHex">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Background Color</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="color" value="#ffffff" class="w-12 h-10 border border-gray-300 dark:border-gray-600 rounded" data-bind="qr.background">
+                                        <input type="text" value="#ffffff" class="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white text-sm" data-bind="qr.backgroundHex">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-3">
+                                <button class="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition-colors" data-event="click:generateQR">
+                                    <i class="fas fa-qrcode mr-2"></i>Generate QR Code
+                                </button>
+                                <button class="px-6 bg-secondary-600 hover:bg-secondary-700 text-white py-3 rounded-lg font-medium transition-colors" data-event="click:downloadQR">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- QR Code Preview -->
+                        <div class="flex items-center justify-center">
+                            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-8 text-center">
+                                <div class="w-64 h-64 bg-white rounded-lg shadow-lg mb-6 flex items-center justify-center mx-auto">
+                                    <div class="w-48 h-48 bg-black grid grid-cols-8 gap-1 p-2" id="qrPreview" data-mock="true">
+                                        <!-- QR Code Pattern Mock -->
+                                        <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+                                        <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                        <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+                                        <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                        <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+                                        <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                        <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+                                        <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">QR Code Preview</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">400x400 • PNG • Classic Style</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent QR Codes -->
+                <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recently Generated QR Codes</h3>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-900/50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Preview</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Restaurant</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Style</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Size</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Generated</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- @MAP: qrCodes.map(qr => ( -->
+                                <tr data-mock="true">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="w-12 h-12 bg-black grid grid-cols-4 gap-px p-1">
+                                            <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+                                            <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                            <div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+                                            <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-white"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Karachi Food Corner</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Classic</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">400x400</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Jan 15, 2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary-600 hover:text-primary-700" data-event="click:downloadQRCode">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="text-secondary-600 hover:text-secondary-700" data-event="click:editQRCode">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-error hover:text-red-700" data-event="click:deleteQRCode">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- @END_MAP -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Section -->
+            <div id="support-section" class="section hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Support Tickets</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Manage customer support requests</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <select class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white text-sm" data-bind="support.filter">
+                                    <option value="">All Tickets</option>
+                                    <option value="open">Open</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
+                                </select>
+                                <select class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white text-sm" data-bind="support.priority">
+                                    <option value="">All Priority</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <!-- @MAP: supportTickets.map(ticket => ( -->
+                        <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50" data-mock="true">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">#12847</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">High Priority</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">In Progress</span>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">QR Code Not Generating Properly</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3">Restaurant owner reports QR codes are not generating with custom colors. Getting default black/white only.</p>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <span><i class="fas fa-store mr-1"></i>Karachi Food Corner</span>
+                                        <span><i class="fas fa-envelope mr-1"></i>ali@foodcorner.pk</span>
+                                        <span><i class="fas fa-clock mr-1"></i>2 hours ago</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex space-x-2">
+                                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors" data-event="click:viewTicket">
+                                        View
+                                    </button>
+                                    <button class="bg-secondary-600 hover:bg-secondary-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors" data-event="click:assignTicket">
+                                        Assign
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50" data-mock="true">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">#12846</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Medium Priority</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Open</span>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Unable to Update Menu Items</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3">Having trouble updating menu items in the dashboard. Save button not working.</p>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <span><i class="fas fa-store mr-1"></i>Lahore Desi Restaurant</span>
+                                        <span><i class="fas fa-envelope mr-1"></i>fatima@desi.pk</span>
+                                        <span><i class="fas fa-clock mr-1"></i>5 hours ago</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex space-x-2">
+                                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors" data-event="click:viewTicket">
+                                        View
+                                    </button>
+                                    <button class="bg-secondary-600 hover:bg-secondary-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors" data-event="click:assignTicket">
+                                        Assign
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50" data-mock="true">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-2">
+                                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">#12845</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Low Priority</span>
+                                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Resolved</span>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Request for Template Customization</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-3">Would like to customize the Traditional Desi template with restaurant logo.</p>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <span><i class="fas fa-store mr-1"></i>Peshawar Kabab House</span>
+                                        <span><i class="fas fa-envelope mr-1"></i>admin@kabab.pk</span>
+                                        <span><i class="fas fa-clock mr-1"></i>1 day ago</span>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex space-x-2">
+                                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors" data-event="click:viewTicket">
+                                        View
+                                    </button>
+                                    <button class="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-3 py-1 rounded text-sm font-medium" disabled>
+                                        Resolved
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="section hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Revenue Chart -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Monthly Revenue (PKR)</h3>
+                        <canvas id="analyticsRevenueChart" height="200"></canvas>
+                    </div>
+
+                    <!-- User Growth Chart -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Restaurant Signups</h3>
+                        <canvas id="analyticsSignupChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Analytics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" data-mock="true">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary-600 mb-2" data-bind="analytics.totalScans">45,267</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Total QR Scans</div>
+                            <div class="text-xs text-success mt-1">+12% this month</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" data-mock="true">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-secondary-600 mb-2" data-bind="analytics.avgSession">3.2</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Avg. Session (min)</div>
+                            <div class="text-xs text-success mt-1">+5% this month</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" data-mock="true">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-yellow-600 mb-2" data-bind="analytics.repeatVisits">68%</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Repeat Visits</div>
+                            <div class="text-xs text-success mt-1">+8% this month</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6" data-mock="true">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-600 mb-2" data-bind="analytics.mobileScansto">92%</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Mobile Scans</div>
+                            <div class="text-xs text-success mt-1">+3% this month</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geographic Distribution -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Geographic Distribution</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <!-- @MAP: cityData.map(city => ( -->
+                            <div class="flex items-center justify-between" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-map-marker-alt text-primary-600 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">Karachi</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-semibold text-gray-900 dark:text-white">89 restaurants</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">36% of total</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-secondary-100 dark:bg-secondary-900/20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-map-marker-alt text-secondary-600 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">Lahore</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-semibold text-gray-900 dark:text-white">76 restaurants</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">31% of total</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-map-marker-alt text-yellow-600 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">Islamabad</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-semibold text-gray-900 dark:text-white">45 restaurants</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">18% of total</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-map-marker-alt text-purple-600 text-sm"></i>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">Others</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-semibold text-gray-900 dark:text-white">37 restaurants</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">15% of total</div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP -->
+                        </div>
+                        
+                        <div class="flex items-center justify-center">
+                            <canvas id="analyticsLocationChart" width="200" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="section hidden">
+                <div class="space-y-8">
+                    <!-- General Settings -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">General Settings</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Configure basic platform settings</p>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Name</label>
+                                    <input type="text" value="QR Menu Generator" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="settings.companyName">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Support Email</label>
+                                    <input type="email" value="support@qrmenu.pk" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="settings.supportEmail">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Default Currency</label>
+                                <select class="w-full md:w-1/3 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 dark:bg-gray-700 dark:text-white" data-bind="settings.currency">
+                                    <option value="PKR">PKR - Pakistani Rupee</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Gateway Settings -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Payment Gateways</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Configure payment methods for Pakistani market</p>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <!-- JazzCash -->
+                            <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-mobile-alt text-red-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">JazzCash</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Mobile wallet payments</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-success">Connected</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" data-bind="settings.jazzcash.enabled">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- EasyPaisa -->
+                            <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-mobile-alt text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">EasyPaisa</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Digital payments platform</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-success">Connected</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" data-bind="settings.easypaisa.enabled">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Bank Transfer -->
+                            <div class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-university text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">Bank Transfer</h4>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Direct bank transfers</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-success">Active</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer" data-bind="settings.bank.enabled">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Templates -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 Let me analyze this request for a Multi-Vendor QR Menu Generator Admin Panel for a restaurant management platform in Pakistan.
+
+<!-- Based on the design decision framework:
+
+1. Initial Analysis: No specific aesthetic requirements mentioned, so I'll use the evaluation factors.
+
+A. Purpose & User Needs: This is utility-focused - it's an admin panel for restaurant management, where efficiency and learnability are paramount
+B. Content Characteristics: Information-dense - displays data, forms, dashboards, tables
+C. Market Context: Function-differentiated - this is a business tool where performance and usability matter most
+D. Update Frequency: Stability-valued - admin interfaces should remain consistent
+E. Component Complexity: Standard patterns sufficient - can use established UI components
+
+Since 4 out of 5 factors fall into the Utility-Focused/Function category, I should use a Design System Approach. Material Design or a clean modern admin design system would work well here.
+
+The request specifies:
+- Professional blue/green color scheme
+- Modern, clean interface
+- Responsive layout
+- Dark/light theme toggle
+- Collapsible sidebar navigation
+- Pakistani market focus with PKR currency
+
+I'll create a comprehensive admin panel with:
+1. Login page
+2. Dashboard with metrics
+3. Restaurant management
+4. Subscription plans
+5. Menu templates
+6. Support tickets
+7. Analytics
+
+I'll use Tailwind CSS for styling and create a professional, clean interface with the specified color scheme.EvwMCkgIBhACGAIqQA/XEu1Eq9uXk0X9dGU3N6mO0n2Ww9HY7Q+p6SdodisBjh7dpA43OwLd7O37oQ9Gxg301YdEkfhbqXVXZ2kdrgMSDDQYJgRxVWh/BYB0fRoM6Yrl1BW4KpvGRLnMIjBBg1puobV6qXBOT7gbbwqrrRD6zXnV1pBlrgPnUw+VsPZBNCuXEaHCsZB+D/6oKQEq4QsYfVa20Oqd3lsSgxF2q6axv0IpFugHHyfCowwRW2atVoE3AuYyONUcYanC/N59dIZBqfujFHzkyo2adAx5kgpejyQutbx42f4zuApU78I2kpOoa8LOPMEXwMcT0ZOooNX6HkNQJyOgxzZn15q5A1ik8pcjpzJKms++GsM4onCIkGzpce6LneeGMLfz92CBjyw1Pp45nobPvJXvrwwhi56vWD5paLEgDKbBg6vSipiMepInbfOewHhZSxYLOGd2ZQ3oK6zLACIelcJMiIwRVgrMNi5iD7tL525fq6LQUAq5ucMQiMqaiK2V/O1M9w6HRk+aR4ME8sT1kZ8mQcKz8DMKaEQ/fChoFUtQdc+9G3U7VIYyJ1Qzn8CAh+UekuNenvuLx4cLT5YD7IqYpo/fPIdLUYD6YKXBh002eMObfT0EYLM7RRYgRH3hoqALFAagomYckQa2S5VergTD3clFy//Y1DKJl83YDoQeTt+O9TicieCrfY48xojlgpjbsamCy6zjnr60mbwDUAF8Ebxmr/hlQHBLjoM6cvDkZeftspjSS2Fzl+wDa7UEsdfpPdsLpWn1VZg+Johg7c+momCEH9rTTFVcotQswZlTlyNd3WVN6n7iZR8FMfRZ9ufAXIFj/19azfrUXCANQtGKdQ9Ieilir8gjYRv6bXxow1UVvaAgVcKc0wYro42Q6uQ4u7x2g1xBRiexXdkMJDTkKQslnDdhqXjnetuPJHqjZxC93IxlOGcdNMFjwB5TH3FhPBdJbouo4x1x3sAu7E8ULPkHrLdHTyB/stnJodNw0eHPuOkpdLXgJWgWfn9nlixdbbPL0Xgc9mG0aS7Xxz2b5631yvh+HryB7YUyusedhaS/o7hlr8TMvyCdkyXKYT4JBhWdLjqbZ1ULZabu8/MbV3hImkgXec40hLHqZqDdzSeoY3cInZ1DpWFky8ZXMhUABqa6S1I8doz535jipS0gDIgcKvZ7boNSzjM6cLnFwv3tEPt5TPXhVQok4WU+nGGz/ahfu5mbx2AMpTfMaakbkaE3ieJj1o6A76tehCdd0S+NFWjkopAd6a+H140u0Q4kuKhEVhzYcWp24yK+/C1oaAurTf2grXo8ZMEJ6XFT5d4XXcvJKSBWnxMoL4i9EdpWsIkbAIc1BKFJ2+Vm0beGBnxnsDrPgLRb1GhhK0EJmdZjUtzz2kKQwkqaC1UALr0aQNdgDT3cPR1Y3v7NAmaRO7oO0tOY6rwfZZ8TtgSHk2ezz7VGPuHnTjs2rqqGYchUOtpT+P9W5xjn0YV6e+5A6cq+/9gWRSlFjMyRniPmdAemaSqxbdylAIgoLFEcaIaCJC/wIa9FntiK1ijcexebkch1YZ8jgtg39UIc3jZiM0B2HUtrk81hOW09IOG/AMCb5j4l6kSugZNbDhqFi28KGMIERooxYBm4dilSmQ/Mb34xfD/ZFmQiZUmsDlZF1pGCTskCE3YEBmkjVb85Bz8KXUstNdpYPijagVhRByy8zupBgvyZ2fegPnH+TnGJVh05PKiK6CLErBA/ZWmf8QFkmvE6B4O8bSvIbqb/AzZcJT+40Dy1OBHPUdq12XW/uoVnXX81ReHYW8c3oKmvfmBtLmBXtBOmRRR2jQfXRYgEQT9pch9uWqbL2xZce+Eh4QFCIfYHhwAemFUmuoHCDOdsTg5H9LObsShj23GtgaSpfOTEzfE7Cm8Qr6GUwGaldouuDxKeB1Cxo+QRfbIkNzf+bbkoaW+oJj9NZVTd5e13N/vH1efKNUzaJOG9quEMoa80F5zekznOMV5sPIcBKRx4KfClQ0xDQxKIY1RHH328JeeP5cEYbc7/SXR8nigUhSy/CRF9/DXRcOIGnNUvLBh84EiCU9hoNVIMbU7cp5GaPzQn6YhjUONI084n+P9RwovP2krv2/6EzZklMBlEnrQC3Z2b9f7gsfd3JNudAdzcTrFc8njdTK3R1+uBLkNpwt2FrNnn7fR0YeULC01K6aw9JTHe500NchgB# style
+
+**Design Approach**: Design System Approach using Material Design principles with custom professional blue/green theming
+
+**Color Palette**:
+- Primary: Blue (#1e40af, #3b82f6, #60a5fa)
+- Secondary: Green (#059669, #10b981, #34d399) 
+- Background: Light (#f8fafc, #ffffff) / Dark (#0f172a, #1e293b)
+- Text: Gray scale (#1f2937, #6b7280, #9ca3af)
+- Status: Success (#22c55e), Warning (#f59e0b), Error (#ef4444)
+
+**Typography**: Inter font family with systematic sizing (text-sm to text-4xl)
+
+**Layout**: Responsive grid system with sidebar navigation, main content area, and collapsible components
+
+**Components**: Material-inspired cards, tables, forms, buttons, and navigation with subtle shadows and rounded corners
+
+**Interaction Patterns**: Hover states, focus rings, loading states, and smooth transitions for professional feel
+
+# directory_structure
+```json
+[
+     {"path": "production_design_mockup.html", "status": "new"}
+] -->
