@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 w-64 h-screen transition-transform bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700",
+          "fixed left-0 top-0 z-50 w-64 h-screen transition-transform bg-gradient-to-b from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-gray-850 dark:to-gray-900 shadow-2xl border-r-2 border-gradient-to-b from-blue-200 to-purple-200 dark:border-gray-700 backdrop-blur-xl",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
         data-testid="sidebar"
@@ -74,12 +74,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Logo */}
           <div className="flex items-center mb-8 px-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center mr-3">
-              <QrCode className="text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-3 shadow-xl">
+              <QrCode className="text-white w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">QR Menu</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">QR Menu</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Admin Panel</p>
             </div>
           </div>
 
@@ -114,16 +114,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Bottom section */}
           <div className="absolute bottom-4 left-3 right-3">
             {/* Storage indicator */}
-            <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-3 mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-primary-900 dark:text-primary-100">
+            <div className="bg-gradient-to-r from-blue-100 via-purple-50 to-pink-100 dark:bg-gradient-to-r dark:from-blue-900/30 dark:via-purple-900/30 dark:to-pink-900/30 rounded-2xl p-4 mb-4 shadow-lg border border-blue-200 dark:border-gray-600">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Storage Used
                 </span>
-                <span className="text-xs text-primary-600 dark:text-primary-400">78%</span>
+                <span className="text-xs text-purple-600 dark:text-purple-400 font-bold">78%</span>
               </div>
-              <div className="w-full bg-primary-200 dark:bg-primary-800 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                 <div 
-                  className="bg-primary-600 h-2 rounded-full" 
+                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500 shadow-inner" 
                   style={{ width: "78%" }}
                 ></div>
               </div>
@@ -132,10 +132,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             {/* Sign out button */}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gradient-to-r hover:from-red-100 hover:to-pink-100 dark:hover:bg-gradient-to-r dark:hover:from-red-900/30 dark:hover:to-pink-900/30 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 border border-transparent hover:border-red-200"
               data-testid="button-logout"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-5 h-5" />
               <span className="ml-3">Sign Out</span>
             </button>
           </div>

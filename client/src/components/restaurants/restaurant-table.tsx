@@ -92,58 +92,67 @@ export default function RestaurantTable({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-success text-white">Active</Badge>;
+        return <Badge className="bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-lg border-0 px-3 py-1 font-medium">Active</Badge>;
       case "suspended":
-        return <Badge className="bg-warning text-white">Suspended</Badge>;
+        return <Badge className="bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-lg border-0 px-3 py-1 font-medium">Suspended</Badge>;
       case "inactive":
-        return <Badge variant="secondary">Inactive</Badge>;
+        return <Badge className="bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-lg border-0 px-3 py-1 font-medium">Inactive</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge className="bg-gradient-to-r from-blue-400 to-purple-500 text-white shadow-lg border-0 px-3 py-1 font-medium">{status}</Badge>;
     }
   };
 
   const getPlanBadge = (planId: string | null) => {
     // This would be enhanced with actual plan data
-    return <Badge variant="outline">Premium</Badge>;
+    return <Badge className="bg-gradient-to-r from-purple-400 to-pink-500 text-white shadow-lg border-0 px-3 py-1 font-medium">Premium</Badge>;
   };
 
   if (isLoading) {
     return (
-      <div className="p-6">
+      <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl">
         <div className="animate-pulse space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          ))}
+          {[...Array(5)].map((_, i) => {
+            const colors = [
+              'bg-gradient-to-r from-blue-200 to-purple-200',
+              'bg-gradient-to-r from-green-200 to-teal-200',
+              'bg-gradient-to-r from-orange-200 to-pink-200',
+              'bg-gradient-to-r from-purple-200 to-indigo-200',
+              'bg-gradient-to-r from-yellow-200 to-orange-200'
+            ];
+            return (
+              <div key={i} className={`h-16 ${colors[i]} dark:from-gray-600 dark:to-gray-700 rounded-xl shadow-lg`}></div>
+            );
+          })}
         </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="bg-gradient-to-br from-white via-blue-50/50 to-purple-50/50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl overflow-hidden border-2 border-gradient-to-r from-blue-100 to-purple-100 dark:border-gray-700">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50 dark:bg-gray-900/50">
-              <TableHead>Restaurant</TableHead>
-              <TableHead>Owner</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Actions</TableHead>
+            <TableRow className="bg-gradient-to-r from-blue-100 via-purple-50 to-pink-100 dark:from-gray-800 dark:via-gray-750 dark:to-gray-800 border-b-2 border-blue-200">
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Restaurant</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Owner</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Plan</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Status</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Created</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedRestaurants.map((restaurant) => (
               <TableRow 
                 key={restaurant.id} 
-                className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                className="hover:bg-gradient-to-r hover:from-blue-50/70 hover:via-purple-50/70 hover:to-pink-50/70 dark:hover:from-gray-800 dark:hover:to-gray-750 transition-all duration-300 border-b border-gray-100 dark:border-gray-700 hover:shadow-lg"
                 data-testid={`restaurant-row-${restaurant.id}`}
               >
                 <TableCell>
                   <div className="flex items-center">
-                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center mr-3">
-                      <Store className="w-5 h-5 text-primary-600" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4 shadow-xl">
+                      <Store className="w-6 h-6 text-white" />
                     </div>
                     <div>
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -177,7 +186,7 @@ export default function RestaurantTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-primary-600 hover:text-primary-700"
+                      className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-600 hover:from-blue-200 hover:to-blue-300 hover:text-blue-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
                       data-testid={`button-view-${restaurant.id}`}
                     >
                       <Eye className="w-4 h-4" />
@@ -185,7 +194,7 @@ export default function RestaurantTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-secondary-600 hover:text-secondary-700"
+                      className="bg-gradient-to-r from-green-100 to-emerald-200 text-green-600 hover:from-green-200 hover:to-emerald-300 hover:text-green-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
                       data-testid={`button-edit-${restaurant.id}`}
                     >
                       <Edit className="w-4 h-4" />
@@ -194,7 +203,7 @@ export default function RestaurantTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => handleToggleStatus(restaurant)}
-                      className="text-warning hover:text-yellow-700"
+                      className="bg-gradient-to-r from-yellow-100 to-orange-200 text-orange-600 hover:from-yellow-200 hover:to-orange-300 hover:text-orange-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
                       data-testid={`button-toggle-${restaurant.id}`}
                     >
                       {restaurant.status === "active" ? 
@@ -206,7 +215,7 @@ export default function RestaurantTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDelete(restaurant.id)}
-                      className="text-error hover:text-red-700"
+                      className="bg-gradient-to-r from-red-100 to-pink-200 text-red-600 hover:from-red-200 hover:to-pink-300 hover:text-red-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
                       data-testid={`button-delete-${restaurant.id}`}
                     >
                       <Trash2 className="w-4 h-4" />
