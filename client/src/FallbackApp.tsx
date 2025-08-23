@@ -1,7 +1,14 @@
 import React from 'react';
 
+interface DashboardMetrics {
+  totalRestaurants: number;
+  monthlyRevenue: number;
+  newSignups: number;
+  pendingTickets: number;
+}
+
 export default function FallbackApp() {
-  const [data, setData] = React.useState(null);
+  const [data, setData] = React.useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
