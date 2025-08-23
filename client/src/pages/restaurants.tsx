@@ -246,16 +246,36 @@ export default function Restaurants() {
 
             {/* Restaurant Table */}
             <CardContent className="p-0">
-              <RestaurantTable 
-                restaurants={restaurants || []} 
-                isLoading={isLoading}
-                statusFilter={statusFilter}
-                planFilter={planFilter}
-                selectedRestaurants={selectedRestaurants}
-                onSelectRestaurant={setSelectedRestaurants}
-                onSelectAll={handleSelectAll}
-                onOpenDetail={openRestaurantDetail}
-              />
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <RefreshCw className="w-6 h-6 animate-spin mr-2" />
+                  Loading restaurants...
+                </div>
+              ) : restaurants && restaurants.length > 0 ? (
+                <RestaurantTable 
+                  restaurants={restaurants || []} 
+                  isLoading={isLoading}
+                  statusFilter={statusFilter}
+                  planFilter={planFilter}
+                  selectedRestaurants={selectedRestaurants}
+                  onSelectRestaurant={setSelectedRestaurants}
+                  onSelectAll={handleSelectAll}
+                  onOpenDetail={openRestaurantDetail}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                  <Store className="w-12 h-12 mb-4 text-gray-300" />
+                  <h3 className="text-lg font-medium mb-2">No restaurants found</h3>
+                  <p className="text-sm">Add your first restaurant to get started.</p>
+                  <Button 
+                    onClick={() => setShowForm(true)} 
+                    className="mt-4"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Restaurant
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
