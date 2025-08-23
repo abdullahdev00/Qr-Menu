@@ -163,7 +163,7 @@ export class DbStorage implements IStorage {
 
   async deleteRestaurant(id: string): Promise<boolean> {
     const result = await db.delete(restaurants).where(eq(restaurants.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   async searchRestaurants(query: string): Promise<Restaurant[]> {
@@ -201,7 +201,7 @@ export class DbStorage implements IStorage {
 
   async deleteSubscriptionPlan(id: string): Promise<boolean> {
     const result = await db.delete(subscriptionPlans).where(eq(subscriptionPlans.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   // Payment methods
@@ -288,7 +288,7 @@ export class DbStorage implements IStorage {
 
   async deleteQrCode(id: string): Promise<boolean> {
     const result = await db.delete(qrCodes).where(eq(qrCodes.id, id));
-    return result.rowCount > 0;
+    return result.length > 0;
   }
 
   // Analytics methods
