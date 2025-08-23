@@ -3,23 +3,36 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { type Restaurant } from "@shared/schema";
-import { Store, Eye, Edit, Pause, Play, Trash2 } from "lucide-react";
+import { 
+  Store, Eye, Edit, Pause, Play, Trash2, MessageSquare, 
+  RefreshCw, BarChart3, Phone, Mail, MapPin,
+  MoreHorizontal, Clock
+} from "lucide-react";
 
 interface RestaurantTableProps {
   restaurants: Restaurant[];
   isLoading: boolean;
   statusFilter: string;
   planFilter: string;
+  selectedRestaurants: string[];
+  onSelectRestaurant: (ids: string[]) => void;
+  onSelectAll: () => void;
+  onOpenDetail: (restaurant: Restaurant) => void;
 }
 
 export default function RestaurantTable({ 
   restaurants, 
   isLoading, 
   statusFilter, 
-  planFilter 
+  planFilter,
+  selectedRestaurants,
+  onSelectRestaurant,
+  onSelectAll,
+  onOpenDetail
 }: RestaurantTableProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -89,6 +102,14 @@ export default function RestaurantTable({
     }
   };
 
+  const handleSelectRestaurant = (restaurantId: string, checked: boolean) => {
+    if (checked) {
+      onSelectRestaurant([...selectedRestaurants, restaurantId]);
+    } else {
+      onSelectRestaurant(selectedRestaurants.filter(id => id !== restaurantId));
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
@@ -134,11 +155,17 @@ export default function RestaurantTable({
         <Table>
           <TableHeader>
             <TableRow className="bg-gradient-to-r from-blue-100 via-purple-50 to-pink-100 dark:from-gray-800 dark:via-gray-750 dark:to-gray-800 border-b-2 border-blue-200">
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Restaurant</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Owner</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Plan</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Status</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Created</TableHead>
+              <TableHead className="w-12">
+                <Checkbox 
+                  checked={selectedRestaurants.length === restaurants.length && restaurants.length > 0}
+                  onCheckedChange={onSelectAll}
+                  aria-label="Select all restaurants"
+                />
+              </TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Restaurant Info</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Subscription</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Performance</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Location</TableHead>
               <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -150,43 +177,64 @@ export default function RestaurantTable({
                 data-testid={`restaurant-row-${restaurant.id}`}
               >
                 <TableCell>
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4 shadow-xl">
-                      <Store className="w-6 h-6 text-white" />
+                  <Checkbox 
+                    checked={selectedRestaurants.includes(restaurant.id)}
+                    onCheckedChange={(checked) => handleSelectRestaurant(restaurant.id, checked as boolean)}
+                    aria-label={`Select ${restaurant.name}`}
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                      <span className="text-white font-bold text-sm">{restaurant.name[0]?.toUpperCase()}</span>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {restaurant.name}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {restaurant.slug}
+                      <div className="font-medium text-gray-900 dark:text-white">{restaurant.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{restaurant.ownerName}</div>
+                      <div className="flex items-center text-xs text-gray-400 mt-1">
+                        <Mail className="w-3 h-3 mr-1" />
+                        {restaurant.ownerEmail}
                       </div>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm text-gray-900 dark:text-white">
-                    {restaurant.ownerName}
+                  <div className="space-y-1">
+                    {getPlanBadge(restaurant.planId)}
+                    {getStatusBadge(restaurant.status)}
+                    <div className="text-xs text-gray-500">Next billing: 15 Jan</div>
+                    <div className="text-xs font-medium text-green-600">₨15,000 revenue</div>
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {restaurant.ownerEmail}
+                </TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <div className="text-sm">45/100 menu items</div>
+                    <div className="text-xs text-gray-500">1,234 monthly scans</div>
+                    <div className="flex items-center text-xs text-gray-400">
+                      <Clock className="w-3 h-3 mr-1" />
+                      Active 2h ago
+                    </div>
+                    <div className="text-xs text-blue-600">Top: Biryani Special</div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  {getPlanBadge(restaurant.planId)}
+                  <div className="space-y-1">
+                    <div className="font-medium">{restaurant.city || 'Karachi'}</div>
+                    <div className="text-sm text-gray-500">DHA Phase 2</div>
+                    <div className="text-xs text-gray-400 flex items-center">
+                      <MapPin className="w-3 h-3 mr-1" />
+                      {restaurant.address || 'Address not provided'}
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell>
-                  {getStatusBadge(restaurant.status)}
-                </TableCell>
-                <TableCell className="text-sm text-gray-500 dark:text-gray-400">
-                  {restaurant.createdAt ? new Date(restaurant.createdAt).toLocaleDateString() : "N/A"}
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
+                  <div className="flex items-center space-x-1">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-600 hover:from-blue-200 hover:to-blue-300 hover:text-blue-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
+                      onClick={() => onOpenDetail(restaurant)}
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      title="View Details"
                       data-testid={`button-view-${restaurant.id}`}
                     >
                       <Eye className="w-4 h-4" />
@@ -194,7 +242,8 @@ export default function RestaurantTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="bg-gradient-to-r from-green-100 to-emerald-200 text-green-600 hover:from-green-200 hover:to-emerald-300 hover:text-green-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
+                      className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                      title="Edit Restaurant"
                       data-testid={`button-edit-${restaurant.id}`}
                     >
                       <Edit className="w-4 h-4" />
@@ -203,7 +252,8 @@ export default function RestaurantTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => handleToggleStatus(restaurant)}
-                      className="bg-gradient-to-r from-yellow-100 to-orange-200 text-orange-600 hover:from-yellow-200 hover:to-orange-300 hover:text-orange-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
+                      className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                      title={restaurant.status === 'active' ? 'Suspend' : 'Activate'}
                       data-testid={`button-toggle-${restaurant.id}`}
                     >
                       {restaurant.status === "active" ? 
@@ -214,11 +264,10 @@ export default function RestaurantTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(restaurant.id)}
-                      className="bg-gradient-to-r from-red-100 to-pink-200 text-red-600 hover:from-red-200 hover:to-pink-300 hover:text-red-700 rounded-xl p-2 transition-all duration-200 hover:scale-110 shadow-md"
-                      data-testid={`button-delete-${restaurant.id}`}
+                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                      title="Send Message"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <MessageSquare className="w-4 h-4" />
                     </Button>
                   </div>
                 </TableCell>
