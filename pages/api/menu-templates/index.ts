@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { storage } from '../../../server/storage'
+import { storage } from '../../../lib/storage'
 import { insertMenuTemplateSchema } from '../../../shared/schema'
 
 export default async function handler(

@@ -55,7 +55,7 @@ const performanceData = [
   { day: "Sun", orders: 59, revenue: 11800 },
 ];
 
-export function AnalyticsCharts() {
+export default function Charts() {
   const [activeChart, setActiveChart] = useState<'revenue' | 'signups' | 'scans' | 'performance'>('revenue');
 
   const chartButtons = [
@@ -208,7 +208,6 @@ export function AnalyticsCharts() {
                       <Bar yAxisId="left" dataKey="orders" fill="#F59E0B" radius={[4, 4, 0, 0]} />
                       <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#EF4444" strokeWidth={3} dot={{ fill: "#EF4444", r: 4 }} />
                     </ComposedChart>
-                  )}
                   </ResponsiveContainer>
                 )}
               </div>
