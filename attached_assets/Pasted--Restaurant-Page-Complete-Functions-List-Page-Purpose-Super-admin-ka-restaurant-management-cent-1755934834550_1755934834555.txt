@@ -1,0 +1,187 @@
+🏪 Restaurant Page - Complete Functions List
+Page Purpose:
+Super admin ka restaurant management center - sab restaurants ko control, monitor aur manage karne ke liye.
+
+📋 Restaurant Page Functions:
+1. Top Section - Stats Cards (4 Cards)
+javascriptrestaurantStats: {
+  totalRestaurants: "245 Total",        // Blue gradient
+  activeSubscriptions: "198 Active",    // Green gradient  
+  trialUsers: "32 Trials",              // Orange gradient
+  monthlyRevenue: "₹4,85,000"           // Purple gradient
+}
+2. Filters & Search Bar
+javascriptsearchAndFilters: {
+  globalSearch: "Search restaurants, owners, phone, email",
+  statusFilter: ["All", "Active", "Trial", "Suspended", "Expired"],
+  planFilter: ["All Plans", "Basic ₹1,500", "Pro ₹3,000", "Enterprise ₹5,000"],
+  cityFilter: ["All Cities", "Karachi", "Lahore", "Islamabad", "Faisalabad"],
+  dateRangeFilter: "Registration date picker",
+  sortOptions: ["Newest", "Oldest", "Name A-Z", "Revenue High-Low"]
+}
+3. Main Restaurant Table
+javascriptrestaurantTable: {
+  columns: [
+    {
+      restaurantInfo: {
+        logo: "Small thumbnail",
+        name: "Restaurant name",
+        owner: "Owner name", 
+        contact: "Phone + Email"
+      }
+    },
+    {
+      subscription: {
+        plan: "Current plan badge",
+        status: "Active/Trial/Expired status",
+        nextBilling: "Next payment date",
+        totalRevenue: "₹ lifetime revenue"
+      }
+    },
+    {
+      performance: {
+        menuItems: "45/100 used",
+        qrScans: "1,234 monthly",
+        lastActive: "2 hours ago",
+        popularItem: "Top selling item"
+      }
+    },
+    {
+      location: {
+        city: "City name",
+        area: "Area name",
+        address: "Short address"
+      }
+    },
+    {
+      actions: {
+        quickActions: ["👁️ View", "✏️ Edit", "⏸️ Suspend", "💬 Message"],
+        dropdownActions: ["🔄 Reset Password", "📈 Analytics", "🎫 Support", "🗑️ Delete"]
+      }
+    }
+  ]
+}
+4. Bulk Actions Toolbar
+javascriptbulkActions: {
+  selectAll: "Select all restaurants checkbox",
+  actions: [
+    "📧 Send Bulk Email",
+    "📱 Send Bulk SMS", 
+    "⏸️ Bulk Suspend",
+    "✅ Bulk Activate",
+    "📊 Export Selected",
+    "🗑️ Bulk Delete"
+  ]
+}
+5. Restaurant Detail Modal/Sidebar
+javascriptrestaurantDetailView: {
+  tabs: [
+    {
+      profileTab: {
+        basicInfo: "Name, owner, contact details",
+        businessInfo: "License, type, cuisine",
+        locationInfo: "Address, coordinates, map",
+        registrationDetails: "Signup date, referral source"
+      }
+    },
+    {
+      subscriptionTab: {
+        currentPlan: "Plan details, features",
+        billingHistory: "Payment history table",
+        nextPayment: "Upcoming billing info",
+        planActions: ["Upgrade", "Extend Trial", "Refund"]
+      }
+    },
+    {
+      menuPerformanceTab: {
+        menuStats: "Items count, categories, avg price",
+        qrAnalytics: "Scan stats, peak hours",
+        popularItems: "Top performing menu items",
+        menuPreview: "Live menu link"
+      }
+    },
+    {
+      supportTab: {
+        ticketHistory: "All support tickets",
+        communicationLog: "Email/SMS history",
+        quickCommunication: "Send message forms"
+      }
+    },
+    {
+      analyticsTab: {
+        revenueChart: "Monthly revenue graph",
+        usageStats: "Feature usage metrics",
+        customerFeedback: "Reviews and ratings",
+        performanceMetrics: "KPIs and trends"
+      }
+    }
+  ]
+}
+6. Quick Action Buttons (Floating/Fixed)
+javascriptquickActionButtons: {
+  primaryActions: [
+    {
+      addRestaurant: {
+        icon: "➕",
+        label: "Add Restaurant", 
+        color: "Blue gradient",
+        function: "openAddRestaurantModal()"
+      }
+    },
+    {
+      exportAll: {
+        icon: "📊", 
+        label: "Export All",
+        color: "Green gradient",
+        function: "exportRestaurantData()"
+      }
+    },
+    {
+      bulkMessage: {
+        icon: "📢",
+        label: "Broadcast",
+        color: "Orange gradient", 
+        function: "openBulkMessageModal()"
+      }
+    }
+  ]
+}
+7. Advanced Features Panel
+javascriptadvancedFeatures: {
+  automationRules: {
+    label: "Set up automated actions",
+    functions: [
+      "Auto-suspend on failed payment",
+      "Send reminder emails",
+      "Trial expiry notifications",
+      "Welcome message automation"
+    ]
+  },
+  
+  reportGeneration: {
+    label: "Generate custom reports", 
+    options: [
+      "Monthly revenue report",
+      "Restaurant performance report",
+      "User activity report",
+      "Custom date range reports"
+    ]
+  },
+  
+  systemHealth: {
+    label: "System monitoring",
+    metrics: [
+      "Database performance",
+      "API response times", 
+      "Error rate tracking",
+      "Server resource usage"
+    ]
+  }
+}
+8. Data Visualization Section
+javascriptdataVisualizations: {
+  restaurantGrowth: "Monthly signup trends chart",
+  revenueBreakdown: "Revenue by plan type pie chart", 
+  geographicDistribution: "Restaurants by city bar chart",
+  planPopularity: "Most popular subscription plans"
+}
