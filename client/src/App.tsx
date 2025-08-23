@@ -7,7 +7,7 @@ import { ThemeProvider } from "next-themes";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
-import Restaurants from "@/pages/restaurants";
+import RestaurantsSimple from "@/pages/restaurants-simple";
 import Subscriptions from "@/pages/subscriptions";
 import MenuTemplates from "@/pages/menu-templates";
 import QrCodes from "@/pages/qr-codes";
@@ -26,7 +26,7 @@ function Router() {
           <MainLayout>
             <Switch>
               <Route path="/" component={Dashboard} />
-              <Route path="/restaurants" component={Restaurants} />
+              <Route path="/restaurants" component={RestaurantsSimple} />
               <Route path="/subscriptions" component={Subscriptions} />
               <Route path="/menu-templates" component={MenuTemplates} />
               <Route path="/qr-codes" component={QrCodes} />
