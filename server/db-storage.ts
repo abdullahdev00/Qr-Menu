@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import { eq, like, or, desc } from 'drizzle-orm';
 import { 
   adminUsers,
@@ -21,7 +21,7 @@ import {
 } from "@shared/schema";
 import { IStorage } from './storage';
 
-const sql = neon(process.env.DATABASE_URL!);
+const sql = postgres(process.env.DATABASE_URL!);
 const db = drizzle(sql);
 
 export class DbStorage implements IStorage {
