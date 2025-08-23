@@ -36,12 +36,12 @@ const revenueData = [
 ];
 
 const pieData = [
-  { name: 'Premium Plans', value: 45, color: '#8B5CF6' },
-  { name: 'Basic Plans', value: 35, color: '#06B6D4' },
-  { name: 'Pro Plans', value: 20, color: '#10B981' },
+  { name: 'Premium Plans', value: 45, color: '#F59E0B' },
+  { name: 'Basic Plans', value: 35, color: '#EF4444' },
+  { name: 'Pro Plans', value: 20, color: '#8B5CF6' },
 ];
 
-const COLORS = ['#8B5CF6', '#06B6D4', '#10B981'];
+const COLORS = ['#F59E0B', '#EF4444', '#8B5CF6'];
 
 export default function RevenueChart() {
   const [chartType, setChartType] = useState<'area' | 'bar' | 'line' | 'pie'>('area');
@@ -54,35 +54,52 @@ export default function RevenueChart() {
           <AreaChart data={revenueData}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05}/>
+                <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4}/>
+                <stop offset="50%" stopColor="#60A5FA" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#93C5FD" stopOpacity={0.05}/>
+              </linearGradient>
+              <linearGradient id="strokeRevenue" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#1D4ED8" />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
-            <XAxis dataKey="month" className="text-xs fill-muted-foreground" />
-            <YAxis className="text-xs fill-muted-foreground" tickFormatter={(value) => `PKR ${(value / 1000).toFixed(0)}k`} />
-            <Tooltip formatter={(value: number) => [`PKR ${value.toLocaleString()}`, "Revenue"]} contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-            <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" fill="url(#colorRevenue)" strokeWidth={3} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" strokeOpacity={0.5} />
+            <XAxis dataKey="month" tick={{ fill: '#6B7280', fontSize: 12 }} stroke="#9CA3AF" />
+            <YAxis tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={(value) => `PKR ${(value / 1000).toFixed(0)}k`} stroke="#9CA3AF" />
+            <Tooltip formatter={(value: number) => [`PKR ${value.toLocaleString()}`, "Revenue"]} contentStyle={{ backgroundColor: "white", border: "none", borderRadius: "12px", boxShadow: "0 8px 32px rgba(0,0,0,0.12)", color: "#374151" }} />
+            <Area type="monotone" dataKey="revenue" stroke="url(#strokeRevenue)" fill="url(#colorRevenue)" strokeWidth={4} />
           </AreaChart>
         );
       case 'bar':
         return (
           <BarChart data={revenueData}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
-            <XAxis dataKey="month" className="text-xs fill-muted-foreground" />
-            <YAxis className="text-xs fill-muted-foreground" tickFormatter={(value) => `PKR ${(value / 1000).toFixed(0)}k`} />
-            <Tooltip formatter={(value: number) => [`PKR ${value.toLocaleString()}`, "Revenue"]} contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-            <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            <defs>
+              <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#10B981" />
+                <stop offset="100%" stopColor="#059669" />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" strokeOpacity={0.5} />
+            <XAxis dataKey="month" tick={{ fill: '#6B7280', fontSize: 12 }} stroke="#9CA3AF" />
+            <YAxis tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={(value) => `PKR ${(value / 1000).toFixed(0)}k`} stroke="#9CA3AF" />
+            <Tooltip formatter={(value: number) => [`PKR ${value.toLocaleString()}`, "Revenue"]} contentStyle={{ backgroundColor: "white", border: "none", borderRadius: "12px", boxShadow: "0 8px 32px rgba(0,0,0,0.12)", color: "#374151" }} />
+            <Bar dataKey="revenue" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
           </BarChart>
         );
       case 'line':
         return (
           <LineChart data={revenueData}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted-foreground/20" />
-            <XAxis dataKey="month" className="text-xs fill-muted-foreground" />
-            <YAxis className="text-xs fill-muted-foreground" tickFormatter={(value) => `PKR ${(value / 1000).toFixed(0)}k`} />
-            <Tooltip formatter={(value: number) => [`PKR ${value.toLocaleString()}`, "Revenue"]} contentStyle={{ backgroundColor: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} />
-            <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ fill: "hsl(var(--primary))", r: 4 }} activeDot={{ r: 6 }} />
+            <defs>
+              <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#8B5CF6" />
+                <stop offset="100%" stopColor="#A855F7" />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" strokeOpacity={0.5} />
+            <XAxis dataKey="month" tick={{ fill: '#6B7280', fontSize: 12 }} stroke="#9CA3AF" />
+            <YAxis tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={(value) => `PKR ${(value / 1000).toFixed(0)}k`} stroke="#9CA3AF" />
+            <Tooltip formatter={(value: number) => [`PKR ${value.toLocaleString()}`, "Revenue"]} contentStyle={{ backgroundColor: "white", border: "none", borderRadius: "12px", boxShadow: "0 8px 32px rgba(0,0,0,0.12)", color: "#374151" }} />
+            <Line type="monotone" dataKey="revenue" stroke="url(#lineGradient)" strokeWidth={4} dot={{ fill: "#8B5CF6", strokeWidth: 2, r: 6 }} activeDot={{ r: 8, fill: "#A855F7", strokeWidth: 2, stroke: "white" }} />
           </LineChart>
         );
       case 'pie':
