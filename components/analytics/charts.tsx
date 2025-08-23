@@ -116,8 +116,8 @@ export function AnalyticsCharts() {
             </CardHeader>
             <CardContent>
               <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  {activeChart === 'revenue' && (
+                {activeChart === 'revenue' && (
+                  <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={analyticsData}>
                       <defs>
                         <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
@@ -139,8 +139,10 @@ export function AnalyticsCharts() {
                       />
                       <Area type="monotone" dataKey="revenue" stroke="#3B82F6" fill="url(#revenueGradient)" strokeWidth={3} />
                     </AreaChart>
-                  )}
-                  {activeChart === 'signups' && (
+                  </ResponsiveContainer>
+                )}
+                {activeChart === 'signups' && (
+                  <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={analyticsData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" strokeOpacity={0.3} />
                       <XAxis dataKey="month" className="text-xs fill-muted-foreground" stroke="#9CA3AF" />
@@ -163,8 +165,10 @@ export function AnalyticsCharts() {
                         activeDot={{ r: 8, stroke: "#10B981", strokeWidth: 2 }}
                       />
                     </LineChart>
-                  )}
-                  {activeChart === 'scans' && (
+                  </ResponsiveContainer>
+                )}
+                {activeChart === 'scans' && (
+                  <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={analyticsData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" strokeOpacity={0.3} />
                       <XAxis dataKey="month" className="text-xs fill-muted-foreground" stroke="#9CA3AF" />
@@ -180,8 +184,10 @@ export function AnalyticsCharts() {
                       />
                       <Bar dataKey="scans" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
                     </BarChart>
-                  )}
-                  {activeChart === 'performance' && (
+                  </ResponsiveContainer>
+                )}
+                {activeChart === 'performance' && (
+                  <ResponsiveContainer width="100%" height="100%">
                     <ComposedChart data={performanceData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" strokeOpacity={0.3} />
                       <XAxis dataKey="day" className="text-xs fill-muted-foreground" stroke="#9CA3AF" />
@@ -203,7 +209,8 @@ export function AnalyticsCharts() {
                       <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#EF4444" strokeWidth={3} dot={{ fill: "#EF4444", r: 4 }} />
                     </ComposedChart>
                   )}
-                </ResponsiveContainer>
+                  </ResponsiveContainer>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -1,10 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    appDir: false
-  },
   env: {
     DATABASE_URL: process.env.DATABASE_URL,
     PGHOST: process.env.PGHOST,
