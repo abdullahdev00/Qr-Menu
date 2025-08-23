@@ -57,11 +57,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 w-64 h-screen transition-transform bg-gradient-to-b from-white via-blue-50/30 to-purple-50/30 dark:from-gray-800 dark:via-gray-850 dark:to-gray-900 shadow-2xl border-r-2 border-gradient-to-b from-blue-200 to-purple-200 dark:border-gray-700 backdrop-blur-xl",
+          "fixed left-0 top-0 z-50 w-64 h-screen transition-all duration-300 bg-gradient-to-b from-white via-blue-50/40 to-purple-50/40 dark:from-gray-900 dark:via-blue-950/30 dark:to-purple-950/30 shadow-2xl border-r border-blue-200/50 dark:border-blue-800/30 backdrop-blur-2xl",
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
         data-testid="sidebar"
       >
+        {/* Animated background overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-pink-400/10 opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
         <div className="h-full px-3 py-4 overflow-y-auto">
           {/* Close button for mobile */}
           <button
@@ -73,39 +75,79 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </button>
 
           {/* Logo */}
-          <div className="flex items-center mb-8 px-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-3 shadow-xl">
-              <QrCode className="text-white w-6 h-6" />
+          <div className="flex items-center mb-8 px-3 group">
+            <div className="relative w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-3 shadow-xl transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-pink-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+              <QrCode className="text-white w-6 h-6 relative z-10 drop-shadow-lg" />
+              <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">QR Menu</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Admin Panel</p>
+            <div className="transition-all duration-300 group-hover:translate-x-1">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">QR Menu</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wide">Admin Panel</p>
             </div>
           </div>
 
           {/* Navigation Menu */}
-          <nav className="space-y-2 mb-8">
-            {navigation.map((item) => {
+          <nav className="space-y-1 mb-8">
+            {navigation.map((item, index) => {
               const isActive = location === item.href;
+              const gradients = [
+                'from-blue-500 to-blue-600',
+                'from-emerald-500 to-emerald-600', 
+                'from-purple-500 to-purple-600',
+                'from-orange-500 to-orange-600',
+                'from-pink-500 to-pink-600',
+                'from-teal-500 to-teal-600',
+                'from-indigo-500 to-indigo-600',
+                'from-gray-500 to-gray-600'
+              ];
               return (
                 <button
                   key={item.name}
                   onClick={() => handleNavigation(item.href)}
-                  className={cn("nav-item w-full text-left", isActive && "active")}
+                  className={cn(
+                    "group relative w-full flex items-center px-4 py-3 mx-2 text-sm font-medium rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg",
+                    isActive 
+                      ? `bg-gradient-to-r ${gradients[index]} text-white shadow-lg scale-105` 
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gradient-to-r hover:from-gray-100/80 hover:to-blue-100/80 dark:hover:from-gray-800/50 dark:hover:to-blue-900/50 hover:text-gray-900 dark:hover:text-white"
+                  )}
                   data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                 >
-                  <item.icon className="w-5 h-5" />
-                  <span className="ml-3">{item.name}</span>
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full shadow-lg"></div>
+                  )}
+                  
+                  {/* Icon with background */}
+                  <div className={cn(
+                    "relative w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-all duration-300",
+                    isActive 
+                      ? "bg-white/20 backdrop-blur-sm" 
+                      : "bg-gray-100/50 dark:bg-gray-800/50 group-hover:bg-white/20 group-hover:backdrop-blur-sm"
+                  )}>
+                    <item.icon className={cn("w-5 h-5 transition-transform duration-300 group-hover:scale-110", isActive ? "text-white drop-shadow-sm" : "")} />
+                  </div>
+                  
+                  <span className={cn("flex-1 text-left transition-all duration-300", isActive && "drop-shadow-sm")}>
+                    {item.name}
+                  </span>
+                  
                   {item.badge && (
-                    <span 
-                      className={cn(
-                        "ml-auto text-xs font-medium px-2.5 py-0.5 rounded-full",
-                        item.badgeColor || "bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400"
-                      )}
-                    >
+                    <span className={cn(
+                      "text-xs font-bold px-2.5 py-1 rounded-full transition-all duration-300 transform group-hover:scale-110",
+                      isActive 
+                        ? "bg-white/20 text-white backdrop-blur-sm" 
+                        : "bg-gradient-to-r from-red-400 to-pink-500 text-white shadow-lg animate-pulse"
+                    )}>
                       {item.badge}
                     </span>
                   )}
+                  
+                  {/* Hover glow effect */}
+                  <div className={cn(
+                    "absolute inset-0 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 bg-gradient-to-r",
+                    gradients[index]
+                  )}></div>
                 </button>
               );
             })}
@@ -114,29 +156,52 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Bottom section */}
           <div className="absolute bottom-4 left-3 right-3">
             {/* Storage indicator */}
-            <div className="bg-gradient-to-r from-blue-100 via-purple-50 to-pink-100 dark:bg-gradient-to-r dark:from-blue-900/30 dark:via-purple-900/30 dark:to-pink-900/30 rounded-2xl p-4 mb-4 shadow-lg border border-blue-200 dark:border-gray-600">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Storage Used
-                </span>
-                <span className="text-xs text-purple-600 dark:text-purple-400 font-bold">78%</span>
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500 shadow-inner" 
-                  style={{ width: "78%" }}
-                ></div>
+            <div className="relative bg-gradient-to-br from-blue-50/80 via-purple-50/80 to-pink-50/80 dark:bg-gradient-to-br dark:from-blue-900/40 dark:via-purple-900/40 dark:to-pink-900/40 rounded-2xl p-4 mb-4 shadow-xl border border-blue-200/50 dark:border-purple-800/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group cursor-pointer">
+              {/* Animated background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-purple-400/10 to-pink-400/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
+                    🗄️ Storage Used
+                  </span>
+                  <span className="text-xs font-bold px-2 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg animate-pulse">
+                    78%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200/80 dark:bg-gray-700/80 rounded-full h-3 overflow-hidden shadow-inner">
+                  <div className="relative h-3 rounded-full overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-3 rounded-full transition-all duration-700 shadow-lg relative overflow-hidden" 
+                      style={{ width: "78%" }}
+                    >
+                      {/* Animated shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">2.3 GB of 3 GB used</p>
               </div>
             </div>
 
             {/* Sign out button */}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gradient-to-r hover:from-red-100 hover:to-pink-100 dark:hover:bg-gradient-to-r dark:hover:from-red-900/30 dark:hover:to-pink-900/30 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 border border-transparent hover:border-red-200"
+              className="group relative w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gradient-to-r from-gray-50/50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-700/50 hover:from-red-50 hover:to-pink-50 dark:hover:from-red-900/30 dark:hover:to-pink-900/30 rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border border-gray-200/50 dark:border-gray-600/50 hover:border-red-300/50 dark:hover:border-red-700/50 backdrop-blur-sm"
               data-testid="button-logout"
             >
-              <LogOut className="w-5 h-5" />
-              <span className="ml-3">Sign Out</span>
+              {/* Logout icon with animation */}
+              <div className="relative w-8 h-8 rounded-lg bg-gray-100/50 dark:bg-gray-700/50 group-hover:bg-red-100 dark:group-hover:bg-red-900/40 flex items-center justify-center mr-3 transition-all duration-300">
+                <LogOut className="w-5 h-5 transition-all duration-300 group-hover:scale-110 group-hover:text-red-600 dark:group-hover:text-red-400" />
+                <div className="absolute inset-0 bg-red-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+              
+              <span className="flex-1 text-left transition-colors duration-300 group-hover:text-red-600 dark:group-hover:text-red-400 font-medium">
+                Sign Out
+              </span>
+              
+              {/* Hover glow effect */}
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-red-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
           </div>
         </div>
