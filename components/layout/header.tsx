@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useTheme } from "next-themes";
+import { useTheme } from "../../src/lib/theme-provider";
 import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import { getCurrentUser } from "../../lib/auth";
-import { ThemeToggle } from "../ui/theme-toggle";
 import { Menu, Moon, Sun, Bell } from "lucide-react";
 
 interface HeaderProps {
@@ -81,9 +80,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
               data-testid="button-theme-toggle"
             >
               <div className="relative z-10">
-                {theme === "dark" ? 
-                  <Sun className="w-5 h-5 transition-all duration-300 group-hover:rotate-180 drop-shadow-sm" /> : 
-                  <Moon className="w-5 h-5 transition-all duration-300 group-hover:-rotate-12 drop-shadow-sm" />
+                {theme === "light" ? 
+                  <Moon className="w-5 h-5 transition-all duration-300 group-hover:-rotate-12 drop-shadow-sm" /> :
+                  <Sun className="w-5 h-5 transition-all duration-300 group-hover:rotate-180 drop-shadow-sm" />
                 }
               </div>
               <div className="absolute inset-0 bg-gradient-to-br from-yellow-300/20 to-orange-300/20 dark:from-yellow-400/20 dark:to-blue-400/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
