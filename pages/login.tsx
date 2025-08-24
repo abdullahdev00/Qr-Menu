@@ -30,11 +30,12 @@ export default function Login() {
       if (response.ok) {
         const data = await response.json()
         localStorage.setItem('user', JSON.stringify(data.user))
-        setLocation('/dashboard')
         toast({
-          title: "Login successful",
+          title: "Login successful", 
           description: "Welcome back!",
         })
+        // Refresh the page to update authentication status
+        window.location.href = '/dashboard'
       } else {
         toast({
           title: "Login failed",

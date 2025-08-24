@@ -1,6 +1,6 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Route, Switch, Router, Redirect } from 'wouter';
 import { Toaster } from '../components/ui/toaster';
 
@@ -27,10 +27,30 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // For demo purposes
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check localStorage for authentication
+    const user = localStorage.getItem('user');
+    if (user) {
+      setIsAuthenticated(true);
+    }
+    setIsLoading(false);
+  }, []);
 
   console.log('🎨 Loading Original Beautiful Admin Panel...');
   console.log('✅ Original design loaded successfully!');
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-xl">Loading...</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -44,21 +64,25 @@ function App() {
               </Route>
             </Switch>
           ) : (
-            <MainLayout>
-              <Switch>
-                <Route path="/">
-                  <Redirect to="/dashboard" />
-                </Route>
-                <Route path="/dashboard" component={DashboardPage} />
-                <Route path="/restaurants" component={RestaurantsPage} />
-                <Route path="/menu-templates" component={MenuTemplatesPage} />
-                <Route path="/qr-codes" component={QRCodesPage} />
-                <Route path="/subscriptions" component={SubscriptionsPage} />
-                <Route path="/analytics" component={AnalyticsPage} />
-                <Route path="/support" component={SupportPage} />
-                <Route path="/login" component={LoginPage} />
-              </Switch>
-            </MainLayout>
+            <Switch>
+              <Route path="/login" component={LoginPage} />
+              <Route>
+                <MainLayout>
+                  <Switch>
+                    <Route path="/">
+                      <Redirect to="/dashboard" />
+                    </Route>
+                    <Route path="/dashboard" component={DashboardPage} />
+                    <Route path="/restaurants" component={RestaurantsPage} />
+                    <Route path="/menu-templates" component={MenuTemplatesPage} />
+                    <Route path="/qr-codes" component={QRCodesPage} />
+                    <Route path="/subscriptions" component={SubscriptionsPage} />
+                    <Route path="/analytics" component={AnalyticsPage} />
+                    <Route path="/support" component={SupportPage} />
+                  </Switch>
+                </MainLayout>
+              </Route>
+            </Switch>
           )}
           <Toaster />
         </div>
