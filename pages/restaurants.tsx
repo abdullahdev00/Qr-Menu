@@ -67,7 +67,7 @@ export default function Restaurants() {
         {isLoading ? (
           <div className="h-96 bg-gray-200 rounded-lg animate-pulse" />
         ) : (
-          <RestaurantTable restaurants={Array.isArray(restaurants) ? restaurants : []} />
+          <RestaurantTable />
         )}
       </div>
   )
