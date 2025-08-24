@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import { useRouter } from 'next/router'
+import { useLocation } from 'wouter'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Card, CardHeader, CardContent, CardTitle } from '../components/ui/card'
@@ -11,7 +11,7 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [, setLocation] = useLocation()
   const { toast } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -30,7 +30,7 @@ export default function Login() {
       if (response.ok) {
         const data = await response.json()
         localStorage.setItem('user', JSON.stringify(data.user))
-        router.push('/dashboard')
+        setLocation('/dashboard')
         toast({
           title: "Login successful",
           description: "Welcome back!",

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
 import MainLayout from '../components/layout/main-layout'
 import PlanCard from '../components/subscriptions/plan-card'
@@ -13,7 +13,7 @@ interface User {
 }
 
 export default function Subscriptions() {
-  const router = useRouter()
+  const [, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
@@ -21,9 +21,9 @@ export default function Subscriptions() {
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     } else {
-      router.push('/login')
+      setLocation('/login')
     }
-  }, [router])
+  }, [])
 
   const { data: plans, isLoading } = useQuery({
     queryKey: ['/api/subscription-plans'],

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/lib/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { type SupportTicket } from "@shared/schema";
 import { Store, Mail, Clock, User } from "lucide-react";

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useLocation } from 'wouter'
 import MainLayout from '../components/layout/main-layout'
 import Charts from '../components/analytics/charts'
 
@@ -12,7 +12,7 @@ interface User {
 }
 
 export default function Analytics() {
-  const router = useRouter()
+  const [, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
@@ -20,9 +20,9 @@ export default function Analytics() {
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     } else {
-      router.push('/login')
+      setLocation('/login')
     }
-  }, [router])
+  }, [])
 
   if (!user) {
     return (

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
 import MainLayout from '../components/layout/main-layout'
 import TicketItem from '../components/support/ticket-item'
@@ -13,7 +13,7 @@ interface User {
 }
 
 export default function Support() {
-  const router = useRouter()
+  const [, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
@@ -21,9 +21,9 @@ export default function Support() {
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     } else {
-      router.push('/login')
+      setLocation('/login')
     }
-  }, [router])
+  }, [])
 
   const { data: tickets, isLoading } = useQuery({
     queryKey: ['/api/support-tickets'],

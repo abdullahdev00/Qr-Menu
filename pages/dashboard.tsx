@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
 import MainLayout from '../components/layout/main-layout'
 import KpiCards from '../components/dashboard/kpi-cards'
@@ -15,7 +15,7 @@ interface User {
 }
 
 export default function Dashboard() {
-  const router = useRouter()
+  const [, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
@@ -23,9 +23,9 @@ export default function Dashboard() {
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     } else {
-      router.push('/login')
+      setLocation('/login')
     }
-  }, [router])
+  }, [])
 
   const { data: metrics, isLoading } = useQuery({
     queryKey: ['/api/dashboard/metrics'],

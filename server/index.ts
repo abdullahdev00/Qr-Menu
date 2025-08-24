@@ -25,31 +25,16 @@ async function startServer() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // Test route first
-  app.get('/', (req, res) => {
-    res.send('<h1>Server is working!</h1><p>QR Menu Generator is starting...</p>');
-  });
-
-  // Setup Vite dev server for development  
-  if (process.env.NODE_ENV === 'development') {
-    try {
-      const vite = await createViteServer({
-        server: { middlewareMode: true },
-        appType: 'spa',
-        root: process.cwd(),
-      });
-      app.use(vite.ssrFixStacktrace);
-      app.use(vite.middlewares);
-      console.log('✅ Vite dev server integrated');
-    } catch (error) {
-      console.error('❌ Vite integration failed:', error);
-      // Fallback to static files
-      app.use(express.static(join(__dirname, '../public')));
+  // Serve built static files
+  app.use(express.static(join(__dirname, '../dist')));
+  
+  // Fallback route for SPA - serve built index.html
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next();
     }
-  } else {
-    // Serve static files from dist in production
-    app.use(express.static(join(__dirname, '../dist')));
-  }
+    res.sendFile(join(__dirname, '../dist/index.html'));
+  });
 
   // API Routes - Dynamic import handling
   app.use('/api', async (req, res, next) => {

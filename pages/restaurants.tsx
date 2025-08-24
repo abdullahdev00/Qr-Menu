@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
 import MainLayout from '../components/layout/main-layout'
 import RestaurantTable from '../components/restaurants/restaurant-table'
@@ -17,7 +17,7 @@ interface User {
 }
 
 export default function Restaurants() {
-  const router = useRouter()
+  const [, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -26,9 +26,9 @@ export default function Restaurants() {
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     } else {
-      router.push('/login')
+      setLocation('/login')
     }
-  }, [router])
+  }, [])
 
   const { data: restaurants, isLoading } = useQuery({
     queryKey: ['/api/restaurants'],
