@@ -148,13 +148,13 @@ export default function RestaurantsPage() {
     },
   });
 
-  // Filter restaurants
-  const filteredRestaurants = restaurants.filter((restaurant: Restaurant) => {
+  // Filter restaurants - safely handle undefined restaurants
+  const filteredRestaurants = Array.isArray(restaurants) ? restaurants.filter((restaurant: Restaurant) => {
     if (statusFilter !== 'all' && restaurant.status !== statusFilter) {
       return false;
     }
     return true;
-  });
+  }) : [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -386,7 +386,7 @@ export default function RestaurantsPage() {
               <Store className="h-8 w-8 text-blue-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Restaurants</p>
-                <p className="text-2xl font-bold text-gray-900">{restaurants.length}</p>
+                <p className="text-2xl font-bold text-gray-900">{Array.isArray(restaurants) ? restaurants.length : 0}</p>
               </div>
             </div>
           </CardContent>
@@ -399,7 +399,7 @@ export default function RestaurantsPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Active</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {restaurants.filter((r: Restaurant) => r.status === 'active').length}
+                  {Array.isArray(restaurants) ? restaurants.filter((r: Restaurant) => r.status === 'active').length : 0}
                 </p>
               </div>
             </div>
@@ -413,7 +413,7 @@ export default function RestaurantsPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Inactive</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {restaurants.filter((r: Restaurant) => r.status === 'inactive').length}
+                  {Array.isArray(restaurants) ? restaurants.filter((r: Restaurant) => r.status === 'inactive').length : 0}
                 </p>
               </div>
             </div>
