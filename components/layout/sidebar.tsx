@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
-import { cn } from "@/lib/utils";
-import { getCurrentUser, logout } from "@/lib/auth";
+import { cn } from "../../lib/utils";
+import { getCurrentUser, logout } from "../../lib/auth";
 import { 
   BarChart3, 
   Store, 
