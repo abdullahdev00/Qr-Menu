@@ -14,7 +14,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <Header onMenuClick={() => setSidebarOpen(true)} />
       <main className="lg:ml-64 pt-16">
-        <div className="p-4">
+        <div className="p-2 sm:p-4">
           {children}
         </div>
       </main>

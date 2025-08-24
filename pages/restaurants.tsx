@@ -6,7 +6,8 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useToast } from '../lib/use-toast';
 import { 
@@ -57,6 +58,10 @@ export default function RestaurantsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedRestaurants, setSelectedRestaurants] = useState<string[]>([]);
+  const [editingRestaurant, setEditingRestaurant] = useState<Restaurant | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [restaurantToDelete, setRestaurantToDelete] = useState<Restaurant | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -112,6 +117,109 @@ export default function RestaurantsPage() {
     enabled: !!user,
   });
 
+  // Update restaurant mutation
+  const updateRestaurantMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: RestaurantFormData }) => {
+      const response = await fetch(`/api/restaurants/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update restaurant');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/restaurants'] });
+      setIsEditDialogOpen(false);
+      setEditingRestaurant(null);
+      toast({
+        title: "Success",
+        description: "Restaurant updated successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete restaurant mutation
+  const deleteRestaurantMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/restaurants/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete restaurant');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/restaurants'] });
+      setIsDeleteDialogOpen(false);
+      setRestaurantToDelete(null);
+      toast({
+        title: "Success",
+        description: "Restaurant deleted successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handler functions for table actions
+  const handleViewRestaurant = (id: string) => {
+    const restaurant = restaurants.find((r: Restaurant) => r.id === id);
+    if (restaurant) {
+      toast({
+        title: "Restaurant Details",
+        description: `Viewing details for ${restaurant.name}`,
+      });
+      // Here you can navigate to restaurant detail page or open detail modal
+      console.log('Viewing restaurant:', restaurant);
+    }
+  };
+
+  const handleEditRestaurant = (id: string) => {
+    const restaurant = restaurants.find((r: Restaurant) => r.id === id);
+    if (restaurant) {
+      setEditingRestaurant(restaurant);
+      setFormData({
+        name: restaurant.name,
+        slug: restaurant.slug,
+        ownerName: restaurant.ownerName,
+        ownerEmail: restaurant.ownerEmail,
+        ownerPhone: restaurant.ownerPhone,
+        address: restaurant.address,
+        city: restaurant.city,
+        planId: restaurant.planId,
+        status: restaurant.status,
+        notes: restaurant.notes
+      });
+      setIsEditDialogOpen(true);
+    }
+  };
+
+  const handleDeleteRestaurant = (id: string) => {
+    const restaurant = restaurants.find((r: Restaurant) => r.id === id);
+    if (restaurant) {
+      setRestaurantToDelete(restaurant);
+      setIsDeleteDialogOpen(true);
+    }
+  };
+
   // Create restaurant mutation
   const createRestaurantMutation = useMutation({
     mutationFn: async (data: RestaurantFormData) => {
@@ -158,7 +266,25 @@ export default function RestaurantsPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createRestaurantMutation.mutate(formData);
+    if (editingRestaurant) {
+      updateRestaurantMutation.mutate({ id: editingRestaurant.id, data: formData });
+    } else {
+      createRestaurantMutation.mutate(formData);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (restaurantToDelete) {
+      deleteRestaurantMutation.mutate(restaurantToDelete.id);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '', slug: '', ownerName: '', ownerEmail: '', ownerPhone: '',
+      address: '', city: 'Karachi', planId: null, status: 'active', notes: ''
+    });
+    setEditingRestaurant(null);
   };
 
   const getStatusBadge = (status: string) => {
@@ -193,7 +319,10 @@ export default function RestaurantsPage() {
           <p className="text-gray-600">Manage your restaurant clients and their subscriptions</p>
         </div>
 
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+          setIsAddDialogOpen(open);
+          if (!open) resetForm();
+        }}>
           <DialogTrigger asChild>
             <Button className="bg-blue-600 hover:bg-blue-700">
               <Plus className="mr-2 h-4 w-4" />
@@ -202,7 +331,7 @@ export default function RestaurantsPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Add New Restaurant</DialogTitle>
+              <DialogTitle>{editingRestaurant ? 'Edit Restaurant' : 'Add New Restaurant'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -526,13 +655,29 @@ export default function RestaurantsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleViewRestaurant(restaurant.id)}
+                              data-testid={`button-view-${restaurant.id}`}
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleEditRestaurant(restaurant.id)}
+                              data-testid={`button-edit-${restaurant.id}`}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                              onClick={() => handleDeleteRestaurant(restaurant.id)}
+                              data-testid={`button-delete-${restaurant.id}`}
+                            >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -546,6 +691,183 @@ export default function RestaurantsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+        setIsEditDialogOpen(open);
+        if (!open) resetForm();
+      }}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit Restaurant</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Restaurant Name</label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Enter restaurant name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Slug</label>
+                <Input
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  placeholder="restaurant-slug"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Owner Name</label>
+                <Input
+                  value={formData.ownerName}
+                  onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                  placeholder="Owner's full name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Owner Email</label>
+                <Input
+                  type="email"
+                  value={formData.ownerEmail}
+                  onChange={(e) => setFormData({ ...formData, ownerEmail: e.target.value })}
+                  placeholder="owner@restaurant.com"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Phone Number</label>
+                <Input
+                  value={formData.ownerPhone}
+                  onChange={(e) => setFormData({ ...formData, ownerPhone: e.target.value })}
+                  placeholder="+92 300 1234567"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">City</label>
+                <Select
+                  value={formData.city}
+                  onValueChange={(value) => setFormData({ ...formData, city: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Karachi">Karachi</SelectItem>
+                    <SelectItem value="Lahore">Lahore</SelectItem>
+                    <SelectItem value="Islamabad">Islamabad</SelectItem>
+                    <SelectItem value="Faisalabad">Faisalabad</SelectItem>
+                    <SelectItem value="Multan">Multan</SelectItem>
+                    <SelectItem value="Peshawar">Peshawar</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Address</label>
+              <Input
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                placeholder="Full address"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value: 'active' | 'inactive' | 'suspended') => setFormData({ ...formData, status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="suspended">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Subscription Plan</label>
+                <Select
+                  value={formData.planId || ''}
+                  onValueChange={(value) => setFormData({ ...formData, planId: value || null })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select plan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No Plan</SelectItem>
+                    {plans.map((plan: any) => (
+                      <SelectItem key={plan.id} value={plan.id}>{plan.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Notes</label>
+              <Input
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Additional notes..."
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={updateRestaurantMutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {updateRestaurantMutation.isPending ? 'Updating...' : 'Update Restaurant'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete "{restaurantToDelete?.name}" and all associated data.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={deleteRestaurantMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteRestaurantMutation.isPending ? 'Deleting...' : 'Delete Restaurant'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

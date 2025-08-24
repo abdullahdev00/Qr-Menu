@@ -64,7 +64,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Animated background overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-pink-400/10 opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-        <div className="h-full px-3 py-4 overflow-y-auto">
+        <div className="h-full px-3 py-4 overflow-x-hidden overflow-y-auto">
           {/* Close button for mobile */}
           <button
             onClick={onClose}
