@@ -31,8 +31,18 @@ async function startServer() {
     
     try {
       // Try to import the corresponding API handler
-      let handlerPath = `../pages/api/${apiPath}.ts`;
-      const { default: handler } = await import(handlerPath);
+      let handlerPath = `../pages/api/${apiPath}/index.ts`;
+      
+      // Try index.ts first, then fall back to direct .ts file
+      let handler;
+      try {
+        const module = await import(handlerPath);
+        handler = module.default;
+      } catch (indexError) {
+        const directPath = `../pages/api/${apiPath}.ts`;
+        const module = await import(directPath);
+        handler = module.default;
+      }
       
       // Create Next.js-like req/res objects
       const mockReq = { 

@@ -1,0 +1,322 @@
+Project Overview:
+Create a comprehensive QR Code Management Page for multi-vendor restaurant platform admin panel. This page will manage all QR codes across all restaurants including table QR systems.
+
+📋 Core Requirements:
+1. Page Structure & Layout
+
+Header Section: Page title "QR Code Management" with breadcrumb navigation
+Stats Cards: 4 KPI cards showing QR performance metrics
+Main Content: Tabbed interface with different QR management sections
+Action Panel: Quick actions and bulk operations
+Responsive Design: Mobile-friendly interface matching existing admin panel style
+
+2. Top Statistics Cards (4 Cards)
+javascriptstatsCards: [
+  {
+    title: "Total QR Codes Generated",
+    value: "1,847",
+    subtext: "+124 this month", 
+    icon: "qr-code",
+    color: "blue gradient",
+    clickAction: "View all QR codes"
+  },
+  {
+    title: "Active QR Codes",
+    value: "1,623", 
+    subtext: "87.9% active rate",
+    icon: "check-circle",
+    color: "green gradient", 
+    clickAction: "Filter active QRs"
+  },
+  {
+    title: "Monthly Scans",
+    value: "45,678",
+    subtext: "+23% from last month",
+    icon: "trending-up", 
+    color: "purple gradient",
+    clickAction: "View scan analytics"
+  },
+  {
+    title: "Top Performer",
+    value: "McDonald's DHA",
+    subtext: "2,345 scans",
+    icon: "award",
+    color: "orange gradient",
+    clickAction: "View restaurant details"
+  }
+]
+3. Main QR Code Management Table
+javascriptqrCodeTable: {
+  // Search & Filters
+  searchFilters: {
+    globalSearch: "Search by restaurant name, QR type, location",
+    restaurantFilter: "Dropdown with all restaurants", 
+    qrTypeFilter: ["All Types", "Menu QR", "Table QR", "Business Card", "Poster"],
+    statusFilter: ["All Status", "Active", "Inactive", "Expired"],
+    dateRangeFilter: "QR creation date range picker",
+    cityFilter: ["All Cities", "Karachi", "Lahore", "Islamabad"]
+  },
+  
+  // Table Columns
+  tableColumns: [
+    {
+      restaurantInfo: {
+        restaurantLogo: "Small thumbnail image",
+        restaurantName: "Restaurant name with link",
+        ownerName: "Owner name", 
+        location: "City, Area"
+      }
+    },
+    {
+      qrDetails: {
+        qrType: "Badge showing type (Table/Menu/Poster)",
+        totalQRs: "Number of QR codes generated",
+        lastGenerated: "Date of last QR creation",
+        qrPreview: "Small QR code thumbnail"
+      }
+    },
+    {
+      tableQRSystem: {
+        totalTables: "Number of tables (if applicable)",
+        activeTableQRs: "Active table QR codes",
+        tablePerformance: "Best performing table number",
+        averageScansPerTable: "Daily average scans per table"
+      }
+    },
+    {
+      performanceMetrics: {
+        totalScans: "All-time scan count",
+        monthlyScans: "Current month scans",
+        dailyAverage: "Average scans per day", 
+        conversionRate: "Scan to menu view percentage"
+      }
+    },
+    {
+      actionButtons: {
+        primaryActions: ["👁️ View QRs", "📊 Analytics", "🔄 Regenerate"],
+        dropdownActions: [
+          "📥 Download QRs",
+          "🎨 Update Design", 
+          "📱 SMS QR Links",
+          "📧 Email QRs",
+          "⏸️ Disable QRs",
+          "🗑️ Delete QRs"
+        ]
+      }
+    }
+  ]
+}
+4. Tabbed Content Sections
+javascripttabbedSections: {
+  // Tab 1: Overview Dashboard
+  overviewTab: {
+    qrPerformanceChart: {
+      type: "Line chart showing daily QR scans",
+      timeRange: "Last 30 days with date picker",
+      colors: "Blue gradient matching admin theme"
+    },
+    topPerformingQRs: {
+      type: "Bar chart showing top 10 QR performers", 
+      metrics: "Restaurant name vs scan count",
+      colors: "Green gradient"
+    },
+    qrTypeBreakdown: {
+      type: "Pie chart showing QR type distribution",
+      data: "Table QR, Menu QR, Poster QR percentages",
+      colors: ["Orange", "Purple", "Teal"]
+    }
+  },
+  
+  // Tab 2: Table QR Management
+  tableQRTab: {
+    restaurantSelector: "Dropdown to select specific restaurant",
+    tableLayout: {
+      visualView: "Grid showing table numbers with QR status",
+      listView: "Detailed table list with performance metrics",
+      bulkActions: ["Generate All", "Print All", "Export Data"]
+    },
+    tablePerformance: {
+      tableRanking: "List of tables by scan performance",
+      peakHours: "Heat map of table usage by time",
+      conversionMetrics: "Table-wise order conversion rates"
+    }
+  },
+  
+  // Tab 3: QR Templates
+  templatesTab: {
+    templateGallery: {
+      designPreview: "Visual preview of QR design templates",
+      templateEditor: "Simple design customization tool", 
+      brandingOptions: "Logo placement, color schemes",
+      sizePresets: "Standard sizes (table tent, poster, sticker)"
+    },
+    bulkTemplateActions: {
+      applyToAll: "Apply template to all restaurants",
+      applyToCity: "Apply to specific city restaurants",
+      scheduleUpdate: "Schedule template changes"
+    }
+  },
+  
+  // Tab 4: Analytics & Reports
+  analyticsTab: {
+    performanceReports: {
+      dailyReport: "Daily QR scan summary",
+      monthlyTrends: "Monthly performance trends",
+      restaurantComparison: "Cross-restaurant QR performance",
+      exportOptions: ["PDF Report", "Excel Data", "CSV Export"]
+    },
+    advancedAnalytics: {
+      deviceBreakdown: "Mobile vs Desktop scan analytics",
+      geographicAnalysis: "City-wise QR performance", 
+      timeAnalysis: "Peak usage hours and days",
+      conversionFunnel: "Scan → View → Order journey"
+    }
+  }
+}
+5. Quick Actions Panel
+javascriptquickActionsPanel: [
+  {
+    name: "Generate QR Batch",
+    description: "Create QRs for multiple restaurants", 
+    icon: "layers",
+    color: "blue gradient",
+    function: "openBatchGenerationModal()"
+  },
+  {
+    name: "QR Health Check",
+    description: "Test all QR codes functionality",
+    icon: "shield-check", 
+    color: "green gradient",
+    function: "runSystemHealthCheck()"
+  },
+  {
+    name: "Template Designer",
+    description: "Create new QR design templates",
+    icon: "palette",
+    color: "purple gradient", 
+    function: "openTemplateDesigner()"
+  },
+  {
+    name: "Performance Report", 
+    description: "Generate comprehensive QR report",
+    icon: "file-text",
+    color: "orange gradient",
+    function: "generatePerformanceReport()"
+  },
+  {
+    name: "Bulk Operations",
+    description: "Mass QR management tools",
+    icon: "zap",
+    color: "indigo gradient",
+    function: "openBulkOperationsPanel()"
+  },
+  {
+    name: "System Settings",
+    description: "QR system configuration",
+    icon: "settings",
+    color: "gray gradient", 
+    function: "openQRSystemSettings()"
+  }
+]
+6. Modal/Popup Windows
+javascriptmodalWindows: {
+  // QR Detail View Modal
+  qrDetailModal: {
+    restaurantInfo: "Complete restaurant details",
+    qrGallery: "All QR codes for the restaurant",
+    performanceCharts: "Individual QR analytics",
+    downloadOptions: "Various format downloads",
+    editActions: "Regenerate, update, disable options"
+  },
+  
+  // Batch Generation Modal
+  batchGenerationModal: {
+    restaurantSelection: "Multi-select restaurant list",
+    qrTypeSelection: "Choose QR types to generate", 
+    templateSelection: "Design template picker",
+    bulkSettings: "Common settings for all QRs",
+    previewSection: "Preview before generation"
+  },
+  
+  // Table QR Setup Modal
+  tableSetupModal: {
+    restaurantSelector: "Choose restaurant",
+    tableConfiguration: "Add/edit table numbers",
+    qrCustomization: "Table-specific QR settings", 
+    printLayout: "Print setup for table QRs",
+    downloadOptions: "Individual or bulk download"
+  }
+}
+7. Advanced Features
+javascriptadvancedFeatures: {
+  // Real-time Monitoring
+  realtimeTracking: {
+    liveScanFeed: "Real-time QR scan notifications",
+    performanceAlerts: "Low-performing QR alerts",
+    systemHealth: "QR functionality status monitoring"
+  },
+  
+  // Automation Rules
+  automationSystem: {
+    autoRegeneration: "Schedule QR updates",
+    performanceAlerts: "Automated low-performance warnings", 
+    backupSystem: "Automated QR data backups",
+    maintenanceMode: "Scheduled QR system maintenance"
+  },
+  
+  // Integration APIs
+  integrationSupport: {
+    webhookSupport: "QR scan event webhooks",
+    apiEndpoints: "QR management API for restaurants",
+    thirdPartySync: "POS system QR integration", 
+    analyticsExport: "Data export to external analytics"
+  }
+}
+
+🎨 Design Specifications:
+UI/UX Requirements:
+
+Design Consistency: Match existing admin panel color scheme and layout
+Interactive Elements: Hover effects, loading states, smooth transitions
+Data Visualization: Charts using Chart.js or similar library
+Mobile Responsive: Collapsible sections for mobile devices
+Loading States: Skeleton loaders for data fetching
+Error Handling: User-friendly error messages and retry options
+
+Technical Requirements:
+
+Framework: HTML5, CSS3, JavaScript (or React.js if using framework)
+Charts: Chart.js or Recharts for data visualization
+Icons: Lucide React or Font Awesome icon library
+Styling: Tailwind CSS or Bootstrap for responsive design
+State Management: Local storage for user preferences
+API Integration: RESTful APIs for data fetching and updates
+
+Performance Requirements:
+
+Load Time: Page should load within 2 seconds
+Real-time Updates: Live data refresh every 30 seconds
+Pagination: Handle 1000+ QR codes efficiently
+Search Performance: Instant search with debouncing
+Export Speed: Large data exports within 10 seconds
+
+
+🔧 Expected Functionality:
+Core Functions:
+
+QR Code Overview: Display all QR codes across all restaurants
+Performance Analytics: Track QR scan metrics and trends
+Table QR Management: Specialized table QR code system
+Template Management: Design and apply QR templates
+Bulk Operations: Mass QR code generation and updates
+Health Monitoring: System health checks and alerts
+Report Generation: Comprehensive QR performance reports
+Integration Support: API endpoints for external integrations
+
+Business Intelligence:
+
+ROI Tracking: QR code investment vs performance analysis
+Usage Patterns: Peak usage times and seasonal trends
+Restaurant Comparison: Cross-restaurant QR performance metrics
+Feature Adoption: Which restaurants use which QR features
+Technical Performance: System uptime and response times
