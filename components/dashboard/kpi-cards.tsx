@@ -21,7 +21,7 @@ export default function KpiCards() {
 
   if (isLoading || !metrics) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {[...Array(4)].map((_, i) => {
           const colors = [
             'bg-gradient-to-br from-blue-400 to-indigo-500',

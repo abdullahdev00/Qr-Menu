@@ -32,10 +32,6 @@ async function startServer() {
     try {
       // Try to import the corresponding API handler
       let handlerPath = `../pages/api/${apiPath}.ts`;
-      // If it's a directory-based route, try index.ts
-      if (!apiPath.includes('.')) {
-        handlerPath = `../pages/api/${apiPath}/index.ts`;
-      }
       const { default: handler } = await import(handlerPath);
       
       // Create Next.js-like req/res objects

@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { Route, Switch, Router, Redirect } from 'wouter';
 import { Toaster } from '../components/ui/toaster';
+import { ThemeProvider } from './lib/theme-provider';
 
 // Import pages
 import LoginPage from '../pages/login';
@@ -53,8 +54,9 @@ function App() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
+    <ThemeProvider defaultTheme="light" storageKey="qr-menu-theme">
+      <QueryClientProvider client={queryClient}>
+        <Router>
         <div className="min-h-screen bg-background">
           {!isAuthenticated ? (
             <Switch>
@@ -88,6 +90,7 @@ function App() {
         </div>
       </Router>
     </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

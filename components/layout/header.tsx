@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useTheme } from "next-themes";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "../../lib/auth";
+import { ThemeToggle } from "../ui/theme-toggle";
 import { Menu, Moon, Sun, Bell } from "lucide-react";
 
 interface HeaderProps {
