@@ -25,17 +25,6 @@ async function startServer() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // Serve built static files
-  app.use(express.static(join(__dirname, '../dist')));
-  
-  // Fallback route for SPA - serve built index.html
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api/')) {
-      return next();
-    }
-    res.sendFile(join(__dirname, '../dist/index.html'));
-  });
-
   // API Routes - Dynamic import handling
   app.use('/api', async (req, res, next) => {
     const apiPath = req.path.slice(1); // Remove leading slash
@@ -69,9 +58,19 @@ async function startServer() {
     }
   });
 
-  // For production, serve index.html for all other routes (SPA fallback)
-  if (process.env.NODE_ENV !== 'development') {
+  // For production, serve built static files and fallback
+  if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(join(__dirname, '../dist')));
     app.get('*', (req, res) => {
+      res.sendFile(join(__dirname, '../dist/index.html'));
+    });
+  } else {
+    // For development, serve the built files since we have them
+    app.use(express.static(join(__dirname, '../dist')));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api/')) {
+        return next();
+      }
       res.sendFile(join(__dirname, '../dist/index.html'));
     });
   }
