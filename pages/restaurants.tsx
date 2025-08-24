@@ -385,8 +385,8 @@ export default function RestaurantsPage() {
             <div className="flex items-center">
               <Store className="h-8 w-8 text-blue-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Restaurants</p>
-                <p className="text-2xl font-bold text-gray-900">{Array.isArray(restaurants) ? restaurants.length : 0}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Restaurants</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{Array.isArray(restaurants) ? restaurants.length : 0}</p>
               </div>
             </div>
           </CardContent>
@@ -397,8 +397,8 @@ export default function RestaurantsPage() {
             <div className="flex items-center">
               <TrendingUp className="h-8 w-8 text-green-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {Array.isArray(restaurants) ? restaurants.filter((r: Restaurant) => r.status === 'active').length : 0}
                 </p>
               </div>
@@ -411,8 +411,8 @@ export default function RestaurantsPage() {
             <div className="flex items-center">
               <Clock className="h-8 w-8 text-orange-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Inactive</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Inactive</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {Array.isArray(restaurants) ? restaurants.filter((r: Restaurant) => r.status === 'inactive').length : 0}
                 </p>
               </div>
@@ -425,8 +425,8 @@ export default function RestaurantsPage() {
             <div className="flex items-center">
               <Users className="h-8 w-8 text-purple-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold text-gray-900">+12</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">This Month</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">+12</p>
               </div>
             </div>
           </CardContent>
@@ -442,7 +442,7 @@ export default function RestaurantsPage() {
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-16 bg-gray-200 rounded animate-pulse" />
+                <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
               ))}
             </div>
           ) : (
@@ -463,10 +463,10 @@ export default function RestaurantsPage() {
                   {filteredRestaurants.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8">
-                        <div className="flex flex-col items-center justify-center text-gray-500">
-                          <Store className="h-12 w-12 mb-4 text-gray-300" />
-                          <p className="text-lg font-medium">No restaurants found</p>
-                          <p className="text-sm">Get started by adding your first restaurant</p>
+                        <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                          <Store className="h-12 w-12 mb-4 text-gray-300 dark:text-gray-600" />
+                          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">No restaurants found</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Get started by adding your first restaurant</p>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -475,24 +475,24 @@ export default function RestaurantsPage() {
                       <TableRow key={restaurant.id}>
                         <TableCell>
                           <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                               <Store className="h-5 w-5 text-blue-600" />
                             </div>
                             <div>
-                              <div className="font-medium text-gray-900">{restaurant.name}</div>
-                              <div className="text-sm text-gray-500">{restaurant.slug}</div>
+                              <div className="font-medium text-gray-900 dark:text-white">{restaurant.name}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">{restaurant.slug}</div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="font-medium text-gray-900">{restaurant.ownerName}</div>
-                            <div className="text-sm text-gray-500 flex items-center">
+                            <div className="font-medium text-gray-900 dark:text-white">{restaurant.ownerName}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                               <Mail className="h-3 w-3 mr-1" />
                               {restaurant.ownerEmail}
                             </div>
                             {restaurant.ownerPhone && (
-                              <div className="text-sm text-gray-500 flex items-center">
+                              <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                                 <Phone className="h-3 w-3 mr-1" />
                                 {restaurant.ownerPhone}
                               </div>
@@ -500,12 +500,12 @@ export default function RestaurantsPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center text-sm text-gray-900">
-                            <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+                          <div className="flex items-center text-sm text-gray-900 dark:text-white">
+                            <MapPin className="h-4 w-4 mr-1 text-gray-400 dark:text-gray-500" />
                             {restaurant.city}
                           </div>
                           {restaurant.address && (
-                            <div className="text-sm text-gray-500 mt-1 truncate max-w-xs">
+                            <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 truncate max-w-xs">
                               {restaurant.address}
                             </div>
                           )}
@@ -519,7 +519,7 @@ export default function RestaurantsPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center text-sm text-gray-500">
+                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                             <Calendar className="h-4 w-4 mr-1" />
                             {new Date(restaurant.createdAt).toLocaleDateString()}
                           </div>
@@ -532,7 +532,7 @@ export default function RestaurantsPage() {
                             <Button variant="ghost" size="sm">
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-900">
+                            <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>

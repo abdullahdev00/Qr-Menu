@@ -229,27 +229,27 @@ export default function QrCodesPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <Button variant="outline" className="flex flex-col items-center p-4 h-auto bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-blue-200" data-testid="action-generate-batch">
               <Layers className="w-6 h-6 mb-2 text-blue-600" />
-              <span className="text-xs text-center text-blue-700">Generate QR Batch</span>
+              <span className="text-xs text-center text-blue-700 dark:text-blue-300">Generate QR Batch</span>
             </Button>
             <Button variant="outline" className="flex flex-col items-center p-4 h-auto bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-green-200" data-testid="action-health-check">
               <ShieldCheck className="w-6 h-6 mb-2 text-green-600" />
-              <span className="text-xs text-center text-green-700">QR Health Check</span>
+              <span className="text-xs text-center text-green-700 dark:text-green-300">QR Health Check</span>
             </Button>
             <Button variant="outline" className="flex flex-col items-center p-4 h-auto bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-purple-200" data-testid="action-template-designer">
               <Palette className="w-6 h-6 mb-2 text-purple-600" />
-              <span className="text-xs text-center text-purple-700">Template Designer</span>
+              <span className="text-xs text-center text-purple-700 dark:text-purple-300">Template Designer</span>
             </Button>
             <Button variant="outline" className="flex flex-col items-center p-4 h-auto bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 border-orange-200" data-testid="action-performance-report">
               <FileText className="w-6 h-6 mb-2 text-orange-600" />
-              <span className="text-xs text-center text-orange-700">Performance Report</span>
+              <span className="text-xs text-center text-orange-700 dark:text-orange-300">Performance Report</span>
             </Button>
             <Button variant="outline" className="flex flex-col items-center p-4 h-auto bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 border-indigo-200" data-testid="action-bulk-operations">
               <Zap className="w-6 h-6 mb-2 text-indigo-600" />
-              <span className="text-xs text-center text-indigo-700">Bulk Operations</span>
+              <span className="text-xs text-center text-indigo-700 dark:text-indigo-300">Bulk Operations</span>
             </Button>
             <Button variant="outline" className="flex flex-col items-center p-4 h-auto bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border-gray-200" data-testid="action-system-settings">
               <Settings className="w-6 h-6 mb-2 text-gray-600" />
-              <span className="text-xs text-center text-gray-700">System Settings</span>
+              <span className="text-xs text-center text-gray-700 dark:text-gray-300">System Settings</span>
             </Button>
           </div>
         </CardContent>
@@ -413,7 +413,7 @@ export default function QrCodesPage() {
               {qrLoading ? (
                 <div className="space-y-4">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="h-16 bg-gray-200 rounded animate-pulse" />
+                    <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                   ))}
                 </div>
               ) : (
@@ -433,11 +433,11 @@ export default function QrCodesPage() {
                         <TableRow key={qr.id} data-testid={`row-qr-${qr.id}`}>
                           <TableCell>
                             <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-gray-200 rounded-lg flex items-center justify-center">
+                              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                                 <QrCode className="w-4 h-4" />
                               </div>
                               <div>
-                                <p className="font-medium text-sm">{qr.restaurantName || 'Unknown Restaurant'}</p>
+                                <p className="font-medium text-sm text-gray-900 dark:text-white">{qr.restaurantName || 'Unknown Restaurant'}</p>
                                 <p className="text-xs text-muted-foreground flex items-center">
                                   <MapPin className="w-3 h-3 mr-1" />
                                   Karachi, DHA
@@ -463,7 +463,7 @@ export default function QrCodesPage() {
                           <TableCell>
                             {qr.qrType === 'table' ? (
                               <div className="text-sm">
-                                <p>Table #{qr.tableNumber || 'N/A'}</p>
+                                <p className="text-gray-900 dark:text-white">Table #{qr.tableNumber || 'N/A'}</p>
                                 <p className="text-xs text-muted-foreground">Active QR</p>
                               </div>
                             ) : (
@@ -472,7 +472,7 @@ export default function QrCodesPage() {
                           </TableCell>
                           <TableCell>
                             <div className="text-sm">
-                              <p className="font-medium">{qr.scanCount.toLocaleString()} scans</p>
+                              <p className="font-medium text-gray-900 dark:text-white">{qr.scanCount.toLocaleString()} scans</p>
                               <p className="text-xs text-muted-foreground">{qr.monthlyScans} this month</p>
                               <p className="text-xs text-muted-foreground">{qr.conversionRate}% conversion</p>
                             </div>
@@ -549,18 +549,18 @@ export default function QrCodesPage() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                       <Smartphone className="w-4 h-4" />
                       Mobile
                     </span>
-                    <span className="font-semibold">78%</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">78%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                       <Monitor className="w-4 h-4" />
                       Desktop
                     </span>
-                    <span className="font-semibold">22%</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">22%</span>
                   </div>
                 </div>
               </CardContent>
@@ -576,16 +576,16 @@ export default function QrCodesPage() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span>Karachi</span>
-                    <span className="font-semibold">45%</span>
+                    <span className="text-gray-700 dark:text-gray-300">Karachi</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">45%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span>Lahore</span>
-                    <span className="font-semibold">32%</span>
+                    <span className="text-gray-700 dark:text-gray-300">Lahore</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">32%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span>Islamabad</span>
-                    <span className="font-semibold">23%</span>
+                    <span className="text-gray-700 dark:text-gray-300">Islamabad</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">23%</span>
                   </div>
                 </div>
               </CardContent>
@@ -601,16 +601,16 @@ export default function QrCodesPage() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span>12:00 PM - 2:00 PM</span>
-                    <span className="font-semibold">Peak</span>
+                    <span className="text-gray-700 dark:text-gray-300">12:00 PM - 2:00 PM</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">Peak</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span>7:00 PM - 9:00 PM</span>
-                    <span className="font-semibold">High</span>
+                    <span className="text-gray-700 dark:text-gray-300">7:00 PM - 9:00 PM</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">High</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span>10:00 AM - 12:00 PM</span>
-                    <span className="font-semibold">Medium</span>
+                    <span className="text-gray-700 dark:text-gray-300">10:00 AM - 12:00 PM</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">Medium</span>
                   </div>
                 </div>
               </CardContent>
