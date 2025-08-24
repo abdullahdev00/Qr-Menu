@@ -43,12 +43,12 @@ export default function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
-    <header className="lg:ml-64 bg-gradient-to-r from-white via-blue-50/60 to-purple-50/60 dark:from-gray-900 dark:via-blue-950/40 dark:to-purple-950/40 border-b border-blue-200/50 dark:border-blue-800/30 shadow-xl backdrop-blur-2xl relative overflow-hidden">
+    <header className="lg:ml-64 bg-gradient-to-r from-white via-blue-50/60 to-purple-50/60 dark:from-gray-900 dark:via-blue-950/40 dark:to-purple-950/40 border-b border-blue-200/50 dark:border-blue-800/30 shadow-lg backdrop-blur-2xl relative overflow-hidden fixed top-0 left-0 right-0 z-30">
       {/* Animated background pattern */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-pink-400/10"></div>
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"></div>
       
-      <div className="relative px-6 py-4">
+      <div className="relative px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Button

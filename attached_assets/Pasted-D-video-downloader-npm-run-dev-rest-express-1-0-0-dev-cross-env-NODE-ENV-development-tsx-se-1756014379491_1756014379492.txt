@@ -1,0 +1,59 @@
+D:\video downloader>npm run dev
+
+> rest-express@1.0.0 dev
+> cross-env NODE_ENV=development tsx server/index.ts
+
+10:42:12 AM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 10 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+10:42:24 AM [express] GET /api/download-history 200 in 3ms :: []
+10:42:41 AM [express] POST /api/validate-url 200 in 7ms :: {"valid":true,"platform":"TikTok","url":"h…
+TikTok OG scrape success: {
+  title: 'TikTok - Make Your Day',
+  uploader: 'TikTok',
+  thumb: 'No thumbnail',
+  description: ''
+}
+10:42:44 AM [express] POST /api/extract-video-info 200 in 2316ms :: {"url":"https://vt.tiktok.com/ZSA…
+10:42:46 AM [express] POST /api/generate-download-link 200 in 4ms :: {"downloadUrl":"/api/stream-vide…
+Streaming video: https://vt.tiktok.com/ZSAkV3Jso/, quality: 1080p HD, format: mp4
+yt-dlp download link generation failed for https://vt.tiktok.com/ZSAkV3Jso/: ERROR: Could not copy Chrome cookie database. See  https://github.com/yt-dlp/yt-dlp/issues/7271  for more info
+ERROR: Could not copy Chrome cookie database. See  https://github.com/yt-dlp/yt-dlp/issues/7271  for more info  
+
+TikTok requires authentication, providing demo URL
+Actual download URL obtained: https://commondatastorage.googleapis.com/gtv-video...
+Fetching video from actual URL...
+Using yt-dlp direct streaming for TikTok
+Spawning yt-dlp for streaming: C:\Users\Dell\AppData\Local\Programs\Python\Python313\Scripts\yt-dlp.exe --no-warnings --ignore-config --no-check-certificate --geo-bypass --user-agent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 --socket-timeout 60 --extractor-retries 5 --add-header Origin:https://www.tiktok.com --add-header Referer:https://www.tiktok.com/ --cookies-from-browser edge -f bestvideo[height<=1080][ext=mp4][vcodec~='^(avc1|h264)']+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[ext=mp4]/best --merge-output-format mp4 -o C:\Users\Dell\AppData\Local\Temp\vidfetch-1756014169334-r69md64zj8k.mp4 https://vt.tiktok.com/ZSAkV3Jso/ --ffmpeg-location [URL]
+[yt-dlp stderr]: ERROR: Could not copy Chrome cookie database. See  https://github.com/yt-dlp/yt-dlp/issues/7271  for more info
+[yt-dlp stderr]: ERROR: Could not copy Chrome cookie database. See  https://github.com/yt-dlp/yt-dlp/issues/7271  for more info
+yt-dlp process exited with code 1
+10:42:51 AM [express] GET /api/stream-video 500 in 5071ms :: {"error":"Video processing failed with c…
+10:43:14 AM [express] POST /api/validate-url 200 in 1ms :: {"valid":true,"platform":"YouTube","url":"…
+YouTube oEmbed data: {
+  title: 'Why Rawalpindi is Important for Pakistan',
+  author_name: 'HUH Industry',
+  author_url: 'https://www.youtube.com/@huhindustry',
+  type: 'video',
+  height: 200,
+  width: 113,
+  version: '1.0',
+  provider_name: 'YouTube',
+  provider_url: 'https://www.youtube.com/',
+  thumbnail_height: 360,
+  thumbnail_width: 480,
+  thumbnail_url: 'https://i.ytimg.com/vi/fGUJ4Yby3Kw/hq2.jpg',
+  html: '<iframe width="113" height="200" src="https://www.youtube.com/embed/fGUJ4Yby3Kw?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen title="Why Rawalpindi is Important for Pakistan"></iframe>'
+}
+10:43:15 AM [express] POST /api/extract-video-info 200 in 538ms :: {"url":"https://youtube.com/shorts…
+10:43:18 AM [express] POST /api/generate-download-link 200 in 2ms :: {"downloadUrl":"/api/stream-vide…
+Streaming video: https://youtube.com/shorts/fGUJ4Yby3Kw?si=lVsYhw83dj8LVvOo, quality: 1080p HD, format: mp4
+Actual download URL obtained: https://rr3---sn-jtcxg-aixe.googlevideo.com/videop...
+Fetching video from actual URL...
+Using yt-dlp direct streaming for YouTube
+Spawning yt-dlp for streaming: C:\Users\Dell\AppData\Local\Programs\Python\Python313\Scripts\yt-dlp.exe --no-warnings --ignore-config --no-check-certificate --geo-bypass --user-agent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 --socket-timeout 60 --extractor-retries 5 --cookies-from-browser edge -f bestvideo[height<=1080][ext=mp4][vcodec~='^(avc1|h264)']+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best[ext=mp4]/best --merge-output-format mp4 -o C:\Users\Dell\AppData\Local\Temp\vidfetch-1756014206901-kscqa93x8t8.mp4 https://youtube.com/shorts/fGUJ4Yby3Kw?si=lVsYhw83dj8LVvOo --ffmpeg-location [URL]
+[yt-dlp stderr]: ERROR: Could not copy Chrome cookie database. See  https://github.com/yt-dlp/yt-dlp/issues/7271  for more info
+[yt-dlp stderr]: ERROR: Could not copy Chrome cookie database. See  https://github.com/yt-dlp/yt-dlp/issues/7271  for more info
+yt-dlp process exited with code 1
+10:43:29 AM [express] GET /api/stream-video 500 in 11011ms :: {"error":"Video processing failed with …
