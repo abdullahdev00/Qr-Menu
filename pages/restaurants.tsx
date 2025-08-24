@@ -2,7 +2,6 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
-import MainLayout from '../components/layout/main-layout'
 import RestaurantTable from '../components/restaurants/restaurant-table'
 import RestaurantForm from '../components/restaurants/restaurant-form'
 import { Button } from '../components/ui/button'
@@ -46,7 +45,6 @@ export default function Restaurants() {
   }
 
   return (
-    <MainLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -79,6 +77,5 @@ export default function Restaurants() {
           <RestaurantTable restaurants={Array.isArray(restaurants) ? restaurants : []} />
         )}
       </div>
-    </MainLayout>
   )
 }

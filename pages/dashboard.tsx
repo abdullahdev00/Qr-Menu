@@ -2,7 +2,6 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
-import MainLayout from '../components/layout/main-layout'
 import KpiCards from '../components/dashboard/kpi-cards'
 import RevenueChart from '../components/dashboard/revenue-chart'
 import RecentActivity from '../components/dashboard/recent-activity'
@@ -43,7 +42,6 @@ export default function Dashboard() {
   }
 
   return (
-    <MainLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold" data-testid="text-dashboard-title">
@@ -73,6 +71,5 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </MainLayout>
   )
 }

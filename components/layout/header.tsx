@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTheme } from "next-themes";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
 import { Menu, Moon, Sun, Bell } from "lucide-react";
@@ -12,6 +13,30 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const { theme, setTheme } = useTheme();
   const user = getCurrentUser();
   const [notifications] = useState(2);
+  const [location] = useLocation();
+
+  // Get page title based on current route
+  const getPageTitle = () => {
+    switch (location) {
+      case '/dashboard':
+      case '/':
+        return 'Dashboard';
+      case '/restaurants':
+        return 'Restaurants';
+      case '/subscriptions':
+        return 'Subscription Plans';
+      case '/menu-templates':
+        return 'Menu Templates';
+      case '/qr-codes':
+        return 'QR Code Generator';
+      case '/support':
+        return 'Support Tickets';
+      case '/analytics':
+        return 'Analytics';
+      default:
+        return 'Dashboard';
+    }
+  };
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -37,7 +62,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </Button>
             <div className="ml-4 lg:ml-0 group">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-700 to-purple-700 dark:from-white dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent drop-shadow-sm transition-all duration-300 group-hover:scale-105">
-                Dashboard
+                {getPageTitle()}
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-300 font-medium flex items-center transition-all duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                 👋 Welcome back, <span className="ml-1 font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{user?.role === "super_admin" ? "Super Admin" : user?.name}</span>

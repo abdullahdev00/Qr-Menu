@@ -1,7 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
-import MainLayout from '../components/layout/main-layout'
 import Charts from '../components/analytics/charts'
 
 interface User {
@@ -35,7 +34,6 @@ export default function Analytics() {
   }
 
   return (
-    <MainLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold" data-testid="text-analytics-title">
@@ -48,6 +46,5 @@ export default function Analytics() {
 
         <Charts />
       </div>
-    </MainLayout>
   )
 }

@@ -2,7 +2,6 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
-import MainLayout from '../components/layout/main-layout'
 import QrGenerator from '../components/qr/qr-generator'
 
 interface User {
@@ -41,7 +40,6 @@ export default function QrCodes() {
   }
 
   return (
-    <MainLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold" data-testid="text-qr-title">
@@ -77,6 +75,5 @@ export default function QrCodes() {
           </div>
         </div>
       </div>
-    </MainLayout>
   )
 }

@@ -2,7 +2,6 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
 import { useQuery } from '@tanstack/react-query'
-import MainLayout from '../components/layout/main-layout'
 import TemplateCard from '../components/templates/template-card'
 
 interface User {
@@ -41,7 +40,6 @@ export default function MenuTemplates() {
   }
 
   return (
-    <MainLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold" data-testid="text-templates-title">
@@ -66,6 +64,5 @@ export default function MenuTemplates() {
           </div>
         )}
       </div>
-    </MainLayout>
   )
 }
