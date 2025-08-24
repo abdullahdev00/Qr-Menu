@@ -29,8 +29,15 @@ export default function Restaurants() {
     }
   }, [])
 
-  const { data: restaurants, isLoading } = useQuery({
+  const { data: restaurants = [], isLoading } = useQuery({
     queryKey: ['/api/restaurants'],
+    queryFn: async () => {
+      const response = await fetch('/api/restaurants');
+      if (!response.ok) {
+        throw new Error('Failed to fetch restaurants');
+      }
+      return response.json();
+    },
     enabled: !!user,
   })
 
@@ -59,16 +66,21 @@ export default function Restaurants() {
               <DialogHeader>
                 <DialogTitle>Add New Restaurant</DialogTitle>
               </DialogHeader>
-              <RestaurantForm onSuccess={() => setIsDialogOpen(false)} />
+              <RestaurantForm onClose={() => setIsDialogOpen(false)} />
             </DialogContent>
           </Dialog>
         </div>
 
-        {isLoading ? (
-          <div className="h-96 bg-gray-200 rounded-lg animate-pulse" />
-        ) : (
-          <RestaurantTable />
-        )}
+        <RestaurantTable 
+          restaurants={restaurants}
+          isLoading={isLoading}
+          statusFilter=""
+          planFilter=""
+          selectedRestaurants={[]}
+          onSelectRestaurant={() => {}}
+          onSelectAll={() => {}}
+          onOpenDetail={() => {}}
+        />
       </div>
   )
 }

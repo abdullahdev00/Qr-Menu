@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/lib/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { type Restaurant } from "@shared/schema";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Checkbox } from "../ui/checkbox";
+import { useToast } from "../../lib/use-toast";
+import { apiRequest } from "../../lib/queryClient";
+import { type Restaurant } from "../../shared/schema";
 import { 
   Store, Eye, Edit, Pause, Play, Trash2, MessageSquare, 
   RefreshCw, BarChart3, Phone, Mail, MapPin,
