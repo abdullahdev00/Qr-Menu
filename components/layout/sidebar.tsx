@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: BarChart3 },
+  { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
   { name: "Restaurants", href: "/restaurants", icon: Store, badge: "24" },
   { name: "Subscriptions", href: "/subscriptions", icon: CreditCard },
   { name: "Menu Templates", href: "/menu-templates", icon: Utensils },
@@ -90,7 +90,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Navigation Menu */}
           <nav className="space-y-1 mb-8">
             {navigation.map((item, index) => {
-              const isActive = location === item.href;
+              const isActive = location === item.href || (location === "/" && item.href === "/dashboard");
               const gradients = [
                 'from-blue-500 to-blue-600',
                 'from-emerald-500 to-emerald-600', 
