@@ -80,12 +80,19 @@ export const qrCodes = pgTable("qr_codes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
   url: text("url").notNull(),
+  qrType: text("qr_type").notNull().default("menu"), // menu, table, poster, business_card
+  tableNumber: integer("table_number"), // For table QRs
   style: text("style").notNull().default("classic"), // classic, rounded, dots
   size: text("size").notNull().default("medium"), // small, medium, large
   foregroundColor: text("foreground_color").notNull().default("#000000"),
   backgroundColor: text("background_color").notNull().default("#ffffff"),
   format: text("format").notNull().default("png"), // png, jpg, svg
   scanCount: integer("scan_count").notNull().default(0),
+  monthlyScans: integer("monthly_scans").notNull().default(0),
+  dailyAverage: integer("daily_average").notNull().default(0),
+  conversionRate: decimal("conversion_rate", { precision: 5, scale: 2 }).notNull().default("0.00"),
+  status: text("status").notNull().default("active"), // active, inactive, expired
+  lastScannedAt: timestamp("last_scanned_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
