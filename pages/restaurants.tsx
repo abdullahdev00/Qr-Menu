@@ -47,14 +47,7 @@ export default function Restaurants() {
   return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold" data-testid="text-restaurants-title">
-              Restaurants
-            </h1>
-            <p className="text-muted-foreground">
-              Manage restaurant partners and their information
-            </p>
-          </div>
+          <div></div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-add-restaurant">

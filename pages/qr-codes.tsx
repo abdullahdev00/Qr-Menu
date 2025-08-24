@@ -41,14 +41,6 @@ export default function QrCodes() {
 
   return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold" data-testid="text-qr-title">
-            QR Code Generator
-          </h1>
-          <p className="text-muted-foreground">
-            Generate and manage QR codes for restaurant menus
-          </p>
-        </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <div>

@@ -41,14 +41,6 @@ export default function Support() {
 
   return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold" data-testid="text-support-title">
-            Support Tickets
-          </h1>
-          <p className="text-muted-foreground">
-            Manage customer support requests and tickets
-          </p>
-        </div>
 
         {isLoading ? (
           <div className="space-y-4">
