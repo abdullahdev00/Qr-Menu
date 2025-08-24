@@ -10,9 +10,16 @@ export default function KpiCards() {
     pendingTickets: number;
   }>({
     queryKey: ["/api/dashboard/metrics"],
+    queryFn: async () => {
+      const response = await fetch('/api/dashboard/metrics');
+      if (!response.ok) {
+        throw new Error('Failed to fetch metrics');
+      }
+      return response.json();
+    },
   });
 
-  if (isLoading) {
+  if (isLoading || !metrics) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => {

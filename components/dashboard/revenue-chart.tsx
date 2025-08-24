@@ -190,7 +190,7 @@ export default function RevenueChart() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-96">
+        <div className="h-[480px]">
           <ResponsiveContainer width="100%" height="100%">
             {renderChart()}
           </ResponsiveContainer>
