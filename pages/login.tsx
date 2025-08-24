@@ -8,8 +8,8 @@ import { Label } from '../components/ui/label'
 import { useToast } from '../lib/use-toast'
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('admin@demo.com')
+  const [password, setPassword] = useState('password123')
   const [isLoading, setIsLoading] = useState(false)
   const [, setLocation] = useLocation()
   const { toast } = useToast()
