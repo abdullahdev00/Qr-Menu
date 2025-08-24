@@ -134,7 +134,7 @@ export default function RevenueChart() {
       <CardHeader className="pb-4">
         <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
           <CardTitle className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            Analytics Dashboard
+            Revenue Chart
           </CardTitle>
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-1 bg-muted/50 rounded-lg p-1">

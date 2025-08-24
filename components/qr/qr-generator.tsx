@@ -120,10 +120,10 @@ export default function QrGenerator() {
       <CardHeader className="border-b border-gray-200 dark:border-gray-700">
         <CardTitle className="flex items-center space-x-2">
           <QrCode className="w-6 h-6" />
-          <span>QR Code Generator</span>
+          <span>Generate QR Code</span>
         </CardTitle>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Generate and customize QR codes for restaurant menus
+          Create custom QR codes for restaurant menus
         </p>
       </CardHeader>
       <CardContent className="p-6">
