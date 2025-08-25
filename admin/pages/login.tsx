@@ -6,11 +6,13 @@ import { Input } from '../components/ui/input'
 import { Card, CardHeader, CardContent, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
 import { useToast } from '../lib/use-toast'
+import { Shield, Store } from 'lucide-react'
 
 export default function Login() {
-  const [email, setEmail] = useState('admin@demo.com')
-  const [password, setPassword] = useState('password123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [loginType, setLoginType] = useState<'admin' | 'restaurant'>('admin')
   const [, setLocation] = useLocation()
   const { toast } = useToast()
 
@@ -19,7 +21,8 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const endpoint = loginType === 'admin' ? '/api/auth/login' : '/api/auth/restaurant-login'
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +35,7 @@ export default function Login() {
         localStorage.setItem('user', JSON.stringify(data.user))
         toast({
           title: "Login successful", 
-          description: "Welcome back!",
+          description: `Welcome back${loginType === 'restaurant' ? ' to your restaurant panel' : ' to admin panel'}!`,
         })
         // Refresh the page to update authentication status
         window.location.href = '/dashboard'
@@ -51,6 +54,17 @@ export default function Login() {
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const setDefaultCredentials = (type: 'admin' | 'restaurant') => {
+    setLoginType(type)
+    if (type === 'admin') {
+      setEmail('admin@demo.com')
+      setPassword('password123')
+    } else {
+      setEmail('ahmed@albaik.com')
+      setPassword('restaurant123')
     }
   }
 
@@ -75,12 +89,58 @@ export default function Login() {
             QR Menu Generator
           </h2>
           <p className="mt-3 text-lg text-gray-600 dark:text-gray-300 font-medium">
-            Admin Panel Login
+            Multi-Vendor Platform
           </p>
+        </div>
+        
+        {/* Login type selection */}
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-3xl shadow-2xl p-6 space-y-4">
+          <h3 className="text-lg font-semibold text-center text-gray-800 dark:text-gray-200 mb-4">
+            Select Login Type
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              type="button"
+              variant={loginType === 'admin' ? 'default' : 'outline'}
+              onClick={() => setDefaultCredentials('admin')}
+              className={`flex flex-col items-center gap-2 h-20 text-sm font-medium transition-all duration-300 ${
+                loginType === 'admin' 
+                  ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg' 
+                  : 'border-2 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400'
+              }`}
+            >
+              <Shield className="w-6 h-6" />
+              Admin Panel
+            </Button>
+            <Button
+              type="button"
+              variant={loginType === 'restaurant' ? 'default' : 'outline'}
+              onClick={() => setDefaultCredentials('restaurant')}
+              className={`flex flex-col items-center gap-2 h-20 text-sm font-medium transition-all duration-300 ${
+                loginType === 'restaurant' 
+                  ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg' 
+                  : 'border-2 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400'
+              }`}
+            >
+              <Store className="w-6 h-6" />
+              Restaurant Panel
+            </Button>
+          </div>
         </div>
         
         {/* Login form card */}
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-3xl shadow-2xl p-8 space-y-6">
+          <div className="text-center">
+            <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+              {loginType === 'admin' ? 'Admin Login' : 'Restaurant Login'}
+            </h4>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {loginType === 'admin' 
+                ? 'Manage restaurants and platform settings' 
+                : 'Access your restaurant dashboard'
+              }
+            </p>
+          </div>
           <form className="space-y-6" onSubmit={handleLogin}>
             <div className="space-y-5">
               <div className="group">

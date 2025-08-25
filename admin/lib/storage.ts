@@ -79,6 +79,36 @@ class Storage {
         ]);
       }
 
+      // Check if restaurants exist
+      const existingRestaurants = await db.select().from(restaurants).limit(1);
+      
+      if (existingRestaurants.length === 0) {
+        await db.insert(restaurants).values([
+          {
+            name: "Al-Baik Restaurant",
+            slug: "al-baik-restaurant",
+            ownerName: "Ahmed Khan",
+            ownerEmail: "ahmed@albaik.com",
+            password: "restaurant123",
+            ownerPhone: "03001234567",
+            address: "Main Gulberg, Lahore",
+            city: "Lahore",
+            status: "active",
+          },
+          {
+            name: "Karachi Biryani House",
+            slug: "karachi-biryani-house",
+            ownerName: "Zain Ali",
+            ownerEmail: "zain@biryanihouse.com", 
+            password: "restaurant123",
+            ownerPhone: "03219876543",
+            address: "Defence Phase 2, Karachi",
+            city: "Karachi",
+            status: "active",
+          }
+        ]);
+      }
+
       // Check if menu templates exist
       const existingTemplates = await db.select().from(menuTemplates).limit(1);
       
@@ -152,6 +182,11 @@ class Storage {
 
   async createRestaurant(restaurant: InsertRestaurant): Promise<Restaurant> {
     const result = await db.insert(restaurants).values(restaurant).returning();
+    return result[0];
+  }
+
+  async getRestaurantByEmail(email: string): Promise<Restaurant | undefined> {
+    const result = await db.select().from(restaurants).where(eq(restaurants.ownerEmail, email)).limit(1);
     return result[0];
   }
 

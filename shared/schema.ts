@@ -18,6 +18,7 @@ export const restaurants = pgTable("restaurants", {
   slug: text("slug").notNull().unique(),
   ownerName: text("owner_name").notNull(),
   ownerEmail: text("owner_email").notNull(),
+  password: text("password").notNull(), // For restaurant authentication
   ownerPhone: text("owner_phone"),
   address: text("address"),
   city: text("city"),

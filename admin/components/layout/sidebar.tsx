@@ -155,35 +155,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Bottom section */}
           <div className="absolute bottom-4 left-3 right-3">
-            {/* Storage indicator */}
-            <div className="relative bg-gradient-to-br from-blue-50/80 via-purple-50/80 to-pink-50/80 dark:bg-gradient-to-br dark:from-blue-900/40 dark:via-purple-900/40 dark:to-pink-900/40 rounded-2xl p-4 mb-4 shadow-xl border border-blue-200/50 dark:border-purple-800/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group cursor-pointer">
-              {/* Animated background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-purple-400/10 to-pink-400/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
-                    🗄️ Storage Used
-                  </span>
-                  <span className="text-xs font-bold px-2 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg animate-pulse">
-                    78%
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200/80 dark:bg-gray-700/80 rounded-full h-3 overflow-hidden shadow-inner">
-                  <div className="relative h-3 rounded-full overflow-hidden">
-                    <div 
-                      className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-3 rounded-full transition-all duration-700 shadow-lg relative overflow-hidden" 
-                      style={{ width: "78%" }}
-                    >
-                      {/* Animated shine effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 animate-pulse"></div>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">2.3 GB of 3 GB used</p>
-              </div>
-            </div>
-
             {/* Sign out button */}
             <button
               onClick={handleLogout}
