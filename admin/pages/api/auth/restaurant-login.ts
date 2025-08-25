@@ -10,11 +10,14 @@ export default async function handler(
   }
 
   try {
-    const { email, password } = req.body
+    const { email, phone, password } = req.body
 
-    // Find restaurant by owner email
+    // Find restaurant by owner email or phone
     const restaurants = await storage.getRestaurants()
-    const restaurant = restaurants.find(r => r.ownerEmail === email)
+    const restaurant = restaurants.find(r => 
+      (email && r.ownerEmail === email) || 
+      (phone && r.ownerPhone === phone)
+    )
     
     if (!restaurant || restaurant.password !== password) {
       return res.status(401).json({ message: 'Invalid credentials' })
