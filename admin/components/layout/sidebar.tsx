@@ -24,6 +24,7 @@ const adminNavigation = [
   { name: "Restaurants", href: "/restaurants", icon: Store, badge: "24" },
   { name: "Subscriptions", href: "/subscriptions", icon: CreditCard },
   { name: "Menu Templates", href: "/menu-templates", icon: Utensils },
+  { name: "QR Templates", href: "/qr-templates", icon: QrCode },
   { name: "QR Codes", href: "/qr-codes", icon: QrCode },
   { name: "Support", href: "/support", icon: Headphones, badge: "3", badgeColor: "bg-warning" },
   { name: "Analytics", href: "/analytics", icon: PieChart },

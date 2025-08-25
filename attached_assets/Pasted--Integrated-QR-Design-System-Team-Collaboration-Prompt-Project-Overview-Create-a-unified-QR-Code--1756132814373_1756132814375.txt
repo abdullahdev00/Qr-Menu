@@ -1,0 +1,394 @@
+ Integrated QR Design System - Team Collaboration Prompt
+Project Overview:
+Create a unified QR Code Design & Generation System with shared components between Admin Panel (aap) and Restaurant Panel (aapka dost). Same design templates, shared functionality, different interfaces.
+
+🔄 Shared Component Architecture:
+1. Common QR Design Templates (Shared)
+javascriptsharedQRTemplates: {
+  // Template Database (Both panels use same templates)
+  templateLibrary: [
+    {
+      id: "classic_modern",
+      name: "Classic Modern",
+      description: "Clean, professional design",
+      previewImage: "template_preview_1.png",
+      layout: {
+        logoPosition: "top-center",
+        qrSize: "300x300",
+        tableNumberStyle: "bold-bottom",
+        colorScheme: "customizable"
+      },
+      usageStats: "Most popular template"
+    },
+    
+    {
+      id: "premium_elegant", 
+      name: "Premium Elegant",
+      description: "Luxury dining establishments",
+      previewImage: "template_preview_2.png",
+      layout: {
+        logoPosition: "top-left",
+        decorativeFrame: "golden-border",
+        qrSize: "280x280",
+        tableNumberStyle: "elegant-script"
+      },
+      planRestriction: "Pro and Enterprise only"
+    },
+    
+    {
+      id: "fast_food_vibrant",
+      name: "Fast Food Vibrant", 
+      description: "Colorful, energetic design",
+      previewImage: "template_preview_3.png",
+      layout: {
+        backgroundGradient: "dynamic-colors",
+        qrSize: "320x320",
+        tableNumberStyle: "bold-colorful"
+      }
+    },
+    
+    {
+      id: "minimalist_clean",
+      name: "Minimalist Clean",
+      description: "Simple, modern aesthetic",
+      previewImage: "template_preview_4.png",
+      layout: {
+        whitespace: "generous",
+        qrSize: "250x250", 
+        typography: "minimal-sans-serif"
+      }
+    },
+    
+    {
+      id: "traditional_warmth",
+      name: "Traditional Warmth",
+      description: "Traditional restaurant feel",
+      previewImage: "template_preview_5.png",
+      layout: {
+        borderPattern: "traditional-motifs",
+        colorPalette: "warm-earth-tones",
+        qrSize: "290x290"
+      }
+    }
+  ]
+}
+2. Shared QR Generation Engine
+javascriptsharedQREngine: {
+  // Core Generation Logic (Same for both)
+  coreFunction: {
+    generateQRCode: {
+      input: {
+        restaurantData: "ID, name, branding",
+        tableNumber: "Table identifier",
+        templateId: "Selected template",
+        customization: "Colors, logo, text"
+      },
+      
+      process: [
+        "Validate restaurant data",
+        "Load selected template",
+        "Apply customization", 
+        "Generate QR matrix",
+        "Overlay design elements",
+        "Export to requested formats"
+      ],
+      
+      output: {
+        files: ["PNG", "PDF", "SVG", "JPG"],
+        metadata: "Generation details, URLs",
+        previewData: "Thumbnail for UI"
+      }
+    }
+  },
+  
+  // URL Structure (Consistent)
+  urlGeneration: {
+    pattern: "https://menuqr.pk/menu/{restaurant_slug}/table/{table_number}",
+    examples: [
+      "https://menuqr.pk/menu/mcdonalds-dha/table/01",
+      "https://menuqr.pk/menu/kfc-gulberg/table/05"
+    ],
+    tracking: "Analytics parameters for admin"
+  }
+}
+3. Design Customization System (Shared)
+javascriptsharedCustomizationSystem: {
+  // Brand Integration Options
+  brandingOptions: {
+    logoUpload: {
+      acceptedFormats: ["PNG", "JPG", "SVG"],
+      maxSize: "2MB",
+      autoResize: "Maintain aspect ratio",
+      positioning: ["top-center", "top-left", "top-right", "qr-center"]
+    },
+    
+    colorCustomization: {
+      primaryColor: "Restaurant brand color",
+      secondaryColor: "Accent color",
+      backgroundColor: "Page background",
+      qrCodeColors: {
+        foreground: "QR pattern color",
+        background: "QR background color"
+      },
+      presetPalettes: [
+        {name: "Corporate Blue", colors: ["#2563EB", "#EFF6FF"]},
+        {name: "Restaurant Red", colors: ["#DC2626", "#FEF2F2"]},
+        {name: "Fresh Green", colors: ["#16A34A", "#F0FDF4"]},
+        {name: "Premium Gold", colors: ["#D97706", "#FFFBEB"]}
+      ]
+    },
+    
+    textCustomization: {
+      restaurantName: {
+        fontSize: "Adjustable size",
+        fontWeight: ["Normal", "Medium", "Bold"],
+        color: "Customizable"
+      },
+      tableNumber: {
+        format: "Table {number} | T-{number} | {number}",
+        size: "Large, prominent display",
+        style: "Bold, readable"
+      },
+      instructions: {
+        languages: ["English", "Urdu", "Both"],
+        text: "Customizable scan instructions"
+      }
+    }
+  }
+}
+
+🏢 Admin Panel Components (Aapka Part):
+4. Admin QR Management Interface
+javascriptadminQRInterface: {
+  // Template Management
+  templateManagement: {
+    templateLibrary: {
+      viewAllTemplates: "Grid view of all available templates",
+      templateEditor: "Modify existing templates",
+      createNewTemplate: "Template builder interface",
+      templateAnalytics: "Usage stats per template"
+    },
+    
+    templateActions: [
+      "👁️ Preview Template",
+      "✏️ Edit Template",
+      "📊 Usage Statistics", 
+      "🗑️ Delete Template",
+      "📤 Export Template",
+      "📥 Import Template"
+    ]
+  },
+  
+  // Bulk QR Operations
+  bulkOperations: {
+    bulkGeneration: {
+      restaurantSelection: "Multi-select restaurants",
+      templateApplication: "Apply template to selected restaurants",
+      batchProcessing: "Generate QRs for multiple restaurants",
+      downloadManagement: "Organize and deliver generated files"
+    },
+    
+    templateUpdates: {
+      globalUpdate: "Apply template changes to all restaurants",
+      notifyRestaurants: "Send update notifications",
+      versionControl: "Track template versions"
+    }
+  },
+  
+  // QR Analytics Dashboard
+  analyticsOverview: {
+    templatePopularity: "Most used templates chart",
+    generationTrends: "QR generation over time",
+    performanceMetrics: "Template effectiveness",
+    restaurantAdoption: "Template adoption rates"
+  }
+}
+5. Admin Support Functions
+javascriptadminSupportFunctions: {
+  // Restaurant Assistance
+  restaurantSupport: {
+    emergencyGeneration: "Generate QRs for restaurants in need",
+    troubleshooting: "Fix QR generation issues",
+    customRequests: "Handle special template requests",
+    bulkAssistance: "Help with bulk QR operations"
+  },
+  
+  // Quality Control
+  qualityAssurance: {
+    templateValidation: "Ensure template quality standards",
+    qrTesting: "Test generated QR codes functionality", 
+    brandCompliance: "Check brand guideline adherence",
+    printQuality: "Verify print-ready file quality"
+  }
+}
+
+🍽️ Restaurant Panel Components (Aapke Dost Ka Part):
+6. Restaurant QR Generation Interface
+javascriptrestaurantQRInterface: {
+  // Table Management
+  tableSetup: {
+    tableConfiguration: {
+      addTables: "Simple table addition interface",
+      tableDetails: {
+        tableNumber: "Auto-increment or manual",
+        capacity: "Seating capacity selection",
+        location: "Table location in restaurant",
+        specialNotes: "VIP, outdoor, etc."
+      },
+      tableGrid: "Visual table layout manager"
+    }
+  },
+  
+  // QR Generation Wizard
+  generationWizard: {
+    step1: {
+      title: "Select Tables",
+      interface: "Checkbox selection of tables",
+      options: "Select all, or individual tables"
+    },
+    
+    step2: {
+      title: "Choose Template", 
+      interface: "Template gallery with previews",
+      filtering: "Filter by style, plan compatibility"
+    },
+    
+    step3: {
+      title: "Customize Design",
+      interface: "Brand customization panel",
+      options: "Logo upload, color picker, text editing"
+    },
+    
+    step4: {
+      title: "Preview & Generate",
+      interface: "Live preview of QR designs",
+      actions: "Generate, download, print options"
+    }
+  }
+}
+7. Restaurant User Experience
+javascriptrestaurantUserExperience: {
+  // Dashboard Integration
+  dashboardWidget: {
+    qrStatus: "Show QR generation status",
+    quickActions: "Generate QRs, Download, Print",
+    recentActivity: "Last generated QRs",
+    performancePreview: "QR scan statistics"
+  },
+  
+  // Download & Print Management
+  fileManagement: {
+    downloadCenter: {
+      organizationStructure: "Organized by table number",
+      formatOptions: "PNG, PDF, SVG downloads",
+      bulkDownload: "All tables in ZIP file",
+      printInstructions: "How to print professionally"
+    },
+    
+    printingGuide: {
+      sizeRecommendations: "Table tent, sticker sizes",
+      paperTypes: "Recommended paper types",
+      printSettings: "Optimal print configurations",
+      placementTips: "Where to place QRs on tables"
+    }
+  }
+}
+
+🔗 Shared API Architecture:
+8. Common Backend Services
+javascriptsharedBackendServices: {
+  // QR Generation API
+  qrGenerationAPI: {
+    endpoint: "/api/qr/generate",
+    method: "POST",
+    payload: {
+      restaurantId: "string",
+      tableNumbers: "array", 
+      templateId: "string",
+      customization: "object"
+    },
+    response: {
+      qrCodes: "array of generated QR data",
+      downloadUrls: "file download links",
+      generationId: "tracking ID"
+    }
+  },
+  
+  // Template Management API
+  templateAPI: {
+    getTemplates: "/api/templates",
+    createTemplate: "/api/templates/create", 
+    updateTemplate: "/api/templates/{id}",
+    deleteTemplate: "/api/templates/{id}/delete"
+  },
+  
+  // Analytics API
+  analyticsAPI: {
+    qrPerformance: "/api/analytics/qr-performance",
+    templateUsage: "/api/analytics/template-usage",
+    restaurantStats: "/api/analytics/restaurant/{id}"
+  }
+}
+9. Database Schema (Shared)
+javascriptsharedDatabaseSchema: {
+  qrTemplates: {
+    id: "Primary key",
+    name: "Template name",
+    description: "Template description", 
+    designData: "JSON template structure",
+    previewImage: "Template thumbnail",
+    planRestrictions: "Available plans",
+    isActive: "Template status",
+    createdAt: "Creation date",
+    updatedAt: "Last modification"
+  },
+  
+  generatedQRs: {
+    id: "Primary key",
+    restaurantId: "Foreign key",
+    tableNumber: "Table identifier",
+    templateId: "Used template",
+    customization: "Applied customizations",
+    qrUrl: "Generated URL",
+    files: "JSON array of file paths",
+    generatedBy: "Admin or Restaurant",
+    generatedAt: "Creation timestamp",
+    downloadCount: "Usage tracking"
+  }
+}
+
+🎯 Development Coordination:
+Work Division:
+Aapka Part (Admin Panel):
+
+Template management system
+Bulk QR operations
+Analytics dashboard
+Restaurant support tools
+Quality control features
+
+Aapke Dost Ka Part (Restaurant Panel):
+
+Table management interface
+QR generation wizard
+Customization panel
+Download center
+Print management
+
+Shared Responsibilities:
+
+QR template designs
+Core generation engine
+Database schema
+API development
+Design consistency
+
+Communication Points:
+
+Weekly sync meetings
+Shared design system documentation
+Common API specifications
+Template library collaboration
+User testing coordination
+
+Yeh approach ensure karega ke dono panels consistent functionality provide karein while maintaining independent development workflows!

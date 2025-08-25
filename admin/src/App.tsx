@@ -13,6 +13,7 @@ import MenuManagementPage from '../pages/menu-management';
 import RestaurantsPage from '../pages/restaurants';
 import MenuTemplatesPage from '../pages/menu-templates';
 import QRCodesPage from '../pages/qr-codes';
+import QRTemplatesPage from '../pages/qr-templates';
 import SubscriptionsPage from '../pages/subscriptions';
 import AnalyticsPage from '../pages/analytics';
 import SupportPage from '../pages/support';
@@ -82,6 +83,7 @@ function App() {
                     <Route path="/restaurants" component={RestaurantsPage} />
                     <Route path="/menu-templates" component={MenuTemplatesPage} />
                     <Route path="/qr-codes" component={QRCodesPage} />
+                    <Route path="/qr-templates" component={QRTemplatesPage} />
                     <Route path="/subscriptions" component={SubscriptionsPage} />
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
