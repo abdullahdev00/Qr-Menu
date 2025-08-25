@@ -87,8 +87,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </div>
 
-          {/* Navigation Menu - with controlled height and scrolling */}
-          <nav className="space-y-1 flex-1 overflow-y-auto pb-32 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+          {/* Navigation Menu - with controlled height and hidden overflow */}
+          <nav className="space-y-1 flex-1 overflow-y-hidden pb-32">
             {navigation.map((item, index) => {
               const isActive = location === item.href || (location === "/" && item.href === "/dashboard");
               const gradients = [
