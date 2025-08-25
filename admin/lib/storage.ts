@@ -18,7 +18,7 @@ import {
   type MenuTemplate, type InsertMenuTemplate,
   type QrCode, type InsertQrCode,
   type User, type InsertUser
-} from "../shared/schema";
+} from "../../shared/schema";
 
 const sql = postgres(process.env.DATABASE_URL!);
 const db = drizzle(sql);
