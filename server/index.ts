@@ -9,7 +9,7 @@ const app = express();
 const port = parseInt(process.env.PORT || '5000', 10);
 
 // Initialize storage to ensure database is set up
-import('../lib/storage.js').then(() => {
+import('../admin/lib/storage.js').then(() => {
   console.log('✅ Database initialized');
 }).catch((error) => {
   console.error('❌ Database initialization failed:', error);
@@ -31,7 +31,7 @@ async function startServer() {
     
     try {
       // Try to import the corresponding API handler
-      let handlerPath = `../pages/api/${apiPath}/index.ts`;
+      let handlerPath = `../admin/pages/api/${apiPath}/index.ts`;
       
       // Try index.ts first, then fall back to direct .ts file
       let handler;
@@ -39,7 +39,7 @@ async function startServer() {
         const module = await import(handlerPath);
         handler = module.default;
       } catch (indexError) {
-        const directPath = `../pages/api/${apiPath}.ts`;
+        const directPath = `../admin/pages/api/${apiPath}.ts`;
         const module = await import(directPath);
         handler = module.default;
       }
