@@ -94,37 +94,103 @@ export default function Login() {
         </div>
         
         {/* Login type selection */}
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-3xl shadow-2xl p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-center text-gray-800 dark:text-gray-200 mb-4">
-            Select Login Type
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <Button
+        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-blue-200/70 dark:border-blue-700/50 rounded-3xl shadow-2xl p-8 space-y-6">
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+              Choose Your Dashboard 🚀
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Select the type of account you want to access
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Admin Button */}
+            <button
               type="button"
-              variant={loginType === 'admin' ? 'default' : 'outline'}
               onClick={() => setDefaultCredentials('admin')}
-              className={`flex flex-col items-center gap-2 h-20 text-sm font-medium transition-all duration-300 ${
+              className={`group relative overflow-hidden rounded-2xl p-6 h-32 transition-all duration-500 transform hover:scale-105 ${
                 loginType === 'admin' 
-                  ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg' 
-                  : 'border-2 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400'
+                  ? 'bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 text-white shadow-2xl scale-105 ring-4 ring-blue-300/50' 
+                  : 'bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/30 border-2 border-blue-200 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:shadow-xl hover:border-blue-300'
               }`}
             >
-              <Shield className="w-6 h-6" />
-              Admin Panel
-            </Button>
-            <Button
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10 flex flex-col items-center justify-center h-full space-y-3">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  loginType === 'admin' 
+                    ? 'bg-white/20 backdrop-blur-sm' 
+                    : 'bg-blue-100 dark:bg-blue-900/50 group-hover:bg-blue-200 dark:group-hover:bg-blue-800'
+                }`}>
+                  <Shield className="w-7 h-7" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-lg font-bold">Admin Panel</h4>
+                  <p className={`text-xs mt-1 ${
+                    loginType === 'admin' 
+                      ? 'text-white/80' 
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    Manage restaurants & platform
+                  </p>
+                </div>
+              </div>
+              {loginType === 'admin' && (
+                <div className="absolute top-3 right-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+              )}
+            </button>
+
+            {/* Restaurant Button */}
+            <button
               type="button"
-              variant={loginType === 'restaurant' ? 'default' : 'outline'}
               onClick={() => setDefaultCredentials('restaurant')}
-              className={`flex flex-col items-center gap-2 h-20 text-sm font-medium transition-all duration-300 ${
+              className={`group relative overflow-hidden rounded-2xl p-6 h-32 transition-all duration-500 transform hover:scale-105 ${
                 loginType === 'restaurant' 
-                  ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg' 
-                  : 'border-2 border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400'
+                  ? 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white shadow-2xl scale-105 ring-4 ring-emerald-300/50' 
+                  : 'bg-gradient-to-br from-white to-emerald-50 dark:from-gray-800 dark:to-emerald-900/30 border-2 border-emerald-200 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 hover:shadow-xl hover:border-emerald-300'
               }`}
             >
-              <Store className="w-6 h-6" />
-              Restaurant Panel
-            </Button>
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 via-teal-400/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10 flex flex-col items-center justify-center h-full space-y-3">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  loginType === 'restaurant' 
+                    ? 'bg-white/20 backdrop-blur-sm' 
+                    : 'bg-emerald-100 dark:bg-emerald-900/50 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-800'
+                }`}>
+                  <Store className="w-7 h-7" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-lg font-bold">Restaurant Panel</h4>
+                  <p className={`text-xs mt-1 ${
+                    loginType === 'restaurant' 
+                      ? 'text-white/80' 
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    Manage your restaurant menu
+                  </p>
+                </div>
+              </div>
+              {loginType === 'restaurant' && (
+                <div className="absolute top-3 right-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+              )}
+            </button>
+          </div>
+
+          {/* Demo Credentials Helper */}
+          <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/30 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {loginType === 'admin' ? '🔐 Admin Demo Credentials' : '🏪 Restaurant Demo Credentials'}
+              </p>
+              <div className="flex items-center justify-center space-x-4 text-xs text-gray-600 dark:text-gray-400">
+                <span>📧 {loginType === 'admin' ? 'admin@demo.com' : 'ahmed@albaik.com'}</span>
+                <span>🔑 {loginType === 'admin' ? 'password123' : 'restaurant123'}</span>
+              </div>
+            </div>
           </div>
         </div>
         
