@@ -6,7 +6,7 @@ import { Toaster } from '../components/ui/toaster';
 import { ThemeProvider } from './lib/theme-provider';
 
 // Import pages
-import LoginPage from './temp-test/immediate-login';
+import LoginPage from '../pages/login';
 import DashboardPage from '../pages/dashboard';
 import RestaurantDashboardPage from '../pages/restaurant-dashboard';
 import MenuManagementPage from '../pages/menu-management';
