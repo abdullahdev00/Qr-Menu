@@ -3,11 +3,11 @@ import type { Config } from "tailwindcss";
 export default {
   darkMode: ["class"],
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./lib/**/*.{js,ts,jsx,tsx}"
+    "./admin/index.html",
+    "./admin/src/**/*.{js,ts,jsx,tsx}",
+    "./admin/pages/**/*.{js,ts,jsx,tsx}",
+    "./admin/components/**/*.{js,ts,jsx,tsx}",
+    "./admin/lib/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     extend: {
