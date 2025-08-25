@@ -89,7 +89,7 @@ export default function Login() {
             QR Menu Generator
           </h2>
           <p className="mt-3 text-lg text-gray-600 dark:text-gray-300 font-medium">
-            Multi-Vendor Platform
+            Multi-Vendor Platform • DUAL AUTH VERSION ✅
           </p>
         </div>
         
@@ -298,4 +298,4 @@ export default function Login() {
       </div>
     </div>
   )
-}
+}// Force rebuild - Mon Aug 25 01:41:14 PM UTC 2025
