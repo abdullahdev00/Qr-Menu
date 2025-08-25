@@ -87,68 +87,51 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-slate-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">QR Menu Generator</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Multi-Vendor Platform</p>
-              </div>
-            </div>
-            
-            {/* Login Type Selector */}
-            <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-              <button
-                onClick={() => setLoginType('admin')}
-                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  loginType === 'admin'
-                    ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-                data-testid="button-admin-tab"
-              >
-                <Shield className="w-4 h-4 mr-2" />
-                Admin
-              </button>
-              <button
-                onClick={() => setLoginType('restaurant')}
-                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  loginType === 'restaurant'
-                    ? 'bg-white dark:bg-gray-600 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-                data-testid="button-restaurant-tab"
-              >
-                <Store className="w-4 h-4 mr-2" />
-                Restaurant
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-120px)] px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {/* Login Form */}
           <Card className="border-0 shadow-xl">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl text-center">
-                {loginType === 'admin' ? 'Admin Login' : 'Restaurant Login'}
-              </CardTitle>
-              <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                {loginType === 'admin' 
-                  ? 'Access the admin panel to manage restaurants' 
-                  : 'Access your restaurant dashboard'
-                }
-              </p>
+            <CardHeader className="space-y-4">
+              {/* Login Type Selector */}
+              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => setLoginType('admin')}
+                  className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 justify-center ${
+                    loginType === 'admin'
+                      ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                  }`}
+                  data-testid="button-admin-tab"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Admin
+                </button>
+                <button
+                  onClick={() => setLoginType('restaurant')}
+                  className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 justify-center ${
+                    loginType === 'restaurant'
+                      ? 'bg-white dark:bg-gray-600 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                  }`}
+                  data-testid="button-restaurant-tab"
+                >
+                  <Store className="w-4 h-4 mr-2" />
+                  Restaurant
+                </button>
+              </div>
+              
+              <div className="text-center">
+                <CardTitle className="text-2xl">
+                  {loginType === 'admin' ? 'Admin Login' : 'Restaurant Login'}
+                </CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  {loginType === 'admin' 
+                    ? 'Access the admin panel to manage restaurants' 
+                    : 'Access your restaurant dashboard'
+                  }
+                </p>
+              </div>
             </CardHeader>
             <CardContent>
               {/* Restaurant Auth Type Selector */}

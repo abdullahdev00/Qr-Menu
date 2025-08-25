@@ -68,20 +68,6 @@ export default function TestLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       <div className="relative z-10 max-w-lg w-full mx-4 space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-3xl shadow-2xl mb-6">
-            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-            </svg>
-          </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-            NEW LOGIN SYSTEM 🔥
-          </h1>
-          <p className="mt-3 text-lg text-gray-600 font-medium">
-            🚀 DUAL AUTHENTICATION WORKING! 🚀
-          </p>
-        </div>
         
         {/* Dual Login Buttons */}
         <div className="bg-white/95 backdrop-blur-xl border-2 border-blue-200 rounded-3xl shadow-2xl p-8 space-y-6">
