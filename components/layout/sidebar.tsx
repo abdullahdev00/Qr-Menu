@@ -64,18 +64,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Animated background overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-pink-400/10 opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-        <div className="h-full px-3 py-4 overflow-x-hidden overflow-y-auto">
+        <div className="h-full px-3 py-4 overflow-x-hidden flex flex-col">
           {/* Close button for mobile */}
           <button
             onClick={onClose}
-            className="lg:hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            className="lg:hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white z-50"
             data-testid="button-close-sidebar"
           >
             <X className="w-5 h-5" />
           </button>
 
           {/* Logo */}
-          <div className="flex items-center mb-8 px-3 group">
+          <div className="flex items-center mb-8 px-3 group flex-shrink-0">
             <div className="relative w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-3 shadow-xl transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 cursor-pointer">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-pink-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               <QrCode className="text-white w-6 h-6 relative z-10 drop-shadow-lg" />
@@ -87,8 +87,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </div>
 
-          {/* Navigation Menu */}
-          <nav className="space-y-1 mb-8">
+          {/* Navigation Menu - with controlled height and scrolling */}
+          <nav className="space-y-1 flex-1 overflow-y-auto pb-32 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
             {navigation.map((item, index) => {
               const isActive = location === item.href || (location === "/" && item.href === "/dashboard");
               const gradients = [
