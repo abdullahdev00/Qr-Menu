@@ -19,7 +19,7 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const navigation = [
+const adminNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
   { name: "Restaurants", href: "/restaurants", icon: Store, badge: "24" },
   { name: "Subscriptions", href: "/subscriptions", icon: CreditCard },
@@ -30,9 +30,21 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
+const restaurantNavigation = [
+  { name: "Dashboard", href: "/restaurant-dashboard", icon: BarChart3 },
+  { name: "Menu Management", href: "/menu-management", icon: Utensils },
+  { name: "QR Codes", href: "/qr-codes", icon: QrCode },
+  { name: "Analytics", href: "/analytics", icon: PieChart },
+  { name: "Orders", href: "/orders", icon: Store, badge: "5" },
+  { name: "Settings", href: "/settings", icon: Settings },
+];
+
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [location, setLocation] = useLocation();
   const user = getCurrentUser();
+  
+  // Get navigation based on user role
+  const navigation = user?.role === 'restaurant' ? restaurantNavigation : adminNavigation;
 
   const handleLogout = () => {
     logout();
@@ -83,7 +95,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <div className="transition-all duration-300 group-hover:translate-x-1">
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">QR Menu</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wide">Admin Panel</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium tracking-wide">
+                {user?.role === 'restaurant' ? 'Restaurant Panel' : 'Admin Panel'}
+              </p>
             </div>
           </div>
 

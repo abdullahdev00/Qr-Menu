@@ -20,7 +20,12 @@ export default function Dashboard() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
+      const userData = JSON.parse(storedUser)
+      if (userData.role === 'restaurant') {
+        setLocation('/restaurant-dashboard') // Redirect restaurant users to their dashboard
+      } else {
+        setUser(userData)
+      }
     } else {
       setLocation('/login')
     }

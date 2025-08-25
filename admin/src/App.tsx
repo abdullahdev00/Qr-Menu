@@ -8,6 +8,8 @@ import { ThemeProvider } from './lib/theme-provider';
 // Import pages
 import LoginPage from '../pages/login';
 import DashboardPage from '../pages/dashboard';
+import RestaurantDashboardPage from '../pages/restaurant-dashboard';
+import MenuManagementPage from '../pages/menu-management';
 import RestaurantsPage from '../pages/restaurants';
 import MenuTemplatesPage from '../pages/menu-templates';
 import QRCodesPage from '../pages/qr-codes';
@@ -75,6 +77,8 @@ function App() {
                       <Redirect to="/dashboard" />
                     </Route>
                     <Route path="/dashboard" component={DashboardPage} />
+                    <Route path="/restaurant-dashboard" component={RestaurantDashboardPage} />
+                    <Route path="/menu-management" component={MenuManagementPage} />
                     <Route path="/restaurants" component={RestaurantsPage} />
                     <Route path="/menu-templates" component={MenuTemplatesPage} />
                     <Route path="/qr-codes" component={QRCodesPage} />
