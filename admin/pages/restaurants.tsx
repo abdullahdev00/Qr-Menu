@@ -648,15 +648,6 @@ export default function RestaurantsPage() {
             </form>
           </DialogContent>
         </Dialog>
-        
-        {/* Edit Restaurant Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
-          setIsEditDialogOpen(open);
-          if (!open) {
-            resetForm();
-          }
-        }}>
-          <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Edit Restaurant</DialogTitle>
             </DialogHeader>
