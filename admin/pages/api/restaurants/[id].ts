@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { storage } from '../../../lib/storage'
-import { insertRestaurantSchema } from '../../../../shared/schema'
+import { updateRestaurantSchema } from '../../../../shared/schema'
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +20,7 @@ export default async function handler(
       }
       res.json(restaurant)
     } else if (req.method === 'PUT') {
-      const validatedData = insertRestaurantSchema.partial().parse(req.body)
+      const validatedData = updateRestaurantSchema.parse(req.body)
       const restaurant = await storage.updateRestaurant(id, validatedData)
       if (!restaurant) {
         return res.status(404).json({ message: 'Restaurant not found' })

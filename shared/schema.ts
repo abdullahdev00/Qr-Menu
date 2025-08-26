@@ -126,6 +126,9 @@ export const qrCodes = pgTable("qr_codes", {
 // Insert Schemas
 export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({ id: true, createdAt: true });
 export const insertRestaurantSchema = createInsertSchema(restaurants).omit({ id: true, createdAt: true });
+export const updateRestaurantSchema = createInsertSchema(restaurants, {
+  password: z.string().optional(),
+}).omit({ id: true, createdAt: true });
 export const insertSubscriptionPlanSchema = createInsertSchema(subscriptionPlans, {
   price: z.union([z.string(), z.number()]).transform(val => String(val)),
 }).omit({ id: true, createdAt: true });

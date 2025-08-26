@@ -345,9 +345,19 @@ export default function RestaurantsPage() {
     }
 
     if (editingRestaurant) {
-      updateRestaurantMutation.mutate({ id: editingRestaurant.id, data: formData });
+      // For editing, only include password if it's provided
+      const updateData: any = { ...formData };
+      if (!updateData.password) {
+        delete updateData.password;
+      }
+      updateRestaurantMutation.mutate({ id: editingRestaurant.id, data: updateData });
     } else {
-      createRestaurantMutation.mutate(formData);
+      // For new restaurants, ensure password is always included
+      const createData = { 
+        ...formData,
+        password: formData.password || 'restaurant123' // Default password if empty
+      };
+      createRestaurantMutation.mutate(createData);
     }
   };
 
