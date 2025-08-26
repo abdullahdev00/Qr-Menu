@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { eq, like, or, desc } from 'drizzle-orm';
+import { eq, like, or, desc, and } from 'drizzle-orm';
 import { 
   adminUsers,
   restaurants,
@@ -12,6 +12,8 @@ import {
   restaurantTables,
   qrCodes,
   users,
+  menuCategories,
+  menuItems,
   type AdminUser, type InsertAdminUser,
   type Restaurant, type InsertRestaurant,
   type SubscriptionPlan, type InsertSubscriptionPlan,
@@ -21,7 +23,9 @@ import {
   type QrTemplate, type InsertQrTemplate,
   type RestaurantTable, type InsertRestaurantTable,
   type QrCode, type InsertQrCode,
-  type User, type InsertUser
+  type User, type InsertUser,
+  type MenuCategory, type InsertMenuCategory,
+  type MenuItem, type InsertMenuItem
 } from "../../shared/schema";
 
 const sql = postgres(process.env.DATABASE_URL!);
@@ -601,6 +605,82 @@ class Storage {
       popularTemplates,
       recentActivity,
     };
+  }
+
+  // Menu Categories Methods
+  async getMenuCategories(restaurantId: string): Promise<MenuCategory[]> {
+    return await db.select().from(menuCategories)
+      .where(eq(menuCategories.restaurantId, restaurantId))
+      .orderBy(menuCategories.displayOrder, menuCategories.name);
+  }
+
+  async getMenuCategory(id: string): Promise<MenuCategory | undefined> {
+    const result = await db.select().from(menuCategories).where(eq(menuCategories.id, id)).limit(1);
+    return result[0];
+  }
+
+  async createMenuCategory(category: InsertMenuCategory): Promise<MenuCategory> {
+    const result = await db.insert(menuCategories).values(category).returning();
+    return result[0];
+  }
+
+  async updateMenuCategory(id: string, category: Partial<MenuCategory>): Promise<MenuCategory | undefined> {
+    const result = await db.update(menuCategories).set(category).where(eq(menuCategories.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteMenuCategory(id: string): Promise<boolean> {
+    const result = await db.delete(menuCategories).where(eq(menuCategories.id, id));
+    return result.length > 0;
+  }
+
+  // Menu Items Methods
+  async getMenuItems(restaurantId: string, categoryId?: string): Promise<MenuItem[]> {
+    const conditions = [eq(menuItems.restaurantId, restaurantId)];
+    
+    if (categoryId) {
+      conditions.push(eq(menuItems.categoryId, categoryId));
+    }
+
+    const result = await db.select().from(menuItems).where(and(...conditions));
+    return result.sort((a: MenuItem, b: MenuItem) => a.displayOrder - b.displayOrder);
+  }
+
+  async getMenuItem(id: string): Promise<MenuItem | undefined> {
+    const result = await db.select().from(menuItems).where(eq(menuItems.id, id)).limit(1);
+    return result[0];
+  }
+
+  async createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
+    const result = await db.insert(menuItems).values(item).returning();
+    return result[0];
+  }
+
+  async updateMenuItem(id: string, item: Partial<MenuItem>): Promise<MenuItem | undefined> {
+    const result = await db.update(menuItems).set({
+      ...item,
+      updatedAt: new Date()
+    }).where(eq(menuItems.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteMenuItem(id: string): Promise<boolean> {
+    const result = await db.delete(menuItems).where(eq(menuItems.id, id));
+    return result.length > 0;
+  }
+
+  async searchMenuItems(restaurantId: string, searchQuery: string): Promise<MenuItem[]> {
+    return await db.select().from(menuItems)
+      .where(
+        and(
+          eq(menuItems.restaurantId, restaurantId),
+          or(
+            like(menuItems.name, `%${searchQuery}%`),
+            like(menuItems.description, `%${searchQuery}%`)
+          )
+        )
+      )
+      .orderBy(menuItems.displayOrder, menuItems.name);
   }
 }
 

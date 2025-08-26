@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "../../admin/lib/queryClient";
+import { useToast } from "../../admin/hooks/use-toast";
 import { Button } from "../../admin/components/ui/button";
+import { MenuItem, MenuCategory, insertMenuItemSchema } from "../../shared/schema";
 import { Input } from "../../admin/components/ui/input";
 import { Label } from "../../admin/components/ui/label";
 import { Textarea } from "../../admin/components/ui/textarea";
@@ -17,22 +21,18 @@ import { Upload, X, Plus } from "lucide-react";
 
 interface AddMenuItemFormProps {
   onClose: () => void;
+  existingItem?: MenuItem | null;
+  restaurantId: string;
+  categories: MenuCategory[];
 }
 
-const categories = [
-  "Appetizers",
-  "Main Course", 
-  "Desserts",
-  "Beverages",
-  "Pakistani Specialties"
-];
-
-export function AddMenuItemForm({ onClose }: AddMenuItemFormProps) {
+export function AddMenuItemForm({ onClose, existingItem, restaurantId, categories }: AddMenuItemFormProps) {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
-    category: "",
+    categoryId: "",
     preparationTime: "",
     isAvailable: true,
     isVegetarian: false,
@@ -46,6 +46,58 @@ export function AddMenuItemForm({ onClose }: AddMenuItemFormProps) {
   const [newAllergen, setNewAllergen] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+
+  // Populate form with existing data when editing
+  useEffect(() => {
+    if (existingItem) {
+      setFormData({
+        name: existingItem.name,
+        description: existingItem.description || "",
+        price: existingItem.price,
+        categoryId: existingItem.categoryId,
+        preparationTime: existingItem.preparationTime?.toString() || "",
+        isAvailable: existingItem.isAvailable,
+        isVegetarian: existingItem.isVegetarian,
+        isVegan: existingItem.isVegan,
+        isGlutenFree: existingItem.isGlutenFree,
+      });
+      setIngredients(existingItem.ingredients || []);
+      setAllergens(existingItem.allergens || []);
+      if (existingItem.imageUrl) {
+        setImagePreview(existingItem.imageUrl);
+      }
+    }
+  }, [existingItem]);
+
+  // Create/Update mutation
+  const mutation = useMutation({
+    mutationFn: async (data: any) => {
+      const url = existingItem 
+        ? `/api/vendor/menu-items/${existingItem.id}` 
+        : "/api/vendor/menu-items";
+      const method = existingItem ? "PUT" : "POST";
+      
+      const response = await apiRequest(method, url, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: existingItem 
+          ? "Menu item updated successfully" 
+          : "Menu item created successfully"
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/vendor/menu-items"] });
+      onClose();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save menu item",
+        variant: "destructive"
+      });
+    },
+  });
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
@@ -90,9 +142,35 @@ export function AddMenuItemForm({ onClose }: AddMenuItemFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log("Form data:", { ...formData, ingredients, allergens, imageFile });
-    onClose();
+    
+    // Validate required fields
+    if (!formData.name.trim() || !formData.price || !formData.categoryId) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields (Name, Price, and Category)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const submitData = {
+      restaurantId,
+      categoryId: formData.categoryId,
+      name: formData.name.trim(),
+      description: formData.description.trim() || null,
+      price: formData.price,
+      ingredients: ingredients.length > 0 ? ingredients : null,
+      allergens: allergens.length > 0 ? allergens : null,
+      isAvailable: formData.isAvailable,
+      isVegetarian: formData.isVegetarian,
+      isVegan: formData.isVegan,
+      isGlutenFree: formData.isGlutenFree,
+      preparationTime: formData.preparationTime ? parseInt(formData.preparationTime) : null,
+      imageUrl: imagePreview || null, // For now, store image preview URL
+      displayOrder: existingItem?.displayOrder || 0,
+    };
+
+    mutation.mutate(submitData);
   };
 
   return (
@@ -113,8 +191,8 @@ export function AddMenuItemForm({ onClose }: AddMenuItemFormProps) {
         <div className="space-y-2">
           <Label htmlFor="category">Category *</Label>
           <Select
-            value={formData.category}
-            onValueChange={(value) => handleInputChange("category", value)}
+            value={formData.categoryId}
+            onValueChange={(value) => handleInputChange("categoryId", value)}
             required
           >
             <SelectTrigger data-testid="menu-item-category">
@@ -122,8 +200,8 @@ export function AddMenuItemForm({ onClose }: AddMenuItemFormProps) {
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -330,8 +408,15 @@ export function AddMenuItemForm({ onClose }: AddMenuItemFormProps) {
         <Button type="button" variant="outline" onClick={onClose} data-testid="cancel-button">
           Cancel
         </Button>
-        <Button type="submit" data-testid="save-menu-item-button">
-          Save Menu Item
+        <Button 
+          type="submit" 
+          data-testid="save-menu-item-button"
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending 
+            ? (existingItem ? "Updating..." : "Creating...") 
+            : (existingItem ? "Update Menu Item" : "Save Menu Item")
+          }
         </Button>
       </div>
     </form>
