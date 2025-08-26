@@ -32,12 +32,15 @@ interface RestaurantFormData {
 }
 
 export default function Dashboard() {
+  console.log('🚀 Dashboard component function called!')
+  
   const [, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   
   // Debug logs
-  console.log('Dashboard component rendered, isAddDialogOpen:', isAddDialogOpen)
+  console.log('✅ Dashboard component rendered, isAddDialogOpen:', isAddDialogOpen)
+  console.log('🔍 Current location:', window.location.pathname)
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
@@ -188,7 +191,7 @@ export default function Dashboard() {
         <div className="grid gap-4 grid-cols-1">
           <div className="col-span-1">
             <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-4 sm:p-6 shadow-lg border-0">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions - Dialog State: {isAddDialogOpen ? 'OPEN' : 'CLOSED'}</h3>
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <button 
                   onClick={(e) => {
