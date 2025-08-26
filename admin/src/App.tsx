@@ -8,6 +8,9 @@ import { ThemeProvider } from './lib/theme-provider';
 // Import pages
 import LoginPage from '../pages/login';
 import DashboardPage from '../pages/dashboard';
+
+// Debug dashboard import
+console.log('📦 DashboardPage imported:', typeof DashboardPage);
 import RestaurantDashboardPage from '../pages/restaurant-dashboard';
 import MenuManagementPage from '../pages/menu-management';
 import RestaurantsPage from '../pages/restaurants';
@@ -17,6 +20,7 @@ import QRTemplatesPage from '../pages/qr-templates';
 import SubscriptionsPage from '../pages/subscriptions';
 import AnalyticsPage from '../pages/analytics';
 import SupportPage from '../pages/support';
+import TestButtonPage from '../pages/test-button';
 
 import MainLayout from '../components/layout/main-layout';
 
@@ -87,6 +91,7 @@ function App() {
                     <Route path="/subscriptions" component={SubscriptionsPage} />
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
+                    <Route path="/test-button" component={TestButtonPage} />
                   </Switch>
                 </MainLayout>
               </Route>
