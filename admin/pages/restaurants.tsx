@@ -420,7 +420,7 @@ export default function RestaurantsPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>{editingRestaurant ? 'Edit Restaurant' : 'Add New Restaurant'}</DialogTitle>
+              <DialogTitle>Add New Restaurant</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -637,6 +637,246 @@ export default function RestaurantsPage() {
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   {createRestaurantMutation.isPending ? 'Creating...' : 'Create Restaurant'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+        
+        {/* Edit Restaurant Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) {
+            resetForm();
+          }
+        }}>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Edit Restaurant</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Restaurant Name *</label>
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      setFormData({ 
+                        ...formData, 
+                        name,
+                        slug: !editingRestaurant ? generateSlug(name) : formData.slug
+                      });
+                      if (errors.name) {
+                        const newErrors = { ...errors }
+                        delete newErrors.name
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="Enter restaurant name"
+                    className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
+                    required
+                  />
+                  <FormError message={errors.name} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Slug *</label>
+                  <Input
+                    value={formData.slug}
+                    onChange={(e) => {
+                      setFormData({ ...formData, slug: e.target.value });
+                      if (errors.slug) {
+                        const newErrors = { ...errors }
+                        delete newErrors.slug
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="restaurant-slug"
+                    className={errors.slug ? 'border-red-500 focus:border-red-500' : ''}
+                    required
+                  />
+                  <FormError message={errors.slug} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Owner Name *</label>
+                  <Input
+                    value={formData.ownerName}
+                    onChange={(e) => {
+                      setFormData({ ...formData, ownerName: e.target.value });
+                      if (errors.ownerName) {
+                        const newErrors = { ...errors }
+                        delete newErrors.ownerName
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="Enter owner name"
+                    className={errors.ownerName ? 'border-red-500 focus:border-red-500' : ''}
+                    required
+                  />
+                  <FormError message={errors.ownerName} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Owner Email *</label>
+                  <Input
+                    type="email"
+                    value={formData.ownerEmail}
+                    onChange={(e) => {
+                      setFormData({ ...formData, ownerEmail: e.target.value });
+                      if (errors.ownerEmail) {
+                        const newErrors = { ...errors }
+                        delete newErrors.ownerEmail
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="owner@example.com"
+                    className={errors.ownerEmail ? 'border-red-500 focus:border-red-500' : ''}
+                    required
+                  />
+                  <FormError message={errors.ownerEmail} />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Restaurant Password</label>
+                <Input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    if (errors.password) {
+                      const newErrors = { ...errors }
+                      delete newErrors.password
+                      setErrors(newErrors)
+                    }
+                  }}
+                  placeholder="Leave blank to keep current password"
+                  className={errors.password ? 'border-red-500 focus:border-red-500' : ''}
+                />
+                <FormError message={errors.password} />
+                <p className="text-xs text-gray-500 mt-1">Leave blank to keep current password</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Phone</label>
+                  <Input
+                    value={formData.ownerPhone}
+                    onChange={(e) => {
+                      setFormData({ ...formData, ownerPhone: e.target.value });
+                      if (errors.ownerPhone) {
+                        const newErrors = { ...errors }
+                        delete newErrors.ownerPhone
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="03001234567"
+                    className={errors.ownerPhone ? 'border-red-500 focus:border-red-500' : ''}
+                  />
+                  <FormError message={errors.ownerPhone} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">City</label>
+                  <Select 
+                    value={formData.city} 
+                    onValueChange={(value) => setFormData({ ...formData, city: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Karachi">Karachi</SelectItem>
+                      <SelectItem value="Lahore">Lahore</SelectItem>
+                      <SelectItem value="Islamabad">Islamabad</SelectItem>
+                      <SelectItem value="Rawalpindi">Rawalpindi</SelectItem>
+                      <SelectItem value="Faisalabad">Faisalabad</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Address</label>
+                <Input
+                  value={formData.address}
+                  onChange={(e) => {
+                    setFormData({ ...formData, address: e.target.value });
+                    if (errors.address) {
+                      const newErrors = { ...errors }
+                      delete newErrors.address
+                      setErrors(newErrors)
+                    }
+                  }}
+                  placeholder="Enter full address"
+                  className={errors.address ? 'border-red-500 focus:border-red-500' : ''}
+                />
+                <FormError message={errors.address} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Subscription Plan</label>
+                  <Select 
+                    value={formData.planId || ''} 
+                    onValueChange={(value) => setFormData({ ...formData, planId: value || null })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a plan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {plans.map((plan: any) => (
+                        <SelectItem key={plan.id} value={plan.id}>
+                          {plan.name} - ₨{plan.price}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <Select 
+                    value={formData.status} 
+                    onValueChange={(value: 'active' | 'inactive' | 'suspended') => 
+                      setFormData({ ...formData, status: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="suspended">Suspended</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Notes</label>
+                <Input
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Optional notes about the restaurant"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={updateRestaurantMutation.isPending}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {updateRestaurantMutation.isPending ? 'Updating...' : 'Update Restaurant'}
                 </Button>
               </div>
             </form>
