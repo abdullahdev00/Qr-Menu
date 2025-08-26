@@ -217,9 +217,12 @@ export default function RestaurantsPage() {
   };
 
   const handleEditRestaurant = (id: string) => {
+    console.log('🔧 Edit button clicked for restaurant ID:', id);
     const restaurant = restaurants.find((r: Restaurant) => r.id === id);
+    console.log('🔧 Found restaurant:', restaurant);
     
     if (restaurant) {
+      console.log('🔧 Setting edit data...');
       setEditingRestaurant(restaurant);
       setFormData({
         name: restaurant.name || '',
@@ -235,8 +238,11 @@ export default function RestaurantsPage() {
         notes: restaurant.notes || ''
       });
       setErrors({});
+      console.log('🔧 Opening edit dialog...');
       setIsEditDialogOpen(true);
+      console.log('🔧 Edit dialog should be open now, isEditDialogOpen:', true);
     } else {
+      console.log('❌ Restaurant not found with ID:', id);
       toast({
         title: "Error",
         description: "Restaurant not found",
