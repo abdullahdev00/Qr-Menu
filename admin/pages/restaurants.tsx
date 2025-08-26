@@ -65,6 +65,10 @@ export default function RestaurantsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  console.log('🏪 RestaurantsPage rendered!');
+  console.log('🔍 User:', user);
+  console.log('🔍 Is authenticated:', !!user);
+
   // Form state
   const [formData, setFormData] = useState<RestaurantFormData>({
     name: '',
