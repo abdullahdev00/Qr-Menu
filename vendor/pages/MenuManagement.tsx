@@ -125,30 +125,36 @@ export function MenuManagement() {
               <Upload className="w-4 h-4 mr-2" />
               Bulk Import
             </Button>
-            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-              <DialogTrigger asChild>
-                <Button data-testid="add-menu-item-button">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Menu Item
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>{editingItem ? "Edit Menu Item" : "Add New Menu Item"}</DialogTitle>
-                  <DialogDescription>
-                    {editingItem ? "Update the menu item details" : "Create a new menu item for your restaurant"}
-                  </DialogDescription>
-                </DialogHeader>
-                <AddMenuItemForm 
-                  onClose={closeDialog} 
-                  existingItem={editingItem} 
-                  restaurantId={RESTAURANT_ID}
-                  categories={categories}
-                />
-              </DialogContent>
-            </Dialog>
+            <Button 
+              data-testid="add-menu-item-button"
+              onClick={() => {
+                console.log("Add Menu Item button clicked!");
+                setShowAddDialog(true);
+              }}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Menu Item
+            </Button>
           </div>
         </div>
+
+        {/* Add Menu Item Dialog */}
+        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>{editingItem ? "Edit Menu Item" : "Add New Menu Item"}</DialogTitle>
+              <DialogDescription>
+                {editingItem ? "Update the menu item details" : "Create a new menu item for your restaurant"}
+              </DialogDescription>
+            </DialogHeader>
+            <AddMenuItemForm 
+              onClose={closeDialog} 
+              existingItem={editingItem} 
+              restaurantId={RESTAURANT_ID}
+              categories={categories}
+            />
+          </DialogContent>
+        </Dialog>
 
         {/* Categories Overview */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
