@@ -139,6 +139,45 @@ export const insertQrTemplateSchema = createInsertSchema(qrTemplates).omit({ id:
 export const insertRestaurantTableSchema = createInsertSchema(restaurantTables).omit({ id: true, createdAt: true });
 export const insertQrCodeSchema = createInsertSchema(qrCodes).omit({ id: true, createdAt: true, updatedAt: true, scanCount: true, downloadCount: true });
 
+// Payment Requests Table - for vendor payment submissions
+export const paymentRequests = pgTable('payment_requests', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  vendorId: varchar('vendor_id').references(() => restaurants.id).notNull(),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  paymentMethod: text('payment_method').notNull(), // 'jazzcash', 'easypaisa', 'bank_transfer'
+  bankName: text('bank_name').notNull(),
+  accountNumber: text('account_number').notNull(),
+  accountHolder: text('account_holder').notNull(),
+  transactionRef: text('transaction_ref').notNull(),
+  receiptUrl: text('receipt_url').notNull(),
+  status: text('status').notNull().default('pending'), // 'pending', 'approved', 'rejected', 'under_review'
+  submittedAt: timestamp('submitted_at').notNull().defaultNow(),
+  processedAt: timestamp('processed_at'),
+  processedBy: varchar('processed_by').references(() => adminUsers.id),
+  adminNotes: text('admin_notes'),
+  rejectionReason: text('rejection_reason'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+// Zod schemas for payment requests
+export const insertPaymentRequestSchema = createInsertSchema(paymentRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  submittedAt: true,
+  processedAt: true,
+  processedBy: true
+});
+
+export const updatePaymentRequestSchema = createInsertSchema(paymentRequests).omit({
+  id: true,
+  vendorId: true,
+  createdAt: true,
+  updatedAt: true,
+  submittedAt: true
+}).partial();
+
 // Types
 export type AdminUser = typeof adminUsers.$inferSelect;
 export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
@@ -158,6 +197,9 @@ export type RestaurantTable = typeof restaurantTables.$inferSelect;
 export type InsertRestaurantTable = z.infer<typeof insertRestaurantTableSchema>;
 export type QrCode = typeof qrCodes.$inferSelect;
 export type InsertQrCode = z.infer<typeof insertQrCodeSchema>;
+export type PaymentRequest = typeof paymentRequests.$inferSelect;
+export type InsertPaymentRequest = z.infer<typeof insertPaymentRequestSchema>;
+export type UpdatePaymentRequest = z.infer<typeof updatePaymentRequestSchema>;
 
 // Legacy user schema for compatibility
 export const users = pgTable("users", {

@@ -14,6 +14,7 @@ console.log('📦 DashboardPage imported:', typeof DashboardPage);
 import RestaurantDashboardPage from '../pages/restaurant-dashboard';
 import MenuManagementPage from '../pages/menu-management';
 import RestaurantsPage from '../pages/restaurants';
+import PaymentsPage from '../pages/payments';
 import MenuTemplatesPage from '../pages/menu-templates';
 import QRCodesPage from '../pages/qr-codes';
 import QRTemplatesPage from '../pages/qr-templates';
@@ -85,6 +86,7 @@ function App() {
                     <Route path="/restaurant-dashboard" component={RestaurantDashboardPage} />
                     <Route path="/menu-management" component={MenuManagementPage} />
                     <Route path="/restaurants" component={RestaurantsPage} />
+                    <Route path="/payments" component={PaymentsPage} />
                     <Route path="/menu-templates" component={MenuTemplatesPage} />
                     <Route path="/qr-codes" component={QRCodesPage} />
                     <Route path="/qr-templates" component={QRTemplatesPage} />

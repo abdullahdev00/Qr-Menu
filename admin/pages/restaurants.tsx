@@ -1343,6 +1343,7 @@ export default function RestaurantsPage() {
           </form>
         </DialogContent>
       </Dialog>
+      )}
     </div>
   );
 }

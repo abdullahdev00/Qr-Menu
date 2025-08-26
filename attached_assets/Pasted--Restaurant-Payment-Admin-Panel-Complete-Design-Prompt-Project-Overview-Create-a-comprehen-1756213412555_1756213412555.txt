@@ -1,0 +1,274 @@
+# Restaurant Payment Admin Panel - Complete Design Prompt
+
+## Project Overview
+Create a comprehensive admin panel for a restaurant payment verification system where vendors (restaurant owners) upload payment receipts and admin verifies them through mobile banking apps before approving/rejecting payments.
+
+## Admin Panel Requirements
+
+### 1. Dashboard Layout
+- **Header Section:**
+  - Logo and platform name on left
+  - Admin profile dropdown on right
+  - Notification bell icon with pending payment count
+  - Logout button
+
+- **Sidebar Navigation:**
+  - Dashboard (overview)
+  - Pending Payments (main section)
+  - Payment History
+  - Vendor Management
+  - Reports & Analytics
+  - Settings
+
+### 2. Main Dashboard Cards
+- **Statistics Cards Row:**
+  - Total Pending Payments (with count and amount)
+  - Today's Approved Payments
+  - Today's Rejected Payments
+  - Total Active Vendors
+
+### 3. Payment Management Page (Table Layout - Similar to Restaurants Page)
+
+**Page Header:**
+- "Payment Requests Management" title
+- Total pending payments counter
+- Search bar with filters (by vendor, date, amount, status)
+- "Export Data" button
+- Date range picker
+
+**Table Structure (Similar to Restaurant Management):**
+
+| Column Header | Description | Width |
+|---------------|-------------|-------|
+| **S.No** | Serial number | 60px |
+| **Vendor Info** | Restaurant name, logo (small), Vendor ID | 200px |
+| **Payment Details** | Amount, Date submitted, Ref# | 180px |
+| **Receipt** | Image thumbnail with "View" button | 120px |
+| **Banking Details** | Bank name, Account info, Payment method | 220px |
+| **Status** | Pending/Approved/Rejected with colored badges | 100px |
+| **Submitted On** | Date and time | 140px |
+| **Actions** | Action buttons | 160px |
+
+**Table Row Details:**
+
+**Vendor Info Column:**
+- Small restaurant logo (40x40px)
+- Restaurant name (bold)
+- Vendor ID (small text)
+- Contact number (if needed)
+
+**Payment Details Column:**
+- Amount in large, bold text (PKR format)
+- Submission date/time
+- Transaction reference number
+- Payment method icon (JazzCash, EasyPaisa, etc.)
+
+**Receipt Column:**
+- Small thumbnail of uploaded receipt (60x80px)
+- "View Full" button
+- Download icon
+- Image quality indicator
+
+**Banking Details Column:**
+- Bank name with icon
+- Account holder name
+- Masked account number (****1234)
+- Mobile banking app name
+- "Copy Details" button (small)
+
+**Status Column:**
+- Color-coded badges:
+  - 🟡 Pending (Yellow)
+  - 🟢 Approved (Green) 
+  - 🔴 Rejected (Red)
+  - 🔵 Under Review (Blue)
+
+**Actions Column:**
+- "View Receipt" (eye icon)
+- "Verify" (shield icon)
+- "Approve" (check icon, green)
+- "Reject" (x icon, red)
+- "More" (three dots dropdown)
+
+**Table Features:**
+- Sortable columns (click column headers)
+- Hover effects on rows
+- Row selection checkboxes for bulk actions
+- Pagination at bottom
+- Rows per page selector (10, 25, 50, 100)
+- Expandable rows for additional details
+
+**Advanced Table Interactions:**
+
+**Row Click Action:**
+- Single click: Highlight row
+- Double click: Open detailed payment view modal
+
+**Bulk Actions Bar (appears when rows selected):**
+- "Approve Selected" 
+- "Reject Selected"
+- "Export Selected"
+- "Mark for Review"
+
+**Expandable Row Details:**
+When row is expanded (+/- button), show:
+- Full banking details
+- Receipt upload history
+- Admin notes/comments
+- Previous interaction history
+- Vendor communication log
+
+**Quick Action Tooltips:**
+- Hover over action buttons shows tooltip
+- Keyboard shortcuts displayed
+- Status meanings explained
+
+**Responsive Table Design:**
+- On mobile: Stack important columns
+- Hide less critical columns on smaller screens
+- Swipe actions for mobile users
+- Sticky header when scrolling
+
+**Search and Filter Bar:**
+- Global search across all fields
+- Advanced filters dropdown:
+  - Amount range slider
+  - Date range picker
+  - Vendor selection dropdown
+  - Status multi-select
+  - Payment method filter
+  - Bank wise filtering
+
+**Table Toolbar:**
+- "Refresh Data" button
+- "Column Settings" (show/hide columns)
+- "View Mode" toggle (compact/comfortable)
+- "Print/Export" options
+- **Step 1:** Admin clicks "Verify in Banking App"
+- **Step 2:** System shows banking details clearly
+- **Step 3:** Admin checks mobile banking app
+- **Step 4:** Admin returns and approves/rejects with reason
+
+### 5. Approval/Rejection Modal
+**When Approving:**
+- Confirmation message
+- Final amount verification
+- Processing timeline
+- Success confirmation
+
+**When Rejecting:**
+- Mandatory reason selection dropdown
+- Optional additional comments
+- Clear explanation sent to vendor
+
+### 6. Table Customization Features
+
+**Column Management:**
+- Drag and drop to reorder columns
+- Resize columns by dragging borders
+- Show/hide columns via settings
+- Save custom column layouts per admin user
+- Reset to default layout option
+
+**Data Export Options:**
+- Export filtered data to Excel
+- Export to PDF with formatting
+- Export selected rows only
+- Scheduled export reports
+- Email export directly
+
+**Table Performance:**
+- Virtual scrolling for large datasets
+- Lazy loading of receipt thumbnails
+- Pagination with jump-to-page
+- Items per page customization
+- Loading states for all actions
+
+**Visual Enhancements:**
+- Alternating row colors
+- Hover effects with subtle animations
+- Status badges with icons
+- Progress bars for amounts
+- Color-coded priority indicators
+
+**Keyboard Shortcuts (for power users):**
+- Arrow keys to navigate
+- Enter to open detailed view
+- Space to select row
+- Ctrl+A to select all
+- Delete key for bulk actions
+- Tab navigation through action buttons
+- **Filter Options:**
+  - Date range picker
+  - Vendor selection
+  - Payment status (Approved/Rejected/Pending)
+  - Amount range
+
+- **Table View:**
+  - Sortable columns
+  - Export functionality
+  - Detailed view option
+
+### 7. Vendor Management
+- List of all registered vendors
+- Vendor verification status
+- Payment history per vendor
+- Block/unblock vendor option
+
+### 8. Design Specifications
+
+**Color Scheme:**
+- Primary: Modern blue (#2563eb)
+- Success: Green (#10b981)
+- Danger: Red (#ef4444)
+- Warning: Orange (#f59e0b)
+- Background: Light gray (#f8fafc)
+
+**Typography:**
+- Headers: Bold, large fonts
+- Body text: Clean, readable fonts
+- Important info: Highlighted/colored text
+
+**Mobile Responsiveness:**
+- Fully responsive design
+- Touch-friendly buttons
+- Optimized for tablet use
+
+**Security Features:**
+- Session timeout warnings
+- Secure image viewing
+- Audit trail for all actions
+- Role-based access control
+
+### 9. Special Features to Include
+
+**Real-time Updates:**
+- Auto-refresh pending payments
+- Live notifications for new submissions
+- Status update alerts
+
+**Image Handling:**
+- High-quality image display
+- Zoom and pan functionality
+- Multiple image support
+- Image verification tools
+
+**Banking Integration Hints:**
+- Quick links to popular mobile banking apps
+- Banking detail validation
+- Transaction ID verification
+
+**Reporting Dashboard:**
+- Daily/weekly/monthly statistics
+- Vendor performance metrics
+- Payment processing analytics
+- Export reports functionality
+
+### 10. User Experience Enhancements
+- Keyboard shortcuts for quick actions
+- Bulk operations for multiple payments
+- Advanced search and filtering
+- Customizable dashboard views
+- Dark/light theme toggle
+
+## Technical Requirements
