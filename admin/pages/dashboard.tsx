@@ -69,6 +69,23 @@ export default function Dashboard() {
     }
   }, [])
 
+  // Manual event listener for button debugging
+  useEffect(() => {
+    const handleButtonClick = () => {
+      console.log('Manual event listener triggered!')
+      setIsAddDialogOpen(true)
+    }
+
+    const button = document.querySelector('[data-testid="button-add-restaurant"]')
+    if (button) {
+      console.log('Button found in DOM, adding manual listener')
+      button.addEventListener('click', handleButtonClick)
+      return () => button.removeEventListener('click', handleButtonClick)
+    } else {
+      console.log('Button NOT found in DOM')
+    }
+  }, [user])
+
   const { data: metrics, isLoading } = useQuery({
     queryKey: ['/api/dashboard/metrics'],
     enabled: !!user,
@@ -176,12 +193,14 @@ export default function Dashboard() {
                 <button 
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log('Add Restaurant button clicked!');
+                    e.stopPropagation();
+                    console.log('React onClick handler triggered!');
                     setIsAddDialogOpen(true);
                   }}
                   className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
                   data-testid="button-add-restaurant"
                   type="button"
+                  style={{ pointerEvents: 'auto' }}
                 >
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
                     <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
