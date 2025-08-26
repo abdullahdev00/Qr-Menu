@@ -4,7 +4,21 @@
 
 This is a comprehensive Multi-Vendor QR Menu Generator Admin Panel designed for restaurant management in the Pakistan market. The application enables administrators to manage restaurant subscriptions, generate QR codes for digital menus, handle customer support, and track analytics across multiple restaurant clients.
 
-The platform provides a complete administrative interface for managing restaurant partners, their subscription plans (priced in PKR), payment processing through local payment methods (JazzCash, EasyPaisa, bank transfers), and comprehensive analytics dashboard.
+The platform provides two main interfaces:
+1. **Admin Panel**: Complete administrative interface for managing restaurant partners, subscription plans (priced in PKR), payment processing through local payment methods (JazzCash, EasyPaisa, bank transfers), and comprehensive analytics dashboard.
+2. **Vendor Dashboard**: Restaurant owner interface for managing their own restaurant operations including menu management, QR code generation, order tracking, customer feedback, and business analytics.
+
+## Recent Changes (January 2025)
+
+- **Added Vendor Dashboard**: Complete restaurant owner admin panel with:
+  - Dashboard with key metrics and quick actions
+  - Menu management system with categories and item customization
+  - QR code generation and management with customization options
+  - Analytics dashboard with sales charts and performance metrics
+  - Customer feedback management system
+  - Restaurant settings configuration
+- **Integration**: Added demo access link from main admin panel to vendor dashboard
+- **Architecture**: Separated vendor functionality into dedicated folder structure
 
 ## User Preferences
 
@@ -28,6 +42,13 @@ The application follows a monorepo structure with clear separation between clien
 - **Styling**: Tailwind CSS with custom CSS variables for theming
 - **Build Tool**: Vite with proper development and production configurations
 
+#### Vendor Dashboard Architecture
+- **Separate Application**: Independent React app in `/vendor` folder
+- **Shared Components**: Reuses UI components from admin panel
+- **Modular Pages**: Dashboard, Menu Management, QR Codes, Analytics, Feedback, Settings
+- **Responsive Design**: Mobile-first approach with dark mode support
+- **Demo Access**: Accessible via link from main admin dashboard
+
 ### Backend Architecture
 - **Server Framework**: Express.js with TypeScript
 - **Database ORM**: Drizzle ORM with PostgreSQL dialect
@@ -45,6 +66,12 @@ The schema includes comprehensive entities for restaurant management:
 - **Support Tickets**: Customer support system with priority and status tracking
 - **Menu Templates**: Pre-designed menu templates for restaurants
 - **QR Codes**: Generated QR codes with customization options
+
+#### Vendor-Specific Tables
+- **Vendor Menus**: Restaurant-specific menu items with categories, pricing, and availability
+- **Vendor QR Codes**: Generated QR codes linked to specific restaurants and menu sections
+- **Vendor Orders**: Order tracking and management for individual restaurants
+- **Vendor Analytics**: Performance metrics and analytics data for restaurant owners
 
 ### Authentication & Authorization
 - Simple email/password authentication system

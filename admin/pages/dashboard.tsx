@@ -125,6 +125,13 @@ export default function Dashboard() {
                 <button className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center">
                   Send Notifications
                 </button>
+                <button 
+                  onClick={() => window.open('/vendor/vendor.html', '_blank')}
+                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-700 dark:to-blue-600 text-blue-700 dark:text-blue-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
+                  data-testid="vendor-dashboard-link"
+                >
+                  🍽️ Vendor Dashboard Demo
+                </button>
               </div>
             </div>
           </div>

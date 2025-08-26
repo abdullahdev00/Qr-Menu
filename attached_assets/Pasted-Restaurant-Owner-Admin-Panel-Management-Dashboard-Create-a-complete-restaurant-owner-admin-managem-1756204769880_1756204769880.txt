@@ -1,0 +1,112 @@
+Restaurant Owner Admin Panel - Management Dashboard
+Create a complete restaurant owner/admin management web application with the following functional features:
+Core Features & Buttons:
+1. Add Menu Item
+
+Admin form to add new menu items to restaurant menu
+Fields: Item name, description, price, category (appetizer, main course, dessert, beverages)
+Image upload for food items
+Availability toggle (available/not available)
+Save items to database/storage
+Edit and delete existing menu items
+Bulk import menu items option
+
+2. Generate QR
+
+Generate individual QR codes for each restaurant table
+Table management: Add/remove tables, table numbers
+Each QR links to digital menu with specific table ID
+Bulk QR generation for multiple tables
+Download QR codes as images (PNG/PDF)
+Print-ready QR codes with table numbers
+QR customization (logo, colors, design)
+Track which table QR was scanned when
+
+3. View Analytics
+
+Restaurant owner dashboard showing:
+
+Daily/weekly/monthly revenue
+Most ordered menu items
+Table-wise order analytics
+Peak hours analysis
+Customer visit patterns
+Menu item performance
+QR code scan statistics per table
+Staff performance metrics
+
+
+
+4. Settings
+
+Restaurant profile management:
+
+Restaurant name, address, contact details
+Business hours
+Tax settings and pricing
+Menu categories management
+Table layout and numbering
+Staff accounts management
+Payment methods setup
+Notification preferences
+
+
+
+5. Customer Feedback
+
+View all customer reviews and ratings
+Feedback management and responses
+Rating analytics (average ratings)
+Feedback categorization and filtering
+Response templates for common feedback
+Feedback alerts and notifications
+Export feedback reports
+Block inappropriate reviews
+
+6. Support
+
+Owner support portal:
+
+Technical support contact
+Business setup guidance
+Payment and billing support
+Account management help
+Feature tutorials and guides
+System status and updates
+Submit support tickets
+
+
+
+Technical Requirements:
+Admin Dashboard:
+
+Secure login for restaurant owners
+Role-based access (owner, manager, staff)
+Modern admin interface design
+Data tables with sorting/filtering
+Real-time notifications
+Mobile-responsive admin panel
+
+Table & QR Management:
+
+Table layout designer
+QR code generator library integration
+Table status tracking (occupied/free)
+QR analytics tracking
+Bulk operations for tables
+
+Menu Management:
+
+CRUD operations for menu items
+Image management system
+Category and subcategory management
+Pricing and discount management
+Menu availability scheduling
+
+Analytics Dashboard:
+
+Charts and graphs for data visualization
+Export reports as PDF/Excel
+Date range filtering
+Comparative analytics
+Revenue tracking and forecasting

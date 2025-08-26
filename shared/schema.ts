@@ -154,12 +154,125 @@ export type InsertRestaurantTable = z.infer<typeof insertRestaurantTableSchema>;
 export type QrCode = typeof qrCodes.$inferSelect;
 export type InsertQrCode = z.infer<typeof insertQrCodeSchema>;
 
+// Vendor Menu Management
+export const menuCategories = pgTable("menu_categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  displayOrder: integer("display_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const menuItems = pgTable("menu_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  categoryId: varchar("category_id").references(() => menuCategories.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  imageUrl: text("image_url"),
+  ingredients: text("ingredients").array(),
+  allergens: text("allergens").array(),
+  isAvailable: boolean("is_available").notNull().default(true),
+  isVegetarian: boolean("is_vegetarian").notNull().default(false),
+  isVegan: boolean("is_vegan").notNull().default(false),
+  isGlutenFree: boolean("is_gluten_free").notNull().default(false),
+  preparationTime: integer("preparation_time"), // in minutes
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const orders = pgTable("orders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  tableId: varchar("table_id").references(() => restaurantTables.id),
+  customerName: text("customer_name"),
+  customerPhone: text("customer_phone"),
+  items: jsonb("items").notNull(), // Array of {menuItemId, quantity, price, customizations}
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  tax: decimal("tax", { precision: 10, scale: 2 }).notNull().default("0"),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  status: text("status").notNull().default("pending"), // pending, confirmed, preparing, ready, served, cancelled
+  specialInstructions: text("special_instructions"),
+  orderType: text("order_type").notNull().default("dine_in"), // dine_in, takeaway, delivery
+  paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, failed
+  paymentMethod: text("payment_method"), // cash, card, online
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const customerFeedback = pgTable("customer_feedback", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  orderId: varchar("order_id").references(() => orders.id),
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  rating: integer("rating").notNull(), // 1-5 stars
+  comment: text("comment"),
+  category: text("category").notNull().default("general"), // food, service, ambiance, cleanliness, general
+  isPublic: boolean("is_public").notNull().default(true),
+  status: text("status").notNull().default("pending"), // pending, approved, rejected
+  response: text("response"), // Restaurant owner response
+  respondedAt: timestamp("responded_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const qrScans = pgTable("qr_scans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  qrCodeId: varchar("qr_code_id").references(() => qrCodes.id).notNull(),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  tableId: varchar("table_id").references(() => restaurantTables.id),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  scanTimestamp: timestamp("scan_timestamp").defaultNow(),
+});
+
+export const restaurantSettings = pgTable("restaurant_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  businessHours: jsonb("business_hours").notNull(), // {monday: {open: "09:00", close: "22:00", closed: false}, ...}
+  taxRate: decimal("tax_rate", { precision: 5, scale: 2 }).notNull().default("0"),
+  serviceCharge: decimal("service_charge", { precision: 5, scale: 2 }).notNull().default("0"),
+  currency: text("currency").notNull().default("PKR"),
+  timezone: text("timezone").notNull().default("Asia/Karachi"),
+  allowOnlineOrdering: boolean("allow_online_ordering").notNull().default(true),
+  allowTableReservation: boolean("allow_table_reservation").notNull().default(false),
+  autoAcceptOrders: boolean("auto_accept_orders").notNull().default(false),
+  notificationSettings: jsonb("notification_settings"), // {email: true, sms: true, push: true}
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Legacy user schema for compatibility
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
+
+// Vendor Insert Schemas
+export const insertMenuCategorySchema = createInsertSchema(menuCategories).omit({ id: true, createdAt: true });
+export const insertMenuItemSchema = createInsertSchema(menuItems).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertCustomerFeedbackSchema = createInsertSchema(customerFeedback).omit({ id: true, createdAt: true, respondedAt: true });
+export const insertQrScanSchema = createInsertSchema(qrScans).omit({ id: true, scanTimestamp: true });
+export const insertRestaurantSettingsSchema = createInsertSchema(restaurantSettings).omit({ id: true, updatedAt: true });
+
+// Vendor Types
+export type MenuCategory = typeof menuCategories.$inferSelect;
+export type InsertMenuCategory = z.infer<typeof insertMenuCategorySchema>;
+export type MenuItem = typeof menuItems.$inferSelect;
+export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type CustomerFeedback = typeof customerFeedback.$inferSelect;
+export type InsertCustomerFeedback = z.infer<typeof insertCustomerFeedbackSchema>;
+export type QrScan = typeof qrScans.$inferSelect;
+export type InsertQrScan = z.infer<typeof insertQrScanSchema>;
+export type RestaurantSettings = typeof restaurantSettings.$inferSelect;
+export type InsertRestaurantSettings = z.infer<typeof insertRestaurantSettingsSchema>;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,

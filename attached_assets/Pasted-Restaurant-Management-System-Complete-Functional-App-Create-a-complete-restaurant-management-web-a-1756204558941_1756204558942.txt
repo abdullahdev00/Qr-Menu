@@ -1,0 +1,98 @@
+Restaurant Management System - Complete Functional App
+Create a complete restaurant management web application with the following functional features:
+Core Features & Buttons:
+1. Add Menu Item
+
+Create a form to add new menu items
+Fields: Item name, description, price, category (appetizer, main course, dessert, beverages)
+Image upload functionality
+Save items to local storage or database
+Display confirmation message after adding
+
+2. Generate QR
+
+Generate QR code for restaurant menu
+QR should link to digital menu page
+Download QR code as image option
+Print-friendly QR code display
+Include restaurant name/logo on QR
+
+3. View Analytics
+
+Dashboard showing:
+
+Total menu items
+Most popular items (mock data)
+Daily/weekly sales graphs
+Customer ratings summary
+Order statistics
+
+
+Use charts/graphs for visual representation
+
+4. Settings
+
+Restaurant profile settings (name, address, contact)
+Menu categories management
+Price formatting options
+App theme selection (light/dark mode)
+Language preferences
+Save settings functionality
+
+5. Customer Feedback
+
+Display customer reviews and ratings
+Add new feedback form
+Rating system (1-5 stars)
+Feedback categories (food, service, ambiance)
+Response to feedback feature
+Filter feedback by rating/date
+
+6. Support
+
+Contact support form
+FAQ section
+Live chat simulation
+Help documentation
+Troubleshooting guides
+Contact information display
+
+Technical Requirements:
+Frontend:
+
+Use HTML, CSS, JavaScript (or React if preferred)
+Responsive design for mobile and desktop
+Modern UI with clean navigation
+Interactive buttons and forms
+Loading states and animations
+
+Styling:
+
+Professional restaurant theme
+Use CSS Grid/Flexbox for layouts
+Hover effects on buttons
+Form validation styling
+Mobile-first responsive design
+
+Functionality:
+
+All buttons must be fully functional
+Form submissions should work
+Data persistence (localStorage minimum)
+Input validation and error handling
+Success/error message displays
+
+Navigation:
+
+Header with all main buttons
+Smooth page transitions
+Breadcrumb navigation
+Back buttons where needed
+
+Additional Features:
+
+Search functionality in menu items
+Export menu as PDF
+Basic authentication (login/signup forms)
+Order management simulation
+Print-friendly pages
