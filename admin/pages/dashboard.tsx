@@ -75,7 +75,10 @@ export default function Dashboard() {
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <button 
-                onClick={() => setLocation('/restaurants')}
+                onClick={() => {
+                  console.log('🔥 Add Restaurant button clicked!');
+                  setLocation('/restaurants');
+                }}
                 className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 data-testid="add-restaurant-button"
               >
@@ -88,7 +91,10 @@ export default function Dashboard() {
               </button>
               
               <button 
-                onClick={() => setLocation('/subscriptions')}
+                onClick={() => {
+                  console.log('💰 Process Payment button clicked!');
+                  setLocation('/subscriptions');
+                }}
                 className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 data-testid="process-payment-button"
               >
@@ -101,7 +107,10 @@ export default function Dashboard() {
               </button>
               
               <button 
-                onClick={() => setLocation('/support')}
+                onClick={() => {
+                  console.log('👥 User Management button clicked!');
+                  setLocation('/support');
+                }}
                 className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 data-testid="user-management-button"
               >
@@ -114,7 +123,10 @@ export default function Dashboard() {
               </button>
               
               <button 
-                onClick={() => setLocation('/analytics')}
+                onClick={() => {
+                  console.log('📊 View Reports button clicked!');
+                  setLocation('/analytics');
+                }}
                 className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 data-testid="view-reports-button"
               >
@@ -130,35 +142,50 @@ export default function Dashboard() {
             <div className="mt-4 sm:mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
                 <button 
-                  onClick={() => setLocation('/qr-codes')}
+                  onClick={() => {
+                    console.log('📱 QR Code Management button clicked!');
+                    setLocation('/qr-codes');
+                  }}
                   className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
-                  data-testid="export-data-button"
+                  data-testid="qr-code-management-button"
                 >
                   QR Code Management
                 </button>
                 <button 
-                  onClick={() => setLocation('/menu-templates')}
+                  onClick={() => {
+                    console.log('📋 Menu Templates button clicked!');
+                    setLocation('/menu-templates');
+                  }}
                   className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
-                  data-testid="system-settings-button"
+                  data-testid="menu-templates-button"
                 >
                   Menu Templates
                 </button>
                 <button 
-                  onClick={() => setLocation('/menu-management')}
+                  onClick={() => {
+                    console.log('🍽️ Menu Management button clicked!');
+                    setLocation('/menu-management');
+                  }}
                   className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
-                  data-testid="backup-data-button"
+                  data-testid="menu-management-button"
                 >
                   Menu Management
                 </button>
                 <button 
-                  onClick={() => alert('Notification sent to all restaurants!')}
+                  onClick={() => {
+                    console.log('🔔 Send Notifications button clicked!');
+                    alert('Notification sent to all restaurants!');
+                  }}
                   className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
                   data-testid="send-notifications-button"
                 >
                   Send Notifications
                 </button>
                 <button 
-                  onClick={() => window.open('/vendor/vendor.html', '_blank')}
+                  onClick={() => {
+                    console.log('🏪 Vendor Dashboard Demo button clicked!');
+                    window.open('/vendor/vendor.html', '_blank');
+                  }}
                   className="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-700 dark:to-blue-600 text-blue-700 dark:text-blue-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
                   data-testid="vendor-dashboard-link"
                 >
