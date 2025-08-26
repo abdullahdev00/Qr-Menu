@@ -357,7 +357,12 @@ export default function Subscriptions() {
                   disabled={createPlanMutation.isPending}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
-                  {createPlanMutation.isPending ? 'Creating...' : 'Create Plan'}
+                  {createPlanMutation.isPending ? (
+                    <div className="flex items-center">
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      Creating...
+                    </div>
+                  ) : 'Create Plan'}
                 </Button>
               </DialogFooter>
             </form>
@@ -369,7 +374,26 @@ export default function Subscriptions() {
       {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-96 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            <Card key={i} className="h-96">
+              <CardHeader>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              </CardHeader>
+              <CardContent>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4" />
+                <div className="space-y-2">
+                  {Array.from({ length: 4 }).map((_, j) => (
+                    <div key={j} className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  ))}
+                </div>
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       ) : (
@@ -536,7 +560,12 @@ export default function Subscriptions() {
                 disabled={updatePlanMutation.isPending}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                {updatePlanMutation.isPending ? 'Updating...' : 'Update Plan'}
+                {updatePlanMutation.isPending ? (
+                  <div className="flex items-center">
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Updating...
+                  </div>
+                ) : 'Update Plan'}
               </Button>
             </DialogFooter>
           </form>
