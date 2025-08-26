@@ -15,7 +15,7 @@ import { validators, generateSlug } from '../lib/validation';
 import { 
   Plus, Search, Filter, MoreHorizontal, Edit, Trash2, 
   Eye, Store, MapPin, Phone, Mail, Calendar,
-  Users, TrendingUp, Clock, Star
+  Users, TrendingUp, Clock, Star, AlertCircle, XCircle
 } from 'lucide-react';
 
 interface User {
@@ -648,8 +648,266 @@ export default function RestaurantsPage() {
             </form>
           </DialogContent>
         </Dialog>
+        
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search restaurants..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="w-full sm:w-48">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="suspended">Suspended</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <Store className="h-8 w-8 text-blue-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Restaurants</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{Array.isArray(restaurants) ? restaurants.length : 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <TrendingUp className="h-8 w-8 text-green-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {Array.isArray(restaurants) ? restaurants.filter((r: Restaurant) => r.status === 'active').length : 0}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <AlertCircle className="h-8 w-8 text-yellow-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Suspended</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {Array.isArray(restaurants) ? restaurants.filter((r: Restaurant) => r.status === 'suspended').length : 0}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center">
+              <XCircle className="h-8 w-8 text-red-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Inactive</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {Array.isArray(restaurants) ? restaurants.filter((r: Restaurant) => r.status === 'inactive').length : 0}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Restaurants Table */}
+      <Card>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Loading restaurants...</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Please wait while we fetch the data</p>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Restaurant</TableHead>
+                    <TableHead>Owner Details</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Plan</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredRestaurants.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                          <Store className="h-12 w-12 mb-4 text-gray-300 dark:text-gray-600" />
+                          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">No restaurants found</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Get started by adding your first restaurant</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredRestaurants.map((restaurant: Restaurant) => (
+                      <TableRow key={restaurant.id}>
+                        <TableCell>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                              <Store className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900 dark:text-white">{restaurant.name}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">{restaurant.slug}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium text-gray-900 dark:text-white">{restaurant.ownerName}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                              <Mail className="h-3 w-3 mr-1" />
+                              {restaurant.ownerEmail}
+                            </div>
+                            {restaurant.ownerPhone && (
+                              <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                                <Phone className="h-3 w-3 mr-1" />
+                                {restaurant.ownerPhone}
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center text-sm text-gray-900 dark:text-white">
+                            <MapPin className="h-4 w-4 mr-1 text-gray-400 dark:text-gray-500" />
+                            <div>
+                              {restaurant.city}
+                              {restaurant.address && (
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                  {restaurant.address}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(restaurant.status)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {restaurant.planId ? 'Subscribed' : 'No Plan'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            {new Date(restaurant.createdAt).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleViewRestaurant(restaurant.id)}
+                              data-testid={`button-view-${restaurant.id}`}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleEditRestaurant(restaurant.id)}
+                              data-testid={`button-edit-${restaurant.id}`}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                              onClick={() => handleDeleteRestaurant(restaurant.id)}
+                              data-testid={`button-delete-${restaurant.id}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Restaurant</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{restaurantToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                if (restaurantToDelete) {
+                  deleteRestaurantMutation.mutate(restaurantToDelete.id);
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={deleteRestaurantMutation.isPending}
+            >
+              {deleteRestaurantMutation.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Restaurant Modal */}
+      {editingRestaurant && (
+        <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+          setIsEditDialogOpen(open);
+          if (!open) {
+            setEditingRestaurant(null);
+            resetForm();
+          }
+        }}>
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Edit Restaurant</DialogTitle>
+              <DialogTitle>Edit Restaurant - {editingRestaurant.name}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -879,7 +1137,6 @@ export default function RestaurantsPage() {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
 
       {/* Filters */}
       <Card>
@@ -1138,42 +1395,42 @@ export default function RestaurantsPage() {
               <DialogTitle>Edit Restaurant - {editingRestaurant.name}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Restaurant Name *</label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData({ ...formData, name: e.target.value });
-                    if (errors.name) {
-                      const newErrors = { ...errors }
-                      delete newErrors.name
-                      setErrors(newErrors)
-                    }
-                  }}
-                  placeholder="Enter restaurant name"
-                  className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
-                  required
-                />
-                <FormError message={errors.name} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Slug *</label>
-                <Input
-                  value={formData.slug}
-                  onChange={(e) => {
-                    setFormData({ ...formData, slug: e.target.value });
-                    if (errors.slug) {
-                      const newErrors = { ...errors }
-                      delete newErrors.slug
-                      setErrors(newErrors)
-                    }
-                  }}
-                  placeholder="restaurant-slug"
-                  className={errors.slug ? 'border-red-500 focus:border-red-500' : ''}
-                  required
-                />
-                <FormError message={errors.slug} />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Restaurant Name *</label>
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      if (errors.name) {
+                        const newErrors = { ...errors }
+                        delete newErrors.name
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="Enter restaurant name"
+                    className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
+                    required
+                  />
+                  <FormError message={errors.name} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Slug *</label>
+                  <Input
+                    value={formData.slug}
+                    onChange={(e) => {
+                      setFormData({ ...formData, slug: e.target.value });
+                      if (errors.slug) {
+                        const newErrors = { ...errors }
+                        delete newErrors.slug
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="restaurant-slug"
+                    className={errors.slug ? 'border-red-500 focus:border-red-500' : ''}
+                    required
+                  />
+                  <FormError message={errors.slug} />
               </div>
             </div>
 
