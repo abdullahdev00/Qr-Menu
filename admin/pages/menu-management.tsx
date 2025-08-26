@@ -1,6 +1,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useLocation } from 'wouter'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { queryClient, apiRequest } from '../lib/queryClient'
+import { useToast } from '../hooks/use-toast'
+import { MenuItem as MenuItemType, MenuCategory } from '../../shared/schema'
 import { 
   Plus, 
   Search, 
@@ -19,6 +23,11 @@ import {
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '../components/ui/dialog'
+import { Label } from '../components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
+import { Switch } from '../components/ui/switch'
+import { Textarea } from '../components/ui/textarea'
 
 interface RestaurantUser {
   id: string
@@ -43,6 +52,9 @@ interface MenuItem {
   isPopular: boolean
   tags: string[]
 }
+
+// Hard-coded restaurant ID for demo
+const RESTAURANT_ID = '81c66b53-dce6-40c8-9ff2-56cbff175d39';
 
 const mockMenuItems: MenuItem[] = [
   {
@@ -122,7 +134,32 @@ export default function MenuManagement() {
   const [user, setUser] = useState<RestaurantUser | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(mockMenuItems)
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const { toast } = useToast()
+  
+  // Fetch menu categories
+  const { data: categoriesData = [] } = useQuery<MenuCategory[]>({
+    queryKey: ['/api/vendor/menu-categories', { restaurantId: RESTAURANT_ID }],
+  });
+
+  // Fetch menu items
+  const { data: menuItems = [], isLoading: itemsLoading } = useQuery<MenuItemType[]>({
+    queryKey: ['/api/vendor/menu-items', { restaurantId: RESTAURANT_ID }],
+  });
+
+  // Delete menu item mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (itemId: string) => {
+      await apiRequest('DELETE', `/api/vendor/menu-items/${itemId}`);
+    },
+    onSuccess: () => {
+      toast({ title: 'Success', description: 'Menu item deleted successfully' });
+      queryClient.invalidateQueries({ queryKey: ['/api/vendor/menu-items'] });
+    },
+    onError: (error: any) => {
+      toast({ title: 'Error', description: error.message || 'Failed to delete menu item', variant: 'destructive' });
+    },
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
@@ -148,20 +185,29 @@ export default function MenuManagement() {
     )
   }
 
-  const categories = ['All', ...Array.from(new Set(menuItems.map(item => item.category)))]
+  // Handle delete item with confirmation
+  const handleDeleteItem = (itemId: string) => {
+    if (confirm('Are you sure you want to delete this menu item?')) {
+      deleteMutation.mutate(itemId);
+    }
+  };
+
+  const categories = ['All', ...categoriesData.map(cat => cat.name)]
   
   const filteredItems = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory
+    // Match by category name (find category by id)
+    const categoryName = categoriesData.find(cat => cat.id === item.categoryId)?.name || 'Unknown'
+    const matchesCategory = selectedCategory === 'All' || categoryName === selectedCategory
     return matchesSearch && matchesCategory
   })
 
   const stats = {
     totalItems: menuItems.length,
     availableItems: menuItems.filter(item => item.isAvailable).length,
-    popularItems: menuItems.filter(item => item.isPopular).length,
-    avgRating: (menuItems.reduce((sum, item) => sum + item.rating, 0) / menuItems.length).toFixed(1)
+    vegetarianItems: menuItems.filter(item => item.isVegetarian).length,
+    veganItems: menuItems.filter(item => item.isVegan).length,
   }
 
   return (
@@ -177,7 +223,11 @@ export default function MenuManagement() {
               {user.restaurantName} • Manage your menu items
             </p>
           </div>
-          <Button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+          <Button 
+            onClick={() => setShowAddDialog(true)}
+            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            data-testid="button-add-menu-item"
+          >
             <Plus className="w-5 h-5 mr-2" />
             Add New Item
           </Button>
@@ -212,8 +262,8 @@ export default function MenuManagement() {
               <Star className="w-6 h-6 text-white" />
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.popularItems}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Popular Items</p>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.vegetarianItems}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Vegetarian Items</p>
         </div>
 
         <div className="bg-gradient-to-br from-white to-orange-50/50 dark:from-gray-900 dark:to-orange-950/30 rounded-xl p-6 border border-orange-200/50 dark:border-orange-800/30 shadow-lg">
@@ -222,8 +272,8 @@ export default function MenuManagement() {
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.avgRating}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Avg Rating</p>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.veganItems}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Vegan Items</p>
         </div>
       </div>
 
@@ -293,30 +343,39 @@ export default function MenuManagement() {
                 </button>
               </div>
 
-              {/* Tags */}
+              {/* Category Display */}
               <div className="flex flex-wrap gap-1 mb-4">
-                {item.tags.map((tag, index) => (
-                  <span key={index} className="px-2 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs rounded-full">
-                    {tag}
+                <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs rounded-full">
+                  {categoriesData.find(cat => cat.id === item.categoryId)?.name || 'Unknown'}
+                </span>
+                {item.isAvailable && (
+                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400 text-xs rounded-full">
+                    Available
                   </span>
-                ))}
+                )}
               </div>
 
               {/* Stats */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300">
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1" />
-                    {item.preparationTime}m
-                  </div>
-                  <div className="flex items-center">
-                    <Eye className="w-4 h-4 mr-1" />
-                    {item.views}
-                  </div>
-                  <div className="flex items-center">
-                    <Star className="w-4 h-4 mr-1 text-yellow-500" />
-                    {item.rating}
-                  </div>
+                  {item.preparationTime && (
+                    <div className="flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {item.preparationTime}m
+                    </div>
+                  )}
+                  {item.isVegetarian && (
+                    <div className="flex items-center">
+                      <span className="w-2 h-2 bg-green-500 rounded-full mr-1" />
+                      Vegetarian
+                    </div>
+                  )}
+                  {item.isVegan && (
+                    <div className="flex items-center">
+                      <span className="w-2 h-2 bg-green-600 rounded-full mr-1" />
+                      Vegan
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -324,13 +383,17 @@ export default function MenuManagement() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <DollarSign className="w-4 h-4 text-green-600" />
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">₹{item.price}</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">Rs. {item.price}</span>
                 </div>
                 <div className="flex space-x-2">
                   <button className="p-2 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900 transition-colors">
                     <Edit3 className="w-4 h-4" />
                   </button>
-                  <button className="p-2 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900 transition-colors">
+                  <button 
+                    onClick={() => handleDeleteItem(item.id)}
+                    className="p-2 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900 transition-colors"
+                    data-testid={`button-delete-${item.id}`}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -352,6 +415,188 @@ export default function MenuManagement() {
           </Button>
         </div>
       )}
+
+      {/* Add Menu Item Dialog */}
+      <AddMenuItemDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        categories={categoriesData}
+        restaurantId={RESTAURANT_ID}
+      />
     </div>
   )
+}
+
+// Add Menu Item Dialog Component
+interface AddMenuItemDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  categories: MenuCategory[];
+  restaurantId: string;
+}
+
+function AddMenuItemDialog({ open, onOpenChange, categories, restaurantId }: AddMenuItemDialogProps) {
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: '',
+    categoryId: '',
+    preparationTime: '',
+    isAvailable: true,
+  });
+  const { toast } = useToast();
+
+  const addItemMutation = useMutation({
+    mutationFn: async (itemData: any) => {
+      return await apiRequest('POST', '/api/vendor/menu-items', {
+        ...itemData,
+        restaurantId,
+        price: parseFloat(itemData.price),
+        preparationTime: parseInt(itemData.preparationTime),
+      });
+    },
+    onSuccess: () => {
+      toast({ title: 'Success', description: 'Menu item added successfully' });
+      queryClient.invalidateQueries({ queryKey: ['/api/vendor/menu-items'] });
+      onOpenChange(false);
+      setFormData({
+        name: '',
+        description: '',
+        price: '',
+        categoryId: '',
+        preparationTime: '',
+        isAvailable: true,
+      });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: 'Error', 
+        description: error.message || 'Failed to add menu item', 
+        variant: 'destructive' 
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.description || !formData.price || !formData.categoryId) {
+      toast({ 
+        title: 'Error', 
+        description: 'Please fill in all required fields', 
+        variant: 'destructive' 
+      });
+      return;
+    }
+    addItemMutation.mutate(formData);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add New Menu Item</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Item Name *</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter item name"
+              required
+              data-testid="input-item-name"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description">Description *</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Enter item description"
+              required
+              data-testid="input-item-description"
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (PKR) *</Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                placeholder="0.00"
+                required
+                data-testid="input-item-price"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="preparationTime">Prep Time (minutes)</Label>
+              <Input
+                id="preparationTime"
+                type="number"
+                value={formData.preparationTime}
+                onChange={(e) => setFormData({ ...formData, preparationTime: e.target.value })}
+                placeholder="15"
+                data-testid="input-prep-time"
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="category">Category *</Label>
+            <Select 
+              value={formData.categoryId} 
+              onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+            >
+              <SelectTrigger data-testid="select-category">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="isAvailable"
+              checked={formData.isAvailable}
+              onCheckedChange={(checked) => setFormData({ ...formData, isAvailable: checked })}
+              data-testid="switch-availability"
+            />
+            <Label htmlFor="isAvailable">Available for orders</Label>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              data-testid="button-cancel"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={addItemMutation.isPending}
+              data-testid="button-save-item"
+            >
+              {addItemMutation.isPending ? 'Adding...' : 'Add Item'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 }

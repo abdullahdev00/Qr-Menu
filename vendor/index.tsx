@@ -1,9 +1,8 @@
 import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../admin/lib/queryClient";
 import { VendorApp } from "./VendorApp";
 import "../admin/src/index.css";
-
-const queryClient = new QueryClient();
 
 const container = document.getElementById("root");
 if (container) {
