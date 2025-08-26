@@ -210,22 +210,48 @@ export default function RestaurantsPage() {
   };
 
   const handleEditRestaurant = (id: string) => {
+    console.log('🔧 Edit restaurant called with ID:', id);
     const restaurant = restaurants.find((r: Restaurant) => r.id === id);
+    console.log('🔧 Found restaurant:', restaurant);
+    
     if (restaurant) {
-      setEditingRestaurant(restaurant);
-      setFormData({
-        name: restaurant.name,
-        slug: restaurant.slug,
-        ownerName: restaurant.ownerName,
-        ownerEmail: restaurant.ownerEmail,
-        ownerPhone: restaurant.ownerPhone,
-        address: restaurant.address,
-        city: restaurant.city,
-        planId: restaurant.planId,
-        status: restaurant.status,
-        notes: restaurant.notes
+      try {
+        setEditingRestaurant(restaurant);
+        
+        const newFormData = {
+          name: restaurant.name || '',
+          slug: restaurant.slug || '',
+          ownerName: restaurant.ownerName || '',
+          ownerEmail: restaurant.ownerEmail || '',
+          ownerPhone: restaurant.ownerPhone || '',
+          address: restaurant.address || '',
+          city: restaurant.city || 'Karachi',
+          planId: restaurant.planId || null,
+          status: restaurant.status || 'active',
+          notes: restaurant.notes || ''
+        };
+        
+        console.log('🔧 Setting form data:', newFormData);
+        setFormData(newFormData);
+        setErrors({});
+        
+        console.log('🔧 Opening edit dialog');
+        setIsEditDialogOpen(true);
+      } catch (error) {
+        console.error('🔧 Error in handleEditRestaurant:', error);
+        toast({
+          title: "Error",
+          description: "Failed to open edit form",
+          variant: "destructive",
+        });
+      }
+    } else {
+      console.error('🔧 Restaurant not found with ID:', id);
+      toast({
+        title: "Error",
+        description: "Restaurant not found",
+        variant: "destructive",
       });
-      setIsEditDialogOpen(true);
     }
   };
 
