@@ -45,6 +45,7 @@ interface RestaurantFormData {
   slug: string;
   ownerName: string;
   ownerEmail: string;
+  password: string;
   ownerPhone: string;
   address: string;
   city: string;
@@ -78,6 +79,7 @@ export default function RestaurantsPage() {
     slug: '',
     ownerName: '',
     ownerEmail: '',
+    password: '',
     ownerPhone: '',
     address: '',
     city: 'Karachi',
@@ -224,6 +226,7 @@ export default function RestaurantsPage() {
         slug: restaurant.slug || '',
         ownerName: restaurant.ownerName || '',
         ownerEmail: restaurant.ownerEmail || '',
+        password: '', // Don't populate password when editing
         ownerPhone: restaurant.ownerPhone || '',
         address: restaurant.address || '',
         city: restaurant.city || 'Karachi',
@@ -311,6 +314,13 @@ export default function RestaurantsPage() {
     const emailError = validators.email(formData.ownerEmail)
     if (emailError) newErrors.ownerEmail = emailError
 
+    // Validate password (required for new restaurants)
+    if (!editingRestaurant && !formData.password) {
+      newErrors.password = 'Password is required for new restaurants'
+    } else if (formData.password && formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long'
+    }
+
     // Validate phone if provided
     if (formData.ownerPhone) {
       const phoneError = validators.phone(formData.ownerPhone)
@@ -349,7 +359,7 @@ export default function RestaurantsPage() {
 
   const resetForm = () => {
     setFormData({
-      name: '', slug: '', ownerName: '', ownerEmail: '', ownerPhone: '',
+      name: '', slug: '', ownerName: '', ownerEmail: '', password: '', ownerPhone: '',
       address: '', city: 'Karachi', planId: null, status: 'active', notes: ''
     });
     setEditingRestaurant(null);
@@ -485,6 +495,27 @@ export default function RestaurantsPage() {
                   />
                   <FormError message={errors.ownerEmail} />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Restaurant Password *</label>
+                <Input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    if (errors.password) {
+                      const newErrors = { ...errors }
+                      delete newErrors.password
+                      setErrors(newErrors)
+                    }
+                  }}
+                  placeholder={editingRestaurant ? "Leave blank to keep current password" : "Enter password for restaurant"}
+                  className={errors.password ? 'border-red-500 focus:border-red-500' : ''}
+                  required={!editingRestaurant}
+                />
+                <FormError message={errors.password} />
+                <p className="text-xs text-gray-500 mt-1">This password will be used for restaurant login</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

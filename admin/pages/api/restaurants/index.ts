@@ -26,10 +26,11 @@ export default async function handler(
       res.status(405).json({ message: 'Method not allowed' })
     }
   } catch (error) {
+    console.error('Restaurant API error:', error)
     if (req.method === 'GET') {
-      res.status(500).json({ message: 'Failed to fetch restaurants' })
+      res.status(500).json({ message: 'Failed to fetch restaurants', error: String(error) })
     } else {
-      res.status(500).json({ message: 'Failed to create restaurant' })
+      res.status(500).json({ message: 'Failed to create restaurant', error: String(error) })
     }
   }
 }
