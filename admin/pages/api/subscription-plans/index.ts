@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { storage } from '../../../lib/storage'
-import { insertSubscriptionPlanSchema } from '../../../shared/schema'
+import { insertSubscriptionPlanSchema } from '../../../../shared/schema'
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { storage } from '../../../lib/storage'
-import { insertRestaurantSchema } from '../../../shared/schema'
+import { insertRestaurantSchema } from '../../../../shared/schema'
 
 export default async function handler(
   req: NextApiRequest,
