@@ -73,6 +73,14 @@ export default function Dashboard() {
         <div className="col-span-1">
           <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-4 sm:p-6 shadow-lg border-0">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+            {/* Debug Test Button */}
+            <button 
+              onClick={() => alert('Test button works!')}
+              className="mb-4 px-4 py-2 bg-red-500 text-white rounded"
+              style={{ zIndex: 9999, position: 'relative' }}
+            >
+              TEST BUTTON - Click Me!
+            </button>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <button 
                 onClick={() => {
