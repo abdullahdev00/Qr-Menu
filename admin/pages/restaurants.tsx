@@ -1551,14 +1551,14 @@ export default function RestaurantsPage() {
               <div>
                 <label className="block text-sm font-medium mb-1">Subscription Plan</label>
                 <Select
-                  value={formData.planId || ''}
-                  onValueChange={(value) => setFormData({ ...formData, planId: value || null })}
+                  value={formData.planId || 'no-plan'}
+                  onValueChange={(value) => setFormData({ ...formData, planId: value === 'no-plan' ? null : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select plan" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No Plan</SelectItem>
+                    <SelectItem value="no-plan">No Plan</SelectItem>
                     {plans.map((plan: any) => (
                       <SelectItem key={plan.id} value={plan.id}>{plan.name}</SelectItem>
                     ))}
