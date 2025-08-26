@@ -31,7 +31,7 @@ async function startServer() {
     
     try {
       let handlerPath = `../admin/pages/api/${apiPath}/index.ts`;
-      let dynamicId = null;
+      let dynamicId: string | null = null;
       
       // Handle dynamic routes like /restaurants/uuid or /subscription-plans/uuid
       if (apiPath.match(/^(restaurants|subscription-plans)\/[a-f0-9-]+$/)) {
