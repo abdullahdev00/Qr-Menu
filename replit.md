@@ -9,6 +9,7 @@ The platform provides a complete administrative interface for managing restauran
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Development workflow: All work to be done in main branch, admin panel structure to remain unchanged (no vendor panel changes).
 
 ## System Architecture
 
