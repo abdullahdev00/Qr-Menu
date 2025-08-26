@@ -35,6 +35,9 @@ export default function Dashboard() {
   const [, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  
+  // Debug logs
+  console.log('Dashboard component rendered, isAddDialogOpen:', isAddDialogOpen)
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
@@ -171,9 +174,14 @@ export default function Dashboard() {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <button 
-                  onClick={() => setIsAddDialogOpen(true)}
-                  className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log('Add Restaurant button clicked!');
+                    setIsAddDialogOpen(true);
+                  }}
+                  className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
                   data-testid="button-add-restaurant"
+                  type="button"
                 >
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
                     <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
