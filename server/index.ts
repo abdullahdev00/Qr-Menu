@@ -30,15 +30,24 @@ async function startServer() {
     const apiPath = req.path.slice(1); // Remove leading slash
     
     try {
-      // Try to import the corresponding API handler
       let handlerPath = `../admin/pages/api/${apiPath}/index.ts`;
+      let dynamicId = null;
       
-      // Try index.ts first, then fall back to direct .ts file
+      // Handle dynamic routes like /restaurants/uuid or /subscription-plans/uuid
+      if (apiPath.match(/^(restaurants|subscription-plans)\/[a-f0-9-]+$/)) {
+        const parts = apiPath.split('/');
+        const resource = parts[0];
+        dynamicId = parts[1];
+        handlerPath = `../admin/pages/api/${resource}/[id].ts`;
+      }
+      
+      // Try to import the handler
       let handler;
       try {
         const module = await import(handlerPath);
         handler = module.default;
       } catch (indexError) {
+        // Try direct .ts file if index.ts doesn't exist
         const directPath = `../admin/pages/api/${apiPath}.ts`;
         const module = await import(directPath);
         handler = module.default;
@@ -47,7 +56,7 @@ async function startServer() {
       // Create Next.js-like req/res objects
       const mockReq = { 
         ...req, 
-        query: { ...req.query, ...req.params }, 
+        query: { ...req.query, ...(dynamicId ? { id: dynamicId } : {}) }, 
         body: req.body 
       };
       

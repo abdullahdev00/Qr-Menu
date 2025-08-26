@@ -18,6 +18,7 @@ export default async function handler(
       res.status(405).json({ message: 'Method not allowed' })
     }
   } catch (error) {
+    console.error('Subscription plans API error:', error)
     if (req.method === 'GET') {
       res.status(500).json({ message: 'Failed to fetch subscription plans' })
     } else {
