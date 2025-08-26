@@ -5,7 +5,9 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Card, CardHeader, CardContent, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
+import { FormError } from '../components/ui/form-error'
 import { useToast } from '../lib/use-toast'
+import { validators } from '../lib/validation'
 import { Shield, Store, Mail, Phone, Lock } from 'lucide-react'
 
 export default function Login() {
@@ -15,11 +17,35 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const [loginType, setLoginType] = useState<'admin' | 'restaurant'>('admin')
   const [restaurantAuthType, setRestaurantAuthType] = useState<'email' | 'phone'>('email')
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [, setLocation] = useLocation()
   const { toast } = useToast()
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (loginType === 'admin' || restaurantAuthType === 'email') {
+      const emailError = validators.email(email)
+      if (emailError) newErrors.email = emailError
+    } else {
+      const phoneError = validators.phone(phone)
+      if (phoneError) newErrors.phone = phoneError
+    }
+
+    const passwordError = validators.password(password)
+    if (passwordError) newErrors.password = passwordError
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -69,6 +95,7 @@ export default function Login() {
 
   const setDefaultCredentials = (type: 'admin' | 'restaurant') => {
     setLoginType(type)
+    setErrors({})
     if (type === 'admin') {
       setEmail('admin@demo.com')
       setPassword('password123')
@@ -177,7 +204,7 @@ export default function Login() {
                 {/* Email/Phone Input */}
                 {loginType === 'admin' || restaurantAuthType === 'email' ? (
                   <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email">Email Address *</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
@@ -185,17 +212,25 @@ export default function Login() {
                         name="email"
                         type="email"
                         required
-                        className="pl-10"
+                        className={`pl-10 ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
                         placeholder="Enter your email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value)
+                          if (errors.email) {
+                            const newErrors = { ...errors }
+                            delete newErrors.email
+                            setErrors(newErrors)
+                          }
+                        }}
                         data-testid="input-email"
                       />
                     </div>
+                    <FormError message={errors.email} />
                   </div>
                 ) : (
                   <div>
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone">Phone Number *</Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input
@@ -203,19 +238,27 @@ export default function Login() {
                         name="phone"
                         type="tel"
                         required
-                        className="pl-10"
-                        placeholder="Enter your phone number"
+                        className={`pl-10 ${errors.phone ? 'border-red-500 focus:border-red-500' : ''}`}
+                        placeholder="03001234567"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => {
+                          setPhone(e.target.value)
+                          if (errors.phone) {
+                            const newErrors = { ...errors }
+                            delete newErrors.phone
+                            setErrors(newErrors)
+                          }
+                        }}
                         data-testid="input-phone"
                       />
                     </div>
+                    <FormError message={errors.phone} />
                   </div>
                 )}
 
                 {/* Password Input */}
                 <div>
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Password *</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
@@ -223,13 +266,21 @@ export default function Login() {
                       name="password"
                       type="password"
                       required
-                      className="pl-10"
+                      className={`pl-10 ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
                       placeholder="Enter your password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value)
+                        if (errors.password) {
+                          const newErrors = { ...errors }
+                          delete newErrors.password
+                          setErrors(newErrors)
+                        }
+                      }}
                       data-testid="input-password"
                     />
                   </div>
+                  <FormError message={errors.password} />
                 </div>
 
                 {/* Demo Credentials */}

@@ -9,7 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '../components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { FormError } from '../components/ui/form-error';
 import { useToast } from '../lib/use-toast';
+import { validators, generateSlug } from '../lib/validation';
 import { 
   Plus, Search, Filter, MoreHorizontal, Edit, Trash2, 
   Eye, Store, MapPin, Phone, Mail, Calendar,
@@ -62,6 +64,7 @@ export default function RestaurantsPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [restaurantToDelete, setRestaurantToDelete] = useState<Restaurant | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -278,8 +281,48 @@ export default function RestaurantsPage() {
     return true;
   }) : [];
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    // Validate restaurant name
+    const nameError = validators.restaurantName(formData.name)
+    if (nameError) newErrors.name = nameError
+
+    // Validate slug
+    const slugError = validators.slug(formData.slug)
+    if (slugError) newErrors.slug = slugError
+
+    // Validate owner name
+    const ownerNameError = validators.name(formData.ownerName)
+    if (ownerNameError) newErrors.ownerName = ownerNameError
+
+    // Validate owner email
+    const emailError = validators.email(formData.ownerEmail)
+    if (emailError) newErrors.ownerEmail = emailError
+
+    // Validate phone if provided
+    if (formData.ownerPhone) {
+      const phoneError = validators.phone(formData.ownerPhone)
+      if (phoneError) newErrors.ownerPhone = phoneError
+    }
+
+    // Validate address if provided
+    if (formData.address) {
+      const addressError = validators.address(formData.address)
+      if (addressError) newErrors.address = addressError
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return
+    }
+
     if (editingRestaurant) {
       updateRestaurantMutation.mutate({ id: editingRestaurant.id, data: formData });
     } else {
@@ -299,6 +342,7 @@ export default function RestaurantsPage() {
       address: '', city: 'Karachi', planId: null, status: 'active', notes: ''
     });
     setEditingRestaurant(null);
+    setErrors({});
   };
 
   const getStatusBadge = (status: string) => {
@@ -350,44 +394,85 @@ export default function RestaurantsPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Restaurant Name</label>
+                  <label className="block text-sm font-medium mb-1">Restaurant Name *</label>
                   <Input
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      setFormData({ 
+                        ...formData, 
+                        name,
+                        slug: !editingRestaurant ? generateSlug(name) : formData.slug
+                      });
+                      if (errors.name) {
+                        const newErrors = { ...errors }
+                        delete newErrors.name
+                        setErrors(newErrors)
+                      }
+                    }}
                     placeholder="Enter restaurant name"
+                    className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  <FormError message={errors.name} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Slug</label>
+                  <label className="block text-sm font-medium mb-1">Slug *</label>
                   <Input
                     value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, slug: e.target.value });
+                      if (errors.slug) {
+                        const newErrors = { ...errors }
+                        delete newErrors.slug
+                        setErrors(newErrors)
+                      }
+                    }}
                     placeholder="restaurant-slug"
+                    className={errors.slug ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  <FormError message={errors.slug} />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Owner Name</label>
+                  <label className="block text-sm font-medium mb-1">Owner Name *</label>
                   <Input
                     value={formData.ownerName}
-                    onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, ownerName: e.target.value });
+                      if (errors.ownerName) {
+                        const newErrors = { ...errors }
+                        delete newErrors.ownerName
+                        setErrors(newErrors)
+                      }
+                    }}
                     placeholder="Enter owner name"
+                    className={errors.ownerName ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  <FormError message={errors.ownerName} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Owner Email</label>
+                  <label className="block text-sm font-medium mb-1">Owner Email *</label>
                   <Input
                     type="email"
                     value={formData.ownerEmail}
-                    onChange={(e) => setFormData({ ...formData, ownerEmail: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, ownerEmail: e.target.value });
+                      if (errors.ownerEmail) {
+                        const newErrors = { ...errors }
+                        delete newErrors.ownerEmail
+                        setErrors(newErrors)
+                      }
+                    }}
                     placeholder="owner@example.com"
+                    className={errors.ownerEmail ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  <FormError message={errors.ownerEmail} />
                 </div>
               </div>
 
@@ -396,9 +481,18 @@ export default function RestaurantsPage() {
                   <label className="block text-sm font-medium mb-1">Phone</label>
                   <Input
                     value={formData.ownerPhone}
-                    onChange={(e) => setFormData({ ...formData, ownerPhone: e.target.value })}
-                    placeholder="+92 300 1234567"
+                    onChange={(e) => {
+                      setFormData({ ...formData, ownerPhone: e.target.value });
+                      if (errors.ownerPhone) {
+                        const newErrors = { ...errors }
+                        delete newErrors.ownerPhone
+                        setErrors(newErrors)
+                      }
+                    }}
+                    placeholder="03001234567"
+                    className={errors.ownerPhone ? 'border-red-500 focus:border-red-500' : ''}
                   />
+                  <FormError message={errors.ownerPhone} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">City</label>
@@ -424,9 +518,18 @@ export default function RestaurantsPage() {
                 <label className="block text-sm font-medium mb-1">Address</label>
                 <Input
                   value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, address: e.target.value });
+                    if (errors.address) {
+                      const newErrors = { ...errors }
+                      delete newErrors.address
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="Enter full address"
+                  className={errors.address ? 'border-red-500 focus:border-red-500' : ''}
                 />
+                <FormError message={errors.address} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -718,44 +821,80 @@ export default function RestaurantsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Restaurant Name</label>
+                <label className="block text-sm font-medium mb-1">Restaurant Name *</label>
                 <Input
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    if (errors.name) {
+                      const newErrors = { ...errors }
+                      delete newErrors.name
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="Enter restaurant name"
+                  className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
                   required
                 />
+                <FormError message={errors.name} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
+                <label className="block text-sm font-medium mb-1">Slug *</label>
                 <Input
                   value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, slug: e.target.value });
+                    if (errors.slug) {
+                      const newErrors = { ...errors }
+                      delete newErrors.slug
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="restaurant-slug"
+                  className={errors.slug ? 'border-red-500 focus:border-red-500' : ''}
                   required
                 />
+                <FormError message={errors.slug} />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Owner Name</label>
+                <label className="block text-sm font-medium mb-1">Owner Name *</label>
                 <Input
                   value={formData.ownerName}
-                  onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, ownerName: e.target.value });
+                    if (errors.ownerName) {
+                      const newErrors = { ...errors }
+                      delete newErrors.ownerName
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="Owner's full name"
+                  className={errors.ownerName ? 'border-red-500 focus:border-red-500' : ''}
                   required
                 />
+                <FormError message={errors.ownerName} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Owner Email</label>
+                <label className="block text-sm font-medium mb-1">Owner Email *</label>
                 <Input
                   type="email"
                   value={formData.ownerEmail}
-                  onChange={(e) => setFormData({ ...formData, ownerEmail: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, ownerEmail: e.target.value });
+                    if (errors.ownerEmail) {
+                      const newErrors = { ...errors }
+                      delete newErrors.ownerEmail
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="owner@restaurant.com"
+                  className={errors.ownerEmail ? 'border-red-500 focus:border-red-500' : ''}
                   required
                 />
+                <FormError message={errors.ownerEmail} />
               </div>
             </div>
 
@@ -764,9 +903,18 @@ export default function RestaurantsPage() {
                 <label className="block text-sm font-medium mb-1">Phone Number</label>
                 <Input
                   value={formData.ownerPhone}
-                  onChange={(e) => setFormData({ ...formData, ownerPhone: e.target.value })}
-                  placeholder="+92 300 1234567"
+                  onChange={(e) => {
+                    setFormData({ ...formData, ownerPhone: e.target.value });
+                    if (errors.ownerPhone) {
+                      const newErrors = { ...errors }
+                      delete newErrors.ownerPhone
+                      setErrors(newErrors)
+                    }
+                  }}
+                  placeholder="03001234567"
+                  className={errors.ownerPhone ? 'border-red-500 focus:border-red-500' : ''}
                 />
+                <FormError message={errors.ownerPhone} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">City</label>
@@ -793,10 +941,18 @@ export default function RestaurantsPage() {
               <label className="block text-sm font-medium mb-1">Address</label>
               <Input
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, address: e.target.value });
+                  if (errors.address) {
+                    const newErrors = { ...errors }
+                    delete newErrors.address
+                    setErrors(newErrors)
+                  }
+                }}
                 placeholder="Full address"
-                required
+                className={errors.address ? 'border-red-500 focus:border-red-500' : ''}
               />
+              <FormError message={errors.address} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">

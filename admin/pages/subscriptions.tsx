@@ -12,8 +12,10 @@ import { Textarea } from '../components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
 import { Badge } from '../components/ui/badge'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog'
+import { FormError } from '../components/ui/form-error'
 import { useToast } from '../hooks/use-toast'
 import { apiRequest } from '../lib/queryClient'
+import { validators } from '../lib/validation'
 import type { SubscriptionPlan } from '../../shared/schema'
 
 interface User {
@@ -55,6 +57,7 @@ export default function Subscriptions() {
     priority: 'medium'
   })
   const [featuresText, setFeaturesText] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const { toast } = useToast()
   const queryClient = useQueryClient()
@@ -175,8 +178,46 @@ export default function Subscriptions() {
     },
   })
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    // Validate plan name
+    const nameError = validators.planName(formData.name)
+    if (nameError) newErrors.name = nameError
+
+    // Validate price
+    const priceError = validators.price(formData.price)
+    if (priceError) newErrors.price = priceError
+
+    // Validate description (required)
+    const descError = validators.required('Description', formData.description)
+    if (descError) newErrors.description = descError
+
+    // Validate features
+    const featuresError = validators.features(featuresText)
+    if (featuresError) newErrors.features = featuresError
+
+    // Validate QR limit
+    if (formData.qrLimit && formData.qrLimit < 1) {
+      newErrors.qrLimit = 'QR limit must be at least 1'
+    }
+
+    // Validate menu limit  
+    if (formData.menuLimit && formData.menuLimit < 1) {
+      newErrors.menuLimit = 'Menu limit must be at least 1'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+
     if (editingPlan) {
       updatePlanMutation.mutate({ id: editingPlan.id, data: formData })
     } else {
@@ -226,6 +267,7 @@ export default function Subscriptions() {
     })
     setFeaturesText('')
     setEditingPlan(null)
+    setErrors({})
   }
 
   const getPriorityBadge = (priority: string) => {
@@ -277,47 +319,87 @@ export default function Subscriptions() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">Plan Name</Label>
+                  <Label htmlFor="name">Plan Name *</Label>
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value })
+                      if (errors.name) {
+                        const newErrors = { ...errors }
+                        delete newErrors.name
+                        setErrors(newErrors)
+                      }
+                    }}
                     placeholder="Basic Plan"
+                    className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  <FormError message={errors.name} />
                 </div>
                 <div>
-                  <Label htmlFor="price">Price (PKR)</Label>
+                  <Label htmlFor="price">Price (PKR) *</Label>
                   <Input
                     id="price"
                     type="number"
+                    min="0"
+                    step="0.01"
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })
+                      if (errors.price) {
+                        const newErrors = { ...errors }
+                        delete newErrors.price
+                        setErrors(newErrors)
+                      }
+                    }}
                     placeholder="2500"
+                    className={errors.price ? 'border-red-500 focus:border-red-500' : ''}
                     required
                   />
+                  <FormError message={errors.price} />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description *</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, description: e.target.value })
+                    if (errors.description) {
+                      const newErrors = { ...errors }
+                      delete newErrors.description
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="Plan description..."
+                  className={errors.description ? 'border-red-500 focus:border-red-500' : ''}
+                  required
                 />
+                <FormError message={errors.description} />
               </div>
 
               <div>
-                <Label htmlFor="features">Features (one per line)</Label>
+                <Label htmlFor="features">Features (one per line) *</Label>
                 <Textarea
                   id="features"
                   value={featuresText}
-                  onChange={(e) => setFeaturesText(e.target.value)}
+                  onChange={(e) => {
+                    setFeaturesText(e.target.value)
+                    if (errors.features) {
+                      const newErrors = { ...errors }
+                      delete newErrors.features
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="Digital Menu&#10;QR Code Generation&#10;Basic Analytics"
                   rows={4}
+                  className={errors.features ? 'border-red-500 focus:border-red-500' : ''}
+                  required
                 />
+                <FormError message={errors.features} />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
@@ -326,18 +408,38 @@ export default function Subscriptions() {
                   <Input
                     id="qrLimit"
                     type="number"
+                    min="1"
                     value={formData.qrLimit}
-                    onChange={(e) => setFormData({ ...formData, qrLimit: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, qrLimit: parseInt(e.target.value) || 0 })
+                      if (errors.qrLimit) {
+                        const newErrors = { ...errors }
+                        delete newErrors.qrLimit
+                        setErrors(newErrors)
+                      }
+                    }}
+                    className={errors.qrLimit ? 'border-red-500 focus:border-red-500' : ''}
                   />
+                  <FormError message={errors.qrLimit} />
                 </div>
                 <div>
                   <Label htmlFor="menuLimit">Menu Limit</Label>
                   <Input
                     id="menuLimit"
                     type="number"
+                    min="1"
                     value={formData.menuLimit}
-                    onChange={(e) => setFormData({ ...formData, menuLimit: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, menuLimit: parseInt(e.target.value) || 0 })
+                      if (errors.menuLimit) {
+                        const newErrors = { ...errors }
+                        delete newErrors.menuLimit
+                        setErrors(newErrors)
+                      }
+                    }}
+                    className={errors.menuLimit ? 'border-red-500 focus:border-red-500' : ''}
                   />
+                  <FormError message={errors.menuLimit} />
                 </div>
                 <div>
                   <Label htmlFor="priority">Priority</Label>
@@ -501,47 +603,87 @@ export default function Subscriptions() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-name">Plan Name</Label>
+                <Label htmlFor="edit-name">Plan Name *</Label>
                 <Input
                   id="edit-name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value })
+                    if (errors.name) {
+                      const newErrors = { ...errors }
+                      delete newErrors.name
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="Basic Plan"
+                  className={errors.name ? 'border-red-500 focus:border-red-500' : ''}
                   required
                 />
+                <FormError message={errors.name} />
               </div>
               <div>
-                <Label htmlFor="edit-price">Price (PKR)</Label>
+                <Label htmlFor="edit-price">Price (PKR) *</Label>
                 <Input
                   id="edit-price"
                   type="number"
+                  min="0"
+                  step="0.01"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })
+                    if (errors.price) {
+                      const newErrors = { ...errors }
+                      delete newErrors.price
+                      setErrors(newErrors)
+                    }
+                  }}
                   placeholder="2500"
+                  className={errors.price ? 'border-red-500 focus:border-red-500' : ''}
                   required
                 />
+                <FormError message={errors.price} />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="edit-description">Description</Label>
+              <Label htmlFor="edit-description">Description *</Label>
               <Textarea
                 id="edit-description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, description: e.target.value })
+                  if (errors.description) {
+                    const newErrors = { ...errors }
+                    delete newErrors.description
+                    setErrors(newErrors)
+                  }
+                }}
                 placeholder="Plan description..."
+                className={errors.description ? 'border-red-500 focus:border-red-500' : ''}
+                required
               />
+              <FormError message={errors.description} />
             </div>
 
             <div>
-              <Label htmlFor="edit-features">Features (one per line)</Label>
+              <Label htmlFor="edit-features">Features (one per line) *</Label>
               <Textarea
                 id="edit-features"
                 value={featuresText}
-                onChange={(e) => setFeaturesText(e.target.value)}
+                onChange={(e) => {
+                  setFeaturesText(e.target.value)
+                  if (errors.features) {
+                    const newErrors = { ...errors }
+                    delete newErrors.features
+                    setErrors(newErrors)
+                  }
+                }}
                 placeholder="Digital Menu&#10;QR Code Generation&#10;Basic Analytics"
                 rows={4}
+                className={errors.features ? 'border-red-500 focus:border-red-500' : ''}
+                required
               />
+              <FormError message={errors.features} />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -550,18 +692,38 @@ export default function Subscriptions() {
                 <Input
                   id="edit-qrLimit"
                   type="number"
+                  min="1"
                   value={formData.qrLimit}
-                  onChange={(e) => setFormData({ ...formData, qrLimit: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, qrLimit: parseInt(e.target.value) || 0 })
+                    if (errors.qrLimit) {
+                      const newErrors = { ...errors }
+                      delete newErrors.qrLimit
+                      setErrors(newErrors)
+                    }
+                  }}
+                  className={errors.qrLimit ? 'border-red-500 focus:border-red-500' : ''}
                 />
+                <FormError message={errors.qrLimit} />
               </div>
               <div>
                 <Label htmlFor="edit-menuLimit">Menu Limit</Label>
                 <Input
                   id="edit-menuLimit"
                   type="number"
+                  min="1"
                   value={formData.menuLimit}
-                  onChange={(e) => setFormData({ ...formData, menuLimit: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, menuLimit: parseInt(e.target.value) || 0 })
+                    if (errors.menuLimit) {
+                      const newErrors = { ...errors }
+                      delete newErrors.menuLimit
+                      setErrors(newErrors)
+                    }
+                  }}
+                  className={errors.menuLimit ? 'border-red-500 focus:border-red-500' : ''}
                 />
+                <FormError message={errors.menuLimit} />
               </div>
               <div>
                 <Label htmlFor="edit-priority">Priority</Label>
