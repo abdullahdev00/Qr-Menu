@@ -109,16 +109,25 @@ export default function Subscriptions() {
   // Update plan mutation
   const updatePlanMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: PlanFormData }) => {
+      const updateData = {
+        name: data.name,
+        description: data.description,
+        price: data.price.toString(),
+        features: featuresText.split('\n').filter(f => f.trim()),
+        maxMenuItems: data.qrLimit || null,
+        duration: 30
+      }
+      console.log('Updating plan with data:', updateData)
       const response = await fetch(`/api/subscription-plans/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          price: data.price.toString(),
-          features: featuresText.split('\n').filter(f => f.trim())
-        }),
+        body: JSON.stringify(updateData),
       })
-      if (!response.ok) throw new Error('Failed to update plan')
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error('Update error:', errorData)
+        throw new Error('Failed to update plan')
+      }
       return response.json()
     },
     onSuccess: () => {
@@ -178,15 +187,15 @@ export default function Subscriptions() {
   const handleEditPlan = (plan: any) => {
     setEditingPlan(plan)
     setFormData({
-      name: plan.name,
-      description: '',
+      name: plan.name || '',
+      description: plan.description || '',
       price: parseInt(plan.price) || 0,
       features: Array.isArray(plan.features) ? plan.features : [],
       qrLimit: plan.maxMenuItems || 10,
-      menuLimit: 5,
-      analytics: false,
-      customization: false,
-      priority: 'medium'
+      menuLimit: plan.menuLimit || 5,
+      analytics: plan.analytics || false,
+      customization: plan.customization || false,
+      priority: plan.priority || 'medium'
     })
     setFeaturesText(Array.isArray(plan.features) ? plan.features.join('\n') : '')
     setIsEditDialogOpen(true)
@@ -373,23 +382,44 @@ export default function Subscriptions() {
       {/* Plans Grid */}
       {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i} className="h-96">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="relative">
               <CardHeader>
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
-                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      <div className="h-4 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      <div className="h-5 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4" />
                 <div className="space-y-2">
                   {Array.from({ length: 4 }).map((_, j) => (
-                    <div key={j} className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div key={j} className="flex items-center">
+                      <div className="w-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full mr-2 animate-pulse" />
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse flex-1" />
+                    </div>
                   ))}
                 </div>
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1" />
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-12" />
+                    </div>
+                    <div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1" />
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-16" />
+                    </div>
                   </div>
                 </div>
               </CardContent>
