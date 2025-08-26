@@ -81,6 +81,7 @@ export default function Subscriptions() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
+          price: data.price.toString(),
           features: featuresText.split('\n').filter(f => f.trim())
         }),
       })
@@ -113,6 +114,7 @@ export default function Subscriptions() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
+          price: data.price.toString(),
           features: featuresText.split('\n').filter(f => f.trim())
         }),
       })
