@@ -68,22 +68,14 @@ async function startServer() {
     }
   });
 
-  // For production, serve built static files and fallback
-  if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(join(__dirname, '../dist')));
-    app.get('*', (req, res) => {
-      res.sendFile(join(__dirname, '../dist/index.html'));
-    });
-  } else {
-    // For development, serve the built files since we have them
-    app.use(express.static(join(__dirname, '../dist')));
-    app.get('*', (req, res, next) => {
-      if (req.path.startsWith('/api/')) {
-        return next();
-      }
-      res.sendFile(join(__dirname, '../dist/index.html'));
-    });
-  }
+  // Serve built static files and fallback (for both dev and production since we have the built files)
+  app.use(express.static(join(__dirname, '../dist')));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    res.sendFile(join(__dirname, '../dist/index.html'));
+  });
 
   // Error handling
   app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
