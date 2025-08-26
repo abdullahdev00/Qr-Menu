@@ -75,13 +75,18 @@ export default function Subscriptions() {
 
   // Create plan mutation
   const createPlanMutation = useMutation({
-    mutationFn: (data: PlanFormData) => apiRequest('/api/subscription-plans', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...data,
-        features: featuresText.split('\n').filter(f => f.trim())
-      }),
-    }),
+    mutationFn: async (data: PlanFormData) => {
+      const response = await fetch('/api/subscription-plans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          features: featuresText.split('\n').filter(f => f.trim())
+        }),
+      })
+      if (!response.ok) throw new Error('Failed to create plan')
+      return response.json()
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/subscription-plans'] })
       setIsCreateDialogOpen(false)
@@ -102,14 +107,18 @@ export default function Subscriptions() {
 
   // Update plan mutation
   const updatePlanMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string, data: PlanFormData }) => 
-      apiRequest(`/api/subscription-plans/${id}`, {
+    mutationFn: async ({ id, data }: { id: string, data: PlanFormData }) => {
+      const response = await fetch(`/api/subscription-plans/${id}`, {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
           features: featuresText.split('\n').filter(f => f.trim())
         }),
-      }),
+      })
+      if (!response.ok) throw new Error('Failed to update plan')
+      return response.json()
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/subscription-plans'] })
       setIsEditDialogOpen(false)
@@ -130,9 +139,13 @@ export default function Subscriptions() {
 
   // Delete plan mutation
   const deletePlanMutation = useMutation({
-    mutationFn: (id: string) => apiRequest(`/api/subscription-plans/${id}`, {
-      method: 'DELETE',
-    }),
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/subscription-plans/${id}`, {
+        method: 'DELETE',
+      })
+      if (!response.ok) throw new Error('Failed to delete plan')
+      return response.json()
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/subscription-plans'] })
       setIsDeleteDialogOpen(false)
@@ -160,20 +173,20 @@ export default function Subscriptions() {
     }
   }
 
-  const handleEditPlan = (plan: SubscriptionPlan) => {
+  const handleEditPlan = (plan: any) => {
     setEditingPlan(plan)
     setFormData({
       name: plan.name,
-      description: plan.description || '',
-      price: plan.price,
-      features: plan.features || [],
-      qrLimit: plan.qrLimit || 10,
-      menuLimit: plan.menuLimit || 5,
-      analytics: plan.analytics || false,
-      customization: plan.customization || false,
-      priority: plan.priority || 'medium'
+      description: '',
+      price: parseInt(plan.price) || 0,
+      features: Array.isArray(plan.features) ? plan.features : [],
+      qrLimit: plan.maxMenuItems || 10,
+      menuLimit: 5,
+      analytics: false,
+      customization: false,
+      priority: 'medium'
     })
-    setFeaturesText((plan.features || []).join('\n'))
+    setFeaturesText(Array.isArray(plan.features) ? plan.features.join('\n') : '')
     setIsEditDialogOpen(true)
   }
 
@@ -359,7 +372,7 @@ export default function Subscriptions() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {Array.isArray(plans) && plans.map((plan: SubscriptionPlan) => (
+          {Array.isArray(plans) && plans.map((plan: any) => (
             <Card key={plan.id} className="relative">
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -368,7 +381,7 @@ export default function Subscriptions() {
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-2xl font-bold text-blue-600">₨{plan.price}</span>
                       <span className="text-sm text-gray-500">/month</span>
-                      {getPriorityBadge(plan.priority || 'medium')}
+                      {getPriorityBadge('medium')}
                     </div>
                   </div>
                   <div className="flex gap-1">
@@ -393,9 +406,9 @@ export default function Subscriptions() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">{plan.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">Subscription plan for restaurants</p>
                 <div className="space-y-2">
-                  {(plan.features || []).map((feature: string, index: number) => (
+                  {Array.isArray(plan.features) && plan.features.map((feature: string, index: number) => (
                     <div key={index} className="flex items-center text-sm">
                       <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
                       {feature}
@@ -405,12 +418,12 @@ export default function Subscriptions() {
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">QR Codes:</span>
-                      <span className="ml-1 font-medium">{plan.qrLimit || 'Unlimited'}</span>
+                      <span className="text-gray-500">Menu Items:</span>
+                      <span className="ml-1 font-medium">{plan.maxMenuItems || 'Unlimited'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Menus:</span>
-                      <span className="ml-1 font-medium">{plan.menuLimit || 'Unlimited'}</span>
+                      <span className="text-gray-500">Duration:</span>
+                      <span className="ml-1 font-medium">{plan.duration || 30} days</span>
                     </div>
                   </div>
                 </div>
