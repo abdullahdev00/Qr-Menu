@@ -24,6 +24,7 @@ interface RestaurantFormData {
   ownerName: string;
   ownerEmail: string;
   ownerPhone: string;
+  ownerPassword: string;
   address: string;
   city: string;
   planId: string | null;
@@ -51,6 +52,7 @@ export default function Dashboard() {
     ownerName: '',
     ownerEmail: '',
     ownerPhone: '',
+    ownerPassword: '',
     address: '',
     city: 'Karachi',
     planId: null,
@@ -130,7 +132,7 @@ export default function Dashboard() {
       });
       setIsAddDialogOpen(false);
       setFormData({
-        name: '', slug: '', ownerName: '', ownerEmail: '', ownerPhone: '',
+        name: '', slug: '', ownerName: '', ownerEmail: '', ownerPhone: '', ownerPassword: '',
         address: '', city: 'Karachi', planId: null, status: 'active', notes: ''
       });
     },
@@ -150,7 +152,7 @@ export default function Dashboard() {
 
   const resetForm = () => {
     setFormData({
-      name: '', slug: '', ownerName: '', ownerEmail: '', ownerPhone: '',
+      name: '', slug: '', ownerName: '', ownerEmail: '', ownerPhone: '', ownerPassword: '',
       address: '', city: 'Karachi', planId: null, status: 'active', notes: ''
     });
   };
@@ -325,6 +327,19 @@ export default function Dashboard() {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">Password</label>
+                <Input
+                  type="password"
+                  value={formData.ownerPassword}
+                  onChange={(e) => setFormData({ ...formData, ownerPassword: e.target.value })}
+                  placeholder="Owner account password"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
                 <label className="block text-sm font-medium mb-1">City</label>
                 <Select 
                   value={formData.city} 
@@ -344,14 +359,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Address</label>
-              <Input
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Enter full address"
-              />
-            </div>
+
 
             <div className="grid grid-cols-2 gap-4">
               <div>
