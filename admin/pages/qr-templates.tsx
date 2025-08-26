@@ -35,6 +35,53 @@ export default function QrTemplatesPage() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
+  // Add default restaurant table template if none exists
+  useEffect(() => {
+    const addDefaultTemplate = async () => {
+      try {
+        const response = await fetch('/api/qr/templates')
+        if (response.ok) {
+          const data = await response.json()
+          const templates = data.templates || []
+          
+          // Check if restaurant-table template already exists
+          const hasRestaurantTemplate = templates.some((t: QrTemplate) => t.category === 'restaurant-table')
+          
+          if (!hasRestaurantTemplate) {
+            const defaultTemplate = {
+              name: "Restaurant Table QR Template",
+              description: "Complete template with restaurant name, tagline, QR code and table number",
+              category: "restaurant-table",
+              designData: {
+                layout: {
+                  logoPosition: 'top-center',
+                  qrSize: '200x200',
+                  tableNumberStyle: 'bold-bottom',
+                  showTagline: true,
+                  showRestaurantName: true,
+                },
+                colors: {
+                  primary: '#059669',
+                  secondary: '#ECFDF5',
+                  qrForeground: '#000000',
+                  qrBackground: '#FFFFFF',
+                }
+              },
+              planRestrictions: null,
+            }
+            
+            await apiRequest('POST', '/api/qr/templates', defaultTemplate)
+            queryClient.invalidateQueries({ queryKey: ['/api/qr/templates'] })
+          }
+        }
+      } catch (error) {
+        console.log('Default template creation skipped:', error)
+      }
+    }
+    
+    addDefaultTemplate()
+  }, [])
+
   // Fetch QR templates
   const { data: templatesData, isLoading } = useQuery({
     queryKey: ['/api/qr/templates'],
@@ -116,6 +163,7 @@ export default function QrTemplatesPage() {
       vibrant: 'bg-red-100 text-red-800',
       minimalist: 'bg-gray-100 text-gray-800',
       traditional: 'bg-yellow-100 text-yellow-800',
+      'restaurant-table': 'bg-green-100 text-green-800',
     }
     return colors[category] || 'bg-gray-100 text-gray-800'
   }
@@ -189,6 +237,7 @@ export default function QrTemplatesPage() {
                       <SelectItem value="vibrant">Vibrant</SelectItem>
                       <SelectItem value="minimalist">Minimalist</SelectItem>
                       <SelectItem value="traditional">Traditional</SelectItem>
+                      <SelectItem value="restaurant-table">Restaurant Table</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -358,9 +407,24 @@ export default function QrTemplatesPage() {
               </CardHeader>
               
               <CardContent className="space-y-4">
-                {/* Template Preview Placeholder */}
+                {/* Template Preview */}
                 <div className="h-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg flex items-center justify-center border border-dashed border-gray-300">
-                  <span className="text-gray-500 text-sm">Template Preview</span>
+                  {template.category === 'restaurant-table' ? (
+                    <div className="w-full h-full p-2 bg-white rounded-lg shadow-sm">
+                      <div className="text-center space-y-1">
+                        <h3 className="text-xs font-bold text-gray-800">Restaurant Name</h3>
+                        <p className="text-[10px] text-gray-600">Delicious Pakistani Food</p>
+                        <div className="w-8 h-8 mx-auto bg-black rounded-sm grid grid-cols-4 gap-[1px] p-[2px]">
+                          {[...Array(16)].map((_, i) => (
+                            <div key={i} className={`${i % 2 ? 'bg-white' : 'bg-black'} rounded-[1px]`} />
+                          ))}
+                        </div>
+                        <p className="text-[8px] font-semibold text-blue-600">Table #5</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-gray-500 text-sm">Template Preview</span>
+                  )}
                 </div>
                 
                 {/* Template Stats */}
