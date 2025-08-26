@@ -1137,6 +1137,7 @@ export default function RestaurantsPage() {
             </form>
           </DialogContent>
         </Dialog>
+      )}
       
       {/* Filters */}
       <Card>
