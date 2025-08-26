@@ -1137,7 +1137,7 @@ export default function RestaurantsPage() {
             </form>
           </DialogContent>
         </Dialog>
-
+      
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
