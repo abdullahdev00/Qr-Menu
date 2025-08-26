@@ -37,7 +37,7 @@ async function startServer() {
       if (apiPath.match(/^(restaurants|subscription-plans)\/[a-f0-9-]+$/)) {
         const parts = apiPath.split('/');
         const resource = parts[0];
-        dynamicId = parts[1];
+        dynamicId = parts[1] || null;
         handlerPath = `../admin/pages/api/${resource}/[id].ts`;
       }
       
