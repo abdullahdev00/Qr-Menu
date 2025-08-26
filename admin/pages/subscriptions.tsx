@@ -71,9 +71,11 @@ export default function Subscriptions() {
     }
   }, [])
 
-  const { data: plans, isLoading } = useQuery({
+  const { data: plans = [], isLoading, refetch } = useQuery({
     queryKey: ['/api/subscription-plans'],
     enabled: !!user,
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale to ensure fresh data
   })
 
   // Create plan mutation
@@ -93,6 +95,7 @@ export default function Subscriptions() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/subscription-plans'] })
+      queryClient.refetchQueries({ queryKey: ['/api/subscription-plans'] })
       setIsCreateDialogOpen(false)
       resetForm()
       toast({
@@ -135,6 +138,7 @@ export default function Subscriptions() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/subscription-plans'] })
+      queryClient.refetchQueries({ queryKey: ['/api/subscription-plans'] })
       setIsEditDialogOpen(false)
       resetForm()
       toast({
@@ -162,6 +166,7 @@ export default function Subscriptions() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/subscription-plans'] })
+      queryClient.refetchQueries({ queryKey: ['/api/subscription-plans'] })
       setIsDeleteDialogOpen(false)
       setPlanToDelete(null)
       toast({

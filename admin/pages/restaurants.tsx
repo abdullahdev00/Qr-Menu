@@ -106,7 +106,7 @@ export default function RestaurantsPage() {
   }, []);
 
   // Fetch restaurants
-  const { data: restaurants = [], isLoading } = useQuery({
+  const { data: restaurants = [], isLoading, refetch } = useQuery({
     queryKey: ['/api/restaurants', searchTerm],
     queryFn: async () => {
       const url = searchTerm 
@@ -119,6 +119,8 @@ export default function RestaurantsPage() {
       return response.json();
     },
     enabled: !!user,
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale to ensure fresh data
   });
 
   // Fetch subscription plans
@@ -151,8 +153,10 @@ export default function RestaurantsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/restaurants'] });
+      queryClient.refetchQueries({ queryKey: ['/api/restaurants'] });
       setIsEditDialogOpen(false);
       setEditingRestaurant(null);
+      resetForm();
       toast({
         title: "Success",
         description: "Restaurant updated successfully.",
@@ -180,6 +184,7 @@ export default function RestaurantsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/restaurants'] });
+      queryClient.refetchQueries({ queryKey: ['/api/restaurants'] });
       setIsDeleteDialogOpen(false);
       setRestaurantToDelete(null);
       toast({
@@ -210,43 +215,25 @@ export default function RestaurantsPage() {
   };
 
   const handleEditRestaurant = (id: string) => {
-    console.log('🔧 Edit restaurant called with ID:', id);
     const restaurant = restaurants.find((r: Restaurant) => r.id === id);
-    console.log('🔧 Found restaurant:', restaurant);
     
     if (restaurant) {
-      try {
-        setEditingRestaurant(restaurant);
-        
-        const newFormData = {
-          name: restaurant.name || '',
-          slug: restaurant.slug || '',
-          ownerName: restaurant.ownerName || '',
-          ownerEmail: restaurant.ownerEmail || '',
-          ownerPhone: restaurant.ownerPhone || '',
-          address: restaurant.address || '',
-          city: restaurant.city || 'Karachi',
-          planId: restaurant.planId || null,
-          status: restaurant.status || 'active',
-          notes: restaurant.notes || ''
-        };
-        
-        console.log('🔧 Setting form data:', newFormData);
-        setFormData(newFormData);
-        setErrors({});
-        
-        console.log('🔧 Opening edit dialog');
-        setIsEditDialogOpen(true);
-      } catch (error) {
-        console.error('🔧 Error in handleEditRestaurant:', error);
-        toast({
-          title: "Error",
-          description: "Failed to open edit form",
-          variant: "destructive",
-        });
-      }
+      setEditingRestaurant(restaurant);
+      setFormData({
+        name: restaurant.name || '',
+        slug: restaurant.slug || '',
+        ownerName: restaurant.ownerName || '',
+        ownerEmail: restaurant.ownerEmail || '',
+        ownerPhone: restaurant.ownerPhone || '',
+        address: restaurant.address || '',
+        city: restaurant.city || 'Karachi',
+        planId: restaurant.planId || null,
+        status: restaurant.status || 'active',
+        notes: restaurant.notes || ''
+      });
+      setErrors({});
+      setIsEditDialogOpen(true);
     } else {
-      console.error('🔧 Restaurant not found with ID:', id);
       toast({
         title: "Error",
         description: "Restaurant not found",
@@ -280,15 +267,13 @@ export default function RestaurantsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/restaurants'] });
+      queryClient.refetchQueries({ queryKey: ['/api/restaurants'] });
       toast({
         title: "Restaurant created",
         description: "Restaurant has been successfully created.",
       });
       setIsAddDialogOpen(false);
-      setFormData({
-        name: '', slug: '', ownerName: '', ownerEmail: '', ownerPhone: '',
-        address: '', city: 'Karachi', planId: null, status: 'active', notes: ''
-      });
+      resetForm();
     },
     onError: () => {
       toast({
