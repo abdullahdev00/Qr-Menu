@@ -74,7 +74,11 @@ export default function Dashboard() {
           <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-4 sm:p-6 shadow-lg border-0">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              <button className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+              <button 
+                onClick={() => setLocation('/restaurants')}
+                className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                data-testid="add-restaurant-button"
+              >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -83,7 +87,11 @@ export default function Dashboard() {
                 <span className="text-xs sm:text-sm font-medium text-center">Add Restaurant</span>
               </button>
               
-              <button className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+              <button 
+                onClick={() => setLocation('/subscriptions')}
+                className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                data-testid="process-payment-button"
+              >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -92,7 +100,11 @@ export default function Dashboard() {
                 <span className="text-xs sm:text-sm font-medium text-center">Process Payment</span>
               </button>
               
-              <button className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+              <button 
+                onClick={() => setLocation('/support')}
+                className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                data-testid="user-management-button"
+              >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -101,7 +113,11 @@ export default function Dashboard() {
                 <span className="text-xs sm:text-sm font-medium text-center">User Management</span>
               </button>
               
-              <button className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+              <button 
+                onClick={() => setLocation('/analytics')}
+                className="flex flex-col items-center p-3 sm:p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                data-testid="view-reports-button"
+              >
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 sm:mb-3">
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -113,16 +129,32 @@ export default function Dashboard() {
             
             <div className="mt-4 sm:mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3">
-                <button className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center">
-                  Export Data
+                <button 
+                  onClick={() => setLocation('/qr-codes')}
+                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
+                  data-testid="export-data-button"
+                >
+                  QR Code Management
                 </button>
-                <button className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center">
-                  System Settings
+                <button 
+                  onClick={() => setLocation('/menu-templates')}
+                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
+                  data-testid="system-settings-button"
+                >
+                  Menu Templates
                 </button>
-                <button className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center">
-                  Backup Data
+                <button 
+                  onClick={() => setLocation('/menu-management')}
+                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
+                  data-testid="backup-data-button"
+                >
+                  Menu Management
                 </button>
-                <button className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center">
+                <button 
+                  onClick={() => alert('Notification sent to all restaurants!')}
+                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:shadow-md transition-all duration-200 text-xs sm:text-sm font-medium text-center"
+                  data-testid="send-notifications-button"
+                >
                   Send Notifications
                 </button>
                 <button 
