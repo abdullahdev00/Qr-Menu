@@ -88,6 +88,16 @@ export default function RestaurantsPage() {
     }
   }, [setLocation]);
 
+  // Check for URL parameter to open add form
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('add') === 'true') {
+      setIsAddDialogOpen(true);
+      // Clean up URL without causing re-render
+      window.history.replaceState({}, '', '/restaurants');
+    }
+  }, []);
+
   // Fetch restaurants
   const { data: restaurants = [], isLoading } = useQuery({
     queryKey: ['/api/restaurants', searchTerm],
