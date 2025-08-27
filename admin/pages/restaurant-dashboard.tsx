@@ -1,7 +1,9 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'wouter'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { 
   Store, 
   QrCode, 
@@ -17,6 +19,17 @@ import {
   Clock,
   ChefHat
 } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import { Textarea } from '../components/ui/textarea'
+import { Checkbox } from '../components/ui/checkbox'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form'
+import { useToast } from '../hooks/use-toast'
+import { queryClient } from '../lib/queryClient'
+import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../shared/schema'
 
 interface RestaurantUser {
   id: string
@@ -25,6 +38,328 @@ interface RestaurantUser {
   role: string
   restaurantId: string
   restaurantName: string
+}
+
+// Add Item Dialog Component
+function AddItemDialog({ restaurantId }: { restaurantId: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+  
+  const form = useForm<InsertMenuItem>({
+    resolver: zodResolver(insertMenuItemSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      currency: "PKR",
+      image: "",
+      ingredients: [],
+      allergens: [],
+      isVegan: false,
+      isVegetarian: false,
+      isSpicy: false,
+      preparationTime: undefined,
+      calories: undefined,
+      isAvailable: true,
+      displayOrder: 0,
+      restaurantId: restaurantId,
+      categoryId: undefined
+    },
+  });
+
+  // Get categories for select dropdown
+  const { data: categories = [] } = useQuery({
+    queryKey: ['/api/menu-categories'],
+    queryFn: async (): Promise<MenuCategory[]> => {
+      const response = await fetch('/api/menu-categories');
+      return response.json();
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: InsertMenuItem) => {
+      const response = await fetch('/api/menu-items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      setIsOpen(false);
+      form.reset();
+      toast({
+        title: "Item Added!",
+        description: "Menu item has been successfully added.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add menu item. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = async (data: InsertMenuItem) => {
+    // Convert ingredients and allergens from comma-separated strings to arrays
+    const processedData = {
+      ...data,
+      ingredients: typeof data.ingredients === 'string' 
+        ? data.ingredients.split(',').map(i => i.trim()).filter(Boolean)
+        : data.ingredients || [],
+      allergens: typeof data.allergens === 'string'
+        ? data.allergens.split(',').map(a => a.trim()).filter(Boolean) 
+        : data.allergens || [],
+    };
+    
+    createMutation.mutate(processedData);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <button className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105" data-testid="button-add-item">
+          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+            <Plus className="w-6 h-6" />
+          </div>
+          <span className="text-sm font-medium text-center">Add Menu Item</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add New Menu Item</DialogTitle>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Item Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Chicken Karahi" {...field} data-testid="input-item-name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-category">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Delicious traditional chicken curry with aromatic spices..."
+                      rows={3}
+                      {...field}
+                      value={field.value || ""}
+                      data-testid="textarea-description"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Price and Details */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price (PKR) *</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="850" 
+                        {...field}
+                        data-testid="input-price"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="preparationTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prep Time (minutes)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="25"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value || ""}
+                        data-testid="input-prep-time"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="calories"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Calories</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="650"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value || ""}
+                        data-testid="input-calories"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Dietary Options */}
+            <div className="space-y-4">
+              <Label>Dietary Information</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <FormField
+                  control={form.control}
+                  name="isVegetarian"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-vegetarian"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Vegetarian</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="isVegan"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-vegan"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Vegan</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="isSpicy"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-spicy"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Spicy</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="isAvailable"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-available"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Available</FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsOpen(false)}
+                data-testid="button-cancel"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={createMutation.isPending}
+                data-testid="button-submit"
+              >
+                {createMutation.isPending ? "Adding..." : "Add Item"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export default function RestaurantDashboard() {
@@ -153,12 +488,7 @@ export default function RestaurantDashboard() {
           <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <button className="flex flex-col items-center p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                  <Plus className="w-6 h-6" />
-                </div>
-                <span className="text-sm font-medium text-center">Add Menu Item</span>
-              </button>
+              <AddItemDialog restaurantId={user.restaurantId} />
               
               <button className="flex flex-col items-center p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
