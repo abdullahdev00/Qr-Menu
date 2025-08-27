@@ -301,10 +301,32 @@
             form.reset();
         }
 
-        // Event listeners
-        addItemBtn.addEventListener('click', showModal);
-        closeModalBtn.addEventListener('click', hideModal);
-        cancelBtn.addEventListener('click', hideModal);
+        // Event listeners  
+        console.log('Setting up event listeners...');
+        console.log('addItemBtn found:', !!addItemBtn);
+        console.log('modal found:', !!modal);
+        
+        if (addItemBtn && modal) {
+            addItemBtn.addEventListener('click', function() {
+                console.log('Add Item button clicked!');
+                showModal();
+            });
+            
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', hideModal);
+            }
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', hideModal);
+            }
+            console.log('Event listeners added successfully!');
+        } else {
+            console.error('Required elements not found!', { 
+                addItemBtn: !!addItemBtn, 
+                modal: !!modal,
+                closeModalBtn: !!closeModalBtn,
+                cancelBtn: !!cancelBtn 
+            });
+        }
 
         // Close modal when clicking outside
         modal.addEventListener('click', (e) => {
