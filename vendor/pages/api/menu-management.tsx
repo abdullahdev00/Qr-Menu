@@ -18,19 +18,19 @@ import {
   TrendingUp,
   Package
 } from 'lucide-react'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
-import { Label } from '../components/ui/label'
-import { Textarea } from '../components/ui/textarea'
-import { Checkbox } from '../components/ui/checkbox'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
-import { useToast } from '../hooks/use-toast'
+import { Button } from '../../../admin/components/ui/button'
+import { Input } from '../../../admin/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../../admin/components/ui/dialog'
+import { Label } from '../../../admin/components/ui/label'
+import { Textarea } from '../../../admin/components/ui/textarea'
+import { Checkbox } from '../../../admin/components/ui/checkbox'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../admin/components/ui/select'
+import { useToast } from '../../../admin/hooks/use-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form'
-import { queryClient } from '../lib/queryClient'
-import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../shared/schema'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../../admin/components/ui/form'
+import { queryClient } from '../../../admin/lib/queryClient'
+import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../../shared/schema'
 
 interface RestaurantUser {
   id: string
