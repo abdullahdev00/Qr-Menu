@@ -80,7 +80,7 @@ function App() {
                   return <MenuManagement />;
                 }}
               </Route>
-              <Route path="/vendor">
+              <Route path="/vendor" exact>
                 {() => {
                   console.log("🏪 Vendor dashboard route matched!");
                   return <VendorDashboard />;

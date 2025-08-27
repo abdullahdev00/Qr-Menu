@@ -143,6 +143,15 @@ export function MenuManagement() {
             </Button>
           </div>
         </div>
+        
+        {/* TEST CONTENT - TO MAKE SURE COMPONENT IS WORKING */}
+        <div className="bg-red-100 p-4 border border-red-300 rounded">
+          <h2 className="text-lg font-bold text-red-800">TEST: Vendor MenuManagement Component is Working!</h2>
+          <p className="text-red-600">If you can see this, the component is rendering properly.</p>
+          <p className="text-sm">Categories loading: {categoriesLoading ? 'Yes' : 'No'}</p>
+          <p className="text-sm">Categories count: {categories.length}</p>
+          <p className="text-sm">Menu items count: {menuItems.length}</p>
+        </div>
 
         {/* Add Menu Item Dialog */}
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
