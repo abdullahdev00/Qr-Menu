@@ -73,7 +73,10 @@ function App() {
             <Switch>
               <Route path="/login" component={LoginPage} />
               <Route path="/vendor/:rest*">
-                <VendorApp />
+                {() => {
+                  console.log("🏪 Vendor route matched!");
+                  return <VendorApp />;
+                }}
               </Route>
               <Route>
                 <MainLayout>

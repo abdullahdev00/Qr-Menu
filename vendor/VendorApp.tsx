@@ -7,6 +7,7 @@ import { CustomerFeedback } from "./pages/CustomerFeedback";
 import { Settings } from "./pages/Settings";
 
 export function VendorApp() {
+  console.log("🏪 VendorApp component rendering!");
   return (
     <Switch>
       <Route path="/vendor" component={VendorDashboard} />
