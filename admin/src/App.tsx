@@ -19,6 +19,7 @@ import AnalyticsPage from '../pages/analytics';
 import SupportPage from '../pages/support';
 
 import MainLayout from '../components/layout/main-layout';
+import { VendorApp } from '../../vendor/VendorApp';
 
 // Query client setup
 const queryClient = new QueryClient({
@@ -71,6 +72,9 @@ function App() {
           ) : (
             <Switch>
               <Route path="/login" component={LoginPage} />
+              <Route path="/vendor/:rest*">
+                <VendorApp />
+              </Route>
               <Route>
                 <MainLayout>
                   <Switch>

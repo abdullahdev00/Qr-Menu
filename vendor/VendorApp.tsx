@@ -10,7 +10,7 @@ export function VendorApp() {
   return (
     <Switch>
       <Route path="/vendor" component={VendorDashboard} />
-      <Route path="/vendor/menu" component={MenuManagement} />
+      <Route path="/vendor/menu-management" component={MenuManagement} />
       <Route path="/vendor/qr-codes" component={QRCodeManagement} />
       <Route path="/vendor/analytics" component={Analytics} />
       <Route path="/vendor/feedback" component={CustomerFeedback} />

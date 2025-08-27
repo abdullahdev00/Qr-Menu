@@ -27,7 +27,7 @@ interface VendorLayoutProps {
 
 const navigation = [
   { name: 'Dashboard', href: '/vendor', icon: Home },
-  { name: 'Menu Management', href: '/vendor/menu', icon: Menu },
+  { name: 'Menu Management', href: '/vendor/menu-management', icon: Menu },
   { name: 'Orders', href: '/vendor/orders', icon: ShoppingCart },
   { name: 'QR Codes', href: '/vendor/qr-codes', icon: QrCode },
   { name: 'Analytics', href: '/vendor/analytics', icon: BarChart3 },
