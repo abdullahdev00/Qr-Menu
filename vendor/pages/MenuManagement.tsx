@@ -39,6 +39,8 @@ import { AddMenuItemForm } from "../components/AddMenuItemForm";
 const RESTAURANT_ID = "81c66b53-dce6-40c8-9ff2-56cbff175d39";
 
 export function MenuManagement() {
+  console.log("🚀 MenuManagement component rendering!");
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -106,6 +108,10 @@ export function MenuManagement() {
     setShowAddDialog(false);
     setEditingItem(null);
   };
+
+  console.log("📊 Categories:", categories);
+  console.log("🍽️ Menu items:", menuItems);
+  console.log("⚙️ Show dialog:", showAddDialog);
 
   return (
     <VendorLayout restaurantName="Karachi Kitchen" ownerName="Ahmed Ali">
