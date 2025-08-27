@@ -29,7 +29,7 @@ import { useToast } from '../hooks/use-toast'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form'
-import { apiRequest, queryClient } from '../lib/queryClient'
+import { queryClient } from '../lib/queryClient'
 import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../shared/schema'
 
 interface RestaurantUser {
@@ -159,18 +159,22 @@ function AddItemDialog() {
   // Get categories for select dropdown
   const { data: categories = [] } = useQuery({
     queryKey: ['/api/menu-categories'],
-    queryFn: async () => {
+    queryFn: async (): Promise<MenuCategory[]> => {
       const response = await fetch('/api/menu-categories');
-      return response.json() as MenuCategory[];
+      return response.json();
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertMenuItem) => {
-      return apiRequest('/api/menu-items', {
+      const response = await fetch('/api/menu-items', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
       });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
@@ -273,6 +277,7 @@ function AddItemDialog() {
                       placeholder="Delicious traditional chicken curry with aromatic spices..."
                       rows={3}
                       {...field}
+                      value={field.value || ""}
                       data-testid="textarea-description"
                     />
                   </FormControl>
