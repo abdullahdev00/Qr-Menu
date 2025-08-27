@@ -104,6 +104,40 @@ export const restaurantTables = pgTable("restaurant_tables", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Menu Items Table
+export const menuItems = pgTable("menu_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  categoryId: varchar("category_id").references(() => menuCategories.id),
+  name: text("name").notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").notNull().default("PKR"),
+  image: text("image"),
+  ingredients: jsonb("ingredients"), // Array of ingredients
+  allergens: jsonb("allergens"), // Array of allergens
+  isVegan: boolean("is_vegan").notNull().default(false),
+  isVegetarian: boolean("is_vegetarian").notNull().default(false),
+  isSpicy: boolean("is_spicy").notNull().default(false),
+  preparationTime: integer("preparation_time"), // in minutes
+  calories: integer("calories"),
+  isAvailable: boolean("is_available").notNull().default(true),
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Menu Categories Table
+export const menuCategories = pgTable("menu_categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  displayOrder: integer("display_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Enhanced QR Codes Table
 export const qrCodes = pgTable("qr_codes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -138,6 +172,10 @@ export const insertMenuTemplateSchema = createInsertSchema(menuTemplates).omit({
 export const insertQrTemplateSchema = createInsertSchema(qrTemplates).omit({ id: true, createdAt: true, updatedAt: true, usageCount: true });
 export const insertRestaurantTableSchema = createInsertSchema(restaurantTables).omit({ id: true, createdAt: true });
 export const insertQrCodeSchema = createInsertSchema(qrCodes).omit({ id: true, createdAt: true, updatedAt: true, scanCount: true, downloadCount: true });
+export const insertMenuCategorySchema = createInsertSchema(menuCategories).omit({ id: true, createdAt: true });
+export const insertMenuItemSchema = createInsertSchema(menuItems, {
+  price: z.union([z.string(), z.number()]).transform(val => String(val)),
+}).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Payment Requests Table - for vendor payment submissions
 export const paymentRequests = pgTable('payment_requests', {
@@ -197,6 +235,10 @@ export type RestaurantTable = typeof restaurantTables.$inferSelect;
 export type InsertRestaurantTable = z.infer<typeof insertRestaurantTableSchema>;
 export type QrCode = typeof qrCodes.$inferSelect;
 export type InsertQrCode = z.infer<typeof insertQrCodeSchema>;
+export type MenuCategory = typeof menuCategories.$inferSelect;
+export type InsertMenuCategory = z.infer<typeof insertMenuCategorySchema>;
+export type MenuItem = typeof menuItems.$inferSelect;
+export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
 export type PaymentRequest = typeof paymentRequests.$inferSelect;
 export type InsertPaymentRequest = z.infer<typeof insertPaymentRequestSchema>;
 export type UpdatePaymentRequest = z.infer<typeof updatePaymentRequestSchema>;

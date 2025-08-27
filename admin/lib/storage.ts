@@ -12,6 +12,8 @@ import {
   restaurantTables,
   qrCodes,
   users,
+  menuCategories,
+  menuItems,
   type AdminUser, type InsertAdminUser,
   type Restaurant, type InsertRestaurant,
   type SubscriptionPlan, type InsertSubscriptionPlan,
@@ -21,7 +23,9 @@ import {
   type QrTemplate, type InsertQrTemplate,
   type RestaurantTable, type InsertRestaurantTable,
   type QrCode, type InsertQrCode,
-  type User, type InsertUser
+  type User, type InsertUser,
+  type MenuCategory, type InsertMenuCategory,
+  type MenuItem, type InsertMenuItem
 } from "../../shared/schema";
 
 const sql = postgres(process.env.DATABASE_URL!);
@@ -129,6 +133,39 @@ class Storage {
             description: "Authentic Pakistani design with traditional elements",
             category: "traditional",
             designData: { theme: "traditional", colors: ["#4caf50", "#ffffff"] },
+          }
+        ]);
+      }
+
+      // Check if menu categories exist
+      const existingCategories = await db.select().from(menuCategories).limit(1);
+      
+      if (existingCategories.length === 0 && existingRestaurants.length > 0) {
+        const firstRestaurant = existingRestaurants[0];
+        await db.insert(menuCategories).values([
+          {
+            restaurantId: firstRestaurant.id, // Use actual restaurant ID
+            name: "Appetizers",
+            description: "Starters and small plates",
+            displayOrder: 1,
+          },
+          {
+            restaurantId: firstRestaurant.id, 
+            name: "Main Courses",
+            description: "Full meals and entrees",
+            displayOrder: 2,
+          },
+          {
+            restaurantId: firstRestaurant.id,
+            name: "Desserts", 
+            description: "Sweet treats and desserts",
+            displayOrder: 3,
+          },
+          {
+            restaurantId: firstRestaurant.id,
+            name: "Beverages",
+            description: "Drinks and refreshments",
+            displayOrder: 4,
           }
         ]);
       }
@@ -525,6 +562,64 @@ class Storage {
 
   async deleteQrCode(id: string): Promise<boolean> {
     const result = await db.delete(qrCodes).where(eq(qrCodes.id, id));
+    return result.length > 0;
+  }
+
+  // Menu Category Methods
+  async getMenuCategories(restaurantId?: string): Promise<MenuCategory[]> {
+    const query = db.select().from(menuCategories);
+    if (restaurantId) {
+      return await query.where(eq(menuCategories.restaurantId, restaurantId)).orderBy(menuCategories.displayOrder);
+    }
+    return await query.orderBy(menuCategories.displayOrder);
+  }
+
+  async getMenuCategory(id: string): Promise<MenuCategory | undefined> {
+    const result = await db.select().from(menuCategories).where(eq(menuCategories.id, id)).limit(1);
+    return result[0];
+  }
+
+  async createMenuCategory(category: InsertMenuCategory): Promise<MenuCategory> {
+    const result = await db.insert(menuCategories).values(category).returning();
+    return result[0];
+  }
+
+  async updateMenuCategory(id: string, category: Partial<MenuCategory>): Promise<MenuCategory | undefined> {
+    const result = await db.update(menuCategories).set(category).where(eq(menuCategories.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteMenuCategory(id: string): Promise<boolean> {
+    const result = await db.delete(menuCategories).where(eq(menuCategories.id, id));
+    return result.length > 0;
+  }
+
+  // Menu Item Methods
+  async getMenuItems(restaurantId?: string): Promise<MenuItem[]> {
+    const query = db.select().from(menuItems);
+    if (restaurantId) {
+      return await query.where(eq(menuItems.restaurantId, restaurantId)).orderBy(menuItems.displayOrder, desc(menuItems.createdAt));
+    }
+    return await query.orderBy(menuItems.displayOrder, desc(menuItems.createdAt));
+  }
+
+  async getMenuItem(id: string): Promise<MenuItem | undefined> {
+    const result = await db.select().from(menuItems).where(eq(menuItems.id, id)).limit(1);
+    return result[0];
+  }
+
+  async createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
+    const result = await db.insert(menuItems).values(item).returning();
+    return result[0];
+  }
+
+  async updateMenuItem(id: string, item: Partial<MenuItem>): Promise<MenuItem | undefined> {
+    const result = await db.update(menuItems).set(item).where(eq(menuItems.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteMenuItem(id: string): Promise<boolean> {
+    const result = await db.delete(menuItems).where(eq(menuItems.id, id));
     return result.length > 0;
   }
 

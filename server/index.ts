@@ -33,8 +33,8 @@ async function startServer() {
       let handlerPath = `../admin/pages/api/${apiPath}/index.ts`;
       let dynamicId: string | null = null;
       
-      // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, /payment-requests/uuid, or /qr/templates/uuid
-      if (apiPath.match(/^(restaurants|subscription-plans|payment-requests)\/[a-f0-9-]+$/)) {
+      // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, /payment-requests/uuid, /menu-items/uuid, /menu-categories/uuid, or /qr/templates/uuid
+      if (apiPath.match(/^(restaurants|subscription-plans|payment-requests|menu-items|menu-categories)\/[a-f0-9-]+$/)) {
         const parts = apiPath.split('/');
         const resource = parts[0];
         dynamicId = parts[1] || null;
