@@ -20,7 +20,6 @@ import SupportPage from '../pages/support';
 
 import MainLayout from '../components/layout/main-layout';
 import { VendorApp } from '../../vendor/VendorApp';
-import { MenuManagement } from '../../vendor/pages/MenuManagement';
 import { VendorDashboard } from '../../vendor/pages/VendorDashboard';
 
 // Query client setup
@@ -74,12 +73,6 @@ function App() {
           ) : (
             <Switch>
               <Route path="/login" component={LoginPage} />
-              <Route path="/vendor/menu-management">
-                {() => {
-                  console.log("🏪 Vendor menu-management route matched!");
-                  return <MenuManagement />;
-                }}
-              </Route>
               <Route path="/vendor" exact>
                 {() => {
                   console.log("🏪 Vendor dashboard route matched!");
