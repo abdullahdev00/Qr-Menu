@@ -331,7 +331,6 @@ export default function PaymentsPage() {
                     <TableHead>Vendor Info</TableHead>
                     <TableHead>Payment Details</TableHead>
                     <TableHead>Receipt</TableHead>
-                    <TableHead>Banking Details</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Submitted On</TableHead>
                     <TableHead>Actions</TableHead>
@@ -340,7 +339,7 @@ export default function PaymentsPage() {
                 <TableBody>
                   {filteredPayments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
+                      <TableCell colSpan={7} className="text-center py-8">
                         <div className="flex flex-col items-center justify-center text-gray-500">
                           <DollarSign className="h-12 w-12 mb-4 text-gray-300" />
                           <p className="text-lg font-medium text-gray-700">No payment requests found</p>
@@ -376,30 +375,13 @@ export default function PaymentsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col items-center space-y-2">
-                            <div className="w-16 h-20 bg-gray-100 rounded border flex items-center justify-center">
+                            <div 
+                              className="w-16 h-20 bg-gray-100 rounded border flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
+                              onClick={() => handleViewReceipt(payment)}
+                              title="Click to view receipt"
+                            >
                               <span className="text-xs text-gray-500">Receipt</span>
                             </div>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleViewReceipt(payment)}
-                              className="text-xs"
-                            >
-                              View Full
-                            </Button>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium text-gray-900 flex items-center">
-                              {getPaymentMethodIcon(payment.paymentMethod)}
-                              <span className="ml-2">{payment.bankName}</span>
-                            </div>
-                            <div className="text-sm text-gray-600">{payment.accountHolder}</div>
-                            <div className="text-xs text-gray-400">{payment.accountNumber}</div>
-                            <Button size="sm" variant="ghost" className="text-xs p-0 h-auto">
-                              Copy Details
-                            </Button>
                           </div>
                         </TableCell>
                         <TableCell>
