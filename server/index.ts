@@ -33,12 +33,22 @@ async function startServer() {
       let handlerPath = `../admin/pages/api/${apiPath}/index.ts`;
       let dynamicId: string | null = null;
       
-      // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, or /payment-requests/uuid
+      // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, /payment-requests/uuid, or /qr/templates/uuid
       if (apiPath.match(/^(restaurants|subscription-plans|payment-requests)\/[a-f0-9-]+$/)) {
         const parts = apiPath.split('/');
         const resource = parts[0];
         dynamicId = parts[1] || null;
         handlerPath = `../admin/pages/api/${resource}/[id].ts`;
+      }
+      // Handle QR templates nested routes
+      else if (apiPath.match(/^qr\/templates\/[a-f0-9-]+$/)) {
+        const parts = apiPath.split('/');
+        dynamicId = parts[2] || null;
+        handlerPath = `../admin/pages/api/qr/templates/[id].ts`;
+      }
+      // Handle QR templates base route
+      else if (apiPath === 'qr/templates') {
+        handlerPath = `../admin/pages/api/qr/templates/index.ts`;
       }
       
       // Try to import the handler
