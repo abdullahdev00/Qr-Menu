@@ -56,78 +56,6 @@ interface MenuItem {
   tags: string[]
 }
 
-const mockMenuItems: MenuItem[] = [
-  {
-    id: '1',
-    name: 'Chicken Biryani',
-    description: 'Aromatic basmati rice with tender chicken pieces, served with raita and shorba',
-    price: 450,
-    category: 'Main Course',
-    image: '/placeholder-food.jpg',
-    isAvailable: true,
-    preparationTime: 25,
-    views: 234,
-    rating: 4.8,
-    isPopular: true,
-    tags: ['Spicy', 'Popular', 'Traditional']
-  },
-  {
-    id: '2',
-    name: 'Chicken Karahi',
-    description: 'Traditional Pakistani karahi with fresh tomatoes and green chilies',
-    price: 380,
-    category: 'Main Course',
-    image: '/placeholder-food.jpg',
-    isAvailable: true,
-    preparationTime: 20,
-    views: 189,
-    rating: 4.6,
-    isPopular: false,
-    tags: ['Spicy', 'Traditional']
-  },
-  {
-    id: '3',
-    name: 'Mutton Pulao',
-    description: 'Fragrant rice cooked with tender mutton pieces and aromatic spices',
-    price: 520,
-    category: 'Main Course',
-    image: '/placeholder-food.jpg',
-    isAvailable: false,
-    preparationTime: 35,
-    views: 156,
-    rating: 4.7,
-    isPopular: false,
-    tags: ['Premium', 'Traditional']
-  },
-  {
-    id: '4',
-    name: 'Fresh Lime Soda',
-    description: 'Refreshing lime drink with mint and soda water',
-    price: 120,
-    category: 'Beverages',
-    image: '/placeholder-drink.jpg',
-    isAvailable: true,
-    preparationTime: 5,
-    views: 98,
-    rating: 4.3,
-    isPopular: false,
-    tags: ['Refreshing', 'Cold']
-  },
-  {
-    id: '5',
-    name: 'Gulab Jamun',
-    description: 'Traditional sweet dumplings in sugar syrup (2 pieces)',
-    price: 180,
-    category: 'Desserts',
-    image: '/placeholder-dessert.jpg',
-    isAvailable: true,
-    preparationTime: 5,
-    views: 67,
-    rating: 4.5,
-    isPopular: false,
-    tags: ['Sweet', 'Traditional']
-  }
-]
 
 // Add Item Dialog Component
 function AddItemDialog() {
@@ -488,12 +416,22 @@ export default function MenuManagement() {
     )
   }
 
-  const categories = ['All', ...Array.from(new Set(menuItems.map((item: any) => item.category || 'Uncategorized')))]
+  // Get categories for filtering - combining with database categories
+  const { data: dbCategories = [] } = useQuery({
+    queryKey: ['/api/menu-categories'],
+    queryFn: async (): Promise<MenuCategory[]> => {
+      const response = await fetch('/api/menu-categories');
+      return response.json();
+    },
+  });
+
+  const categories = ['All', ...dbCategories.map(cat => cat.name)]
   
   const filteredItems = menuItems.filter((item: any) => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.description || '').toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'All' // For now, we'll just show all items
+    const matchesCategory = selectedCategory === 'All' || 
+                           (item.categoryId && dbCategories.find(cat => cat.id === item.categoryId)?.name === selectedCategory)
     return matchesSearch && matchesCategory
   })
 
