@@ -235,6 +235,11 @@ class Storage {
     return result.length > 0;
   }
 
+  async getAdminUserByEmail(email: string): Promise<AdminUser | undefined> {
+    const result = await db.select().from(adminUsers).where(eq(adminUsers.email, email)).limit(1);
+    return result[0];
+  }
+
   // Restaurants Methods
   async getRestaurants(searchTerm?: string): Promise<Restaurant[]> {
     const query = db.select().from(restaurants).orderBy(desc(restaurants.createdAt));
