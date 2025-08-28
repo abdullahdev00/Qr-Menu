@@ -4,9 +4,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Checkbox } from "../ui/checkbox";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog";
 import { useToast } from "../../lib/use-toast";
 import { apiRequest } from "../../lib/queryClient";
-import { type Restaurant } from "../../shared/schema";
+import { type Restaurant } from "../../../shared/schema";
 import { 
   Store, Eye, Edit, Pause, Play, Trash2, MessageSquare, 
   RefreshCw, BarChart3, Phone, Mail, MapPin,
@@ -37,6 +38,8 @@ export default function RestaurantTable({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [restaurantToDelete, setRestaurantToDelete] = useState<Restaurant | null>(null);
   const itemsPerPage = 10;
 
   const deleteRestaurantMutation = useMutation({
@@ -96,9 +99,16 @@ export default function RestaurantTable({
     });
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this restaurant?")) {
-      deleteRestaurantMutation.mutate(id);
+  const handleDeleteClick = (restaurant: Restaurant) => {
+    setRestaurantToDelete(restaurant);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (restaurantToDelete) {
+      deleteRestaurantMutation.mutate(restaurantToDelete.id);
+      setDeleteDialogOpen(false);
+      setRestaurantToDelete(null);
     }
   };
 
@@ -269,6 +279,16 @@ export default function RestaurantTable({
                     >
                       <MessageSquare className="w-4 h-4" />
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteClick(restaurant)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      title="Delete Restaurant"
+                      data-testid={`button-delete-${restaurant.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -317,6 +337,33 @@ export default function RestaurantTable({
           </Button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Restaurant</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{restaurantToDelete?.name}</strong>? 
+              This action cannot be undone and will remove all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setDeleteDialogOpen(false);
+              setRestaurantToDelete(null);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete Restaurant
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
