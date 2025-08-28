@@ -45,6 +45,11 @@ export default function RestaurantTable({
   const deleteRestaurantMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/restaurants/${id}`),
     onSuccess: () => {
+      // Close dialog first
+      setDeleteDialogOpen(false);
+      setRestaurantToDelete(null);
+      
+      // Then refresh data and show toast
       queryClient.invalidateQueries({ queryKey: ["/api/restaurants"] });
       toast({
         title: "Restaurant deleted",
@@ -107,8 +112,6 @@ export default function RestaurantTable({
   const handleConfirmDelete = () => {
     if (restaurantToDelete) {
       deleteRestaurantMutation.mutate(restaurantToDelete.id);
-      setDeleteDialogOpen(false);
-      setRestaurantToDelete(null);
     }
   };
 

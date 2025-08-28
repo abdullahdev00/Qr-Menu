@@ -787,12 +787,12 @@ function DeleteConfirmationDialog({ item, isOpen, onOpenChange, refetchItems }: 
     onSuccess: async () => {
       console.log('Delete mutation successful, forcing immediate refresh...');
       
-      // Force immediate data refresh
-      refetchItems();
-      
-      // Close dialog and reset form
+      // Close dialog and reset form FIRST
       onOpenChange(false);
       setConfirmText("");
+      
+      // Force immediate data refresh
+      refetchItems();
       
       // Show success message
       toast({
@@ -844,6 +844,11 @@ function DeleteConfirmationDialog({ item, isOpen, onOpenChange, refetchItems }: 
               type="text"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && confirmText === 'DELETE') {
+                  handleDelete();
+                }
+              }}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:text-white"
               placeholder="Type DELETE here"
               data-testid="input-delete-confirm"
