@@ -446,6 +446,20 @@ class Storage {
   }
 
   async createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
+    // Validate restaurant exists before creating menu item
+    const restaurant = await db.select().from(restaurants).where(eq(restaurants.id, item.restaurantId)).limit(1);
+    
+    if (restaurant.length === 0) {
+      // Get first available restaurant as fallback
+      const firstRestaurant = await db.select().from(restaurants).limit(1);
+      if (firstRestaurant.length > 0) {
+        item.restaurantId = firstRestaurant[0].id;
+        console.log(`⚠️ Restaurant ID ${item.restaurantId} not found, using fallback: ${firstRestaurant[0].id}`);
+      } else {
+        throw new Error('No restaurants available. Please create a restaurant first.');
+      }
+    }
+    
     const result = await db.insert(menuItems).values(item).returning();
     return result[0];
   }

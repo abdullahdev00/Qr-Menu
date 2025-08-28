@@ -31,6 +31,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../admin/components/ui/form'
 import { queryClient } from '../../admin/lib/queryClient'
 import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../shared/schema'
+import { ClearStorageButton } from '../../admin/components/clear-storage'
 
 interface RestaurantUser {
   id: string
@@ -940,7 +941,10 @@ export default function MenuManagement() {
               {user.restaurantName} • Manage your menu items
             </p>
           </div>
-          <AddItemDialog />
+          <div className="flex gap-3">
+            <AddItemDialog />
+            <ClearStorageButton />
+          </div>
         </div>
       </div>
 
