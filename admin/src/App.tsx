@@ -21,6 +21,7 @@ import SubscriptionsPage from '../pages/subscriptions';
 import AnalyticsPage from '../pages/analytics';
 import SupportPage from '../pages/support';
 import TestButtonPage from '../pages/test-button';
+import MenuManagementPage from '../../vendor/pages/menu-management';
 
 import MainLayout from '../components/layout/main-layout';
 
@@ -92,6 +93,7 @@ function App() {
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
                     <Route path="/test-button" component={TestButtonPage} />
+                    <Route path="/menu-management" component={MenuManagementPage} />
                   </Switch>
                 </MainLayout>
               </Route>
