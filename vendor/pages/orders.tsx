@@ -167,7 +167,7 @@ export default function OrdersPage() {
     }
   })
 
-  if (isLoading || !user) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
