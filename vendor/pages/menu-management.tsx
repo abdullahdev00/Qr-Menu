@@ -126,8 +126,8 @@ function AddItemDialog() {
     // Convert ingredients and allergens from comma-separated strings to arrays
     const processedData = {
       ...data,
-      // Use first available restaurant if admin, or user's restaurant if restaurant user
-      restaurantId: data.restaurantId || "a7477822-2020-425e-b984-94b05f367568", // Default to Al-Baik Restaurant
+      // Use first available restaurant if admin, or user's restaurant if restaurant user  
+      restaurantId: data.restaurantId || "da22f73c-ef6f-42a2-9718-ce989f8e579a", // Default to Al-Baik Restaurant
       ingredients: typeof data.ingredients === 'string' 
         ? data.ingredients.split(',').map(i => i.trim()).filter(Boolean)
         : data.ingredients || [],
