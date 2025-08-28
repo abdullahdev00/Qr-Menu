@@ -6,7 +6,10 @@ import { Toaster } from '../admin/components/ui/toaster';
 import { ThemeProvider } from '../admin/src/lib/theme-provider';
 
 // Import vendor pages
+import Dashboard from '../pages/dashboard';
 import MenuManagement from '../pages/menu-management';
+import Orders from '../pages/orders';
+import Analytics from '../pages/analytics';
 
 // Query client setup
 const queryClient = new QueryClient({
@@ -58,9 +61,12 @@ function VendorApp() {
             ) : (
               <Switch>
                 <Route path="/">
-                  <Redirect to="/menu-management" />
+                  <Redirect to="/dashboard" />
                 </Route>
+                <Route path="/dashboard" component={Dashboard} />
                 <Route path="/menu-management" component={MenuManagement} />
+                <Route path="/orders" component={Orders} />
+                <Route path="/analytics" component={Analytics} />
               </Switch>
             )}
             <Toaster />

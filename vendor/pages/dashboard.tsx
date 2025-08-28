@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { useLocation } from 'wouter'
+import { useLocation, Link } from 'wouter'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,7 +17,9 @@ import {
   Phone,
   Star,
   Clock,
-  ChefHat
+  ChefHat,
+  ShoppingBag,
+  Home
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../admin/components/ui/dialog'
 import { Button } from '../../admin/components/ui/button'
@@ -363,7 +365,7 @@ function AddItemDialog({ restaurantId }: { restaurantId: string }) {
 }
 
 export default function VendorDashboard() {
-  const [, setLocation] = useLocation()
+  const [location, setLocation] = useLocation()
   const [user, setUser] = useState<RestaurantUser | null>(null)
 
   useEffect(() => {
@@ -392,6 +394,62 @@ export default function VendorDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Navigation Bar */}
+      <div className="bg-gradient-to-r from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
+        <div className="flex flex-wrap gap-2">
+          <Link href="/dashboard">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/dashboard' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              <span>Dashboard</span>
+            </button>
+          </Link>
+          
+          <Link href="/menu-management">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/menu-management' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <ChefHat className="w-4 h-4" />
+              <span>Menu Management</span>
+            </button>
+          </Link>
+          
+          <Link href="/orders">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/orders' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span>Orders</span>
+            </button>
+          </Link>
+          
+          <Link href="/analytics">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/analytics' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Analytics</span>
+            </button>
+          </Link>
+        </div>
+      </div>
       {/* Welcome Header */}
       <div className="bg-gradient-to-br from-white via-blue-50/40 to-purple-50/40 dark:from-gray-900 dark:via-blue-950/30 dark:to-purple-950/30 rounded-2xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-xl">
         <div className="flex items-center justify-between">
@@ -497,12 +555,14 @@ export default function VendorDashboard() {
                 <span className="text-sm font-medium text-center">Generate QR</span>
               </button>
               
-              <button className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                  <BarChart3 className="w-6 h-6" />
-                </div>
-                <span className="text-sm font-medium text-center">View Analytics</span>
-              </button>
+              <Link href="/analytics">
+                <button className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                    <BarChart3 className="w-6 h-6" />
+                  </div>
+                  <span className="text-sm font-medium text-center">View Analytics</span>
+                </button>
+              </Link>
               
               <button className="flex flex-col items-center p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
