@@ -76,7 +76,7 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
       isSpicy: item?.isSpicy || false,
       preparationTime: item?.preparationTime || undefined,
       calories: item?.calories || undefined,
-      isAvailable: item?.isAvailable || true,
+      isAvailable: item?.isAvailable !== undefined ? item.isAvailable : true,
       displayOrder: item?.displayOrder || 0,
       restaurantId: item?.restaurantId || "",
       categoryId: item?.categoryId || undefined
@@ -152,7 +152,7 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
         isSpicy: item.isSpicy || false,
         preparationTime: item.preparationTime || undefined,
         calories: item.calories || undefined,
-        isAvailable: item.isAvailable || true,
+        isAvailable: item.isAvailable !== undefined ? item.isAvailable : true,
         displayOrder: item.displayOrder || 0,
         restaurantId: item.restaurantId || "",
         categoryId: item.categoryId || undefined
