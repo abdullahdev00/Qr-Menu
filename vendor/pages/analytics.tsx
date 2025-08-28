@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../admin/components
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../admin/components/ui/select'
 import { Button } from '../../admin/components/ui/button'
 import { Badge } from '../../admin/components/ui/badge'
+import { Link } from 'wouter'
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -31,7 +32,11 @@ import {
   AreaChart as AreaChartIcon,
   ChefHat,
   Clock,
-  Star
+  Star,
+  Home,
+  Settings,
+  Eye,
+  Users
 } from "lucide-react"
 
 interface User {
@@ -80,7 +85,7 @@ const topMenuItems = [
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280']
 
 export default function VendorAnalytics() {
-  const [, setLocation] = useLocation()
+  const [location, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
   const [activeChart, setActiveChart] = useState<'revenue' | 'orders' | 'performance' | 'menu'>('revenue')
   const [timeRange, setTimeRange] = useState('12months')
@@ -130,7 +135,7 @@ export default function VendorAnalytics() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis dataKey="month" className="text-xs" />
-              <YAxis className="text-xs" />
+              <YAxis className="text-xs" tickFormatter={(value) => `PKR ${(value / 1000)}K`} />
               <Tooltip 
                 contentStyle={{
                   backgroundColor: "hsl(var(--background))",
@@ -146,7 +151,7 @@ export default function VendorAnalytics() {
                 stroke="#3B82F6" 
                 fillOpacity={1} 
                 fill="url(#colorRevenue)" 
-                strokeWidth={2}
+                strokeWidth={3}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -194,9 +199,13 @@ export default function VendorAnalytics() {
                   border: "1px solid hsl(var(--border))",
                   borderRadius: "6px",
                 }}
+                formatter={(value: number, name: string) => [
+                  name === 'revenue' ? `PKR ${value.toLocaleString()}` : value,
+                  name === 'revenue' ? 'Revenue' : 'Orders'
+                ]}
               />
-              <Bar yAxisId="left" dataKey="orders" fill="#8B5CF6" radius={4} />
-              <Line yAxisId="right" type="monotone" dataKey="avgRating" stroke="#F59E0B" strokeWidth={3} />
+              <Bar yAxisId="left" dataKey="orders" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+              <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#F59E0B" strokeWidth={3} dot={{ fill: "#F59E0B", r: 4 }} />
             </ComposedChart>
           </ResponsiveContainer>
         )
@@ -251,142 +260,239 @@ export default function VendorAnalytics() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-white via-blue-50/40 to-purple-50/40 dark:from-gray-900 dark:via-blue-950/30 dark:to-purple-950/30 rounded-2xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-xl">
+      {/* Navigation Bar */}
+      <div className="bg-gradient-to-r from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
+        <div className="flex flex-wrap gap-2">
+          <Link href="/dashboard">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/dashboard' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              <span>Dashboard</span>
+            </button>
+          </Link>
+          
+          <Link href="/menu-management">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/menu-management' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <ChefHat className="w-4 h-4" />
+              <span>Menu Management</span>
+            </button>
+          </Link>
+          
+          <Link href="/orders">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/orders' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <ShoppingBag className="w-4 h-4" />
+              <span>Orders</span>
+            </button>
+          </Link>
+          
+          <Link href="/vendor/analytics">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/vendor/analytics' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Analytics</span>
+            </button>
+          </Link>
+
+          <Link href="/vendor/settings">
+            <button 
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                location === '/vendor/settings' 
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <Settings className="w-4 h-4" />
+              <span>Settings</span>
+            </button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Analytics Header */}
+      <div className="bg-gradient-to-br from-white via-purple-50/40 to-blue-50/40 dark:from-gray-900 dark:via-purple-950/30 dark:to-blue-950/30 rounded-2xl p-6 border border-purple-200/50 dark:border-purple-800/30 shadow-xl">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Restaurant Analytics 📊
             </h1>
             <p className="text-gray-600 dark:text-gray-300 mt-1">
-              {user.restaurantName} • Performance insights and metrics
+              {user.restaurantName} • Performance Dashboard
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-900 dark:to-blue-950/30 border-blue-200/50 dark:border-blue-800/30">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-white" />
-              </div>
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400">
-                +12.5%
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">PKR 92,000</div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Monthly Revenue</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-white to-emerald-50/50 dark:from-gray-900 dark:to-emerald-950/30 border-emerald-200/50 dark:border-emerald-800/30">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 text-white" />
-              </div>
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400">
-                +8.2%
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">368</div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Total Orders</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-white to-orange-50/50 dark:from-gray-900 dark:to-orange-950/30 border-orange-200/50 dark:border-orange-800/30">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-                <Clock className="w-5 h-5 text-white" />
-              </div>
-              <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400">
-                22 min
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">PKR 250</div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Avg Order Value</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-white to-yellow-50/50 dark:from-gray-900 dark:to-yellow-950/30 border-yellow-200/50 dark:border-yellow-800/30">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center">
-                <Star className="w-5 h-5 text-white" />
-              </div>
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400">
-                Excellent
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">4.8</div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Customer Rating</p>
-          </CardContent>
-        </Card>
+      {/* Chart Selector */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Performance Analytics</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Track your business metrics with interactive charts</p>
+        </div>
+        <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          {chartButtons.map((button) => {
+            const Icon = button.icon;
+            return (
+              <Button
+                key={button.id}
+                variant={activeChart === button.id ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveChart(button.id as any)}
+                className={`flex items-center space-x-2 h-9 ${
+                  activeChart === button.id 
+                    ? `${button.color} hover:${button.color} text-white` 
+                    : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{button.label}</span>
+              </Button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* Chart Controls */}
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-4 lg:space-y-0">
-            <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="w-5 h-5" />
-              <span>Analytics Dashboard</span>
-            </CardTitle>
-            <div className="flex items-center space-x-3">
-              <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7days">Last 7 days</SelectItem>
-                  <SelectItem value="30days">Last 30 days</SelectItem>
-                  <SelectItem value="6months">Last 6 months</SelectItem>
-                  <SelectItem value="12months">Last 12 months</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 mt-4">
-            {chartButtons.map((button) => {
-              const Icon = button.icon
-              return (
-                <Button
-                  key={button.id}
-                  variant={activeChart === button.id ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setActiveChart(button.id as any)}
-                  className={`${activeChart === button.id ? button.color + ' text-white' : ''}`}
-                >
-                  <Icon className="w-4 h-4 mr-2" />
-                  {button.label}
-                </Button>
-              )
-            })}
-          </div>
-        </CardHeader>
-        
-        <CardContent>
-          {renderChart()}
-        </CardContent>
-      </Card>
+      {/* Main Analytics Dashboard */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardHeader className="pb-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                    {chartButtons.find(b => b.id === activeChart)?.label}
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    Interactive data visualization
+                  </p>
+                </div>
+                <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  Live Data
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-96">
+                {renderChart()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Side Stats */}
+        <div className="space-y-4">
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">This Month</p>
+                  <h3 className="text-2xl font-bold">PKR 92K</h3>
+                  <p className="text-blue-100 text-xs mt-1">Revenue Generated</p>
+                </div>
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <DollarSign className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-blue-400">
+                <div className="flex items-center text-blue-100">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  <span className="text-sm">+8% from last month</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-emerald-100 text-sm">Total Orders</p>
+                  <h3 className="text-2xl font-bold">368</h3>
+                  <p className="text-emerald-100 text-xs mt-1">Orders This Month</p>
+                </div>
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <ShoppingBag className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-emerald-400">
+                <div className="flex items-center text-emerald-100">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  <span className="text-sm">+12% from last month</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100 text-sm">Menu Views</p>
+                  <h3 className="text-2xl font-bold">7.5K</h3>
+                  <p className="text-purple-100 text-xs mt-1">QR Code Scans</p>
+                </div>
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Eye className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-purple-400">
+                <div className="flex items-center text-purple-100">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  <span className="text-sm">Peak: Friday evenings</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-100 text-sm">Avg Rating</p>
+                  <h3 className="text-2xl font-bold">4.8 ⭐</h3>
+                  <p className="text-orange-100 text-xs mt-1">Customer Satisfaction</p>
+                </div>
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                  <Star className="w-6 h-6" />
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-orange-400">
+                <div className="flex items-center text-orange-100">
+                  <Star className="w-4 h-4 mr-2" />
+                  <span className="text-sm">Based on 340 reviews</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
