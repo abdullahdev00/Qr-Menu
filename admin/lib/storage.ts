@@ -27,6 +27,9 @@ import {
 const sql = postgres(process.env.DATABASE_URL!);
 const db = drizzle(sql);
 
+// Export db for direct database queries
+export { db };
+
 class Storage {
   constructor() {
     this.initializeData();
@@ -111,6 +114,48 @@ class Storage {
             status: "active",
           }
         ]);
+      }
+
+      // Check if menu categories exist and add sample ones
+      const existingCategories = await db.select().from(menuCategories).limit(1);
+      
+      if (existingCategories.length === 0) {
+        const restaurantsList = await db.select().from(restaurants);
+        
+        if (restaurantsList.length > 0) {
+          const firstRestaurant = restaurantsList[0];
+          
+          await db.insert(menuCategories).values([
+            {
+              restaurantId: firstRestaurant.id,
+              name: "Main Courses",
+              description: "Traditional Pakistani main dishes",
+              displayOrder: 1,
+              isActive: true,
+            },
+            {
+              restaurantId: firstRestaurant.id,
+              name: "Appetizers",
+              description: "Starters and small plates",
+              displayOrder: 2,
+              isActive: true,
+            },
+            {
+              restaurantId: firstRestaurant.id,
+              name: "Beverages",
+              description: "Drinks and refreshments",
+              displayOrder: 3,
+              isActive: true,
+            },
+            {
+              restaurantId: firstRestaurant.id,
+              name: "Desserts",
+              description: "Sweet treats and desserts",
+              displayOrder: 4,
+              isActive: true,
+            }
+          ]);
+        }
       }
 
       // Check if menu templates exist
