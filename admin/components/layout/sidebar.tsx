@@ -10,7 +10,8 @@ import {
   PieChart, 
   Settings,
   LogOut,
-  X
+  X,
+  ShoppingBag
 } from "lucide-react";
 
 interface SidebarProps {
@@ -21,6 +22,7 @@ interface SidebarProps {
 const adminNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
   { name: "Restaurants", href: "/restaurants", icon: Store, badge: "24" },
+  { name: "Orders", href: "/orders", icon: ShoppingBag, badge: "12", badgeColor: "bg-blue-500" },
   { name: "Payment Requests", href: "/payments", icon: CreditCard, badge: "5", badgeColor: "bg-orange-500" },
   { name: "Subscriptions", href: "/subscriptions", icon: CreditCard },
   { name: "Menu Templates", href: "/menu-templates", icon: Utensils },
