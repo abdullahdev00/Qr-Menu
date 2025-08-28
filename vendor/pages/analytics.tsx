@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../admin/components
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../admin/components/ui/select'
 import { Button } from '../../admin/components/ui/button'
 import { Badge } from '../../admin/components/ui/badge'
-import { Link } from 'wouter'
 import { 
   ResponsiveContainer, 
   AreaChart, 
@@ -34,9 +33,10 @@ import {
   Clock,
   Star,
   Home,
-  Settings,
+  Store,
+  Users,
   Eye,
-  Users
+  Building
 } from "lucide-react"
 
 interface User {
@@ -260,76 +260,6 @@ export default function VendorAnalytics() {
 
   return (
     <div className="space-y-6">
-      {/* Navigation Bar */}
-      <div className="bg-gradient-to-r from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-4 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
-        <div className="flex flex-wrap gap-2">
-          <Link href="/dashboard">
-            <button 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                location === '/dashboard' 
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              <Home className="w-4 h-4" />
-              <span>Dashboard</span>
-            </button>
-          </Link>
-          
-          <Link href="/menu-management">
-            <button 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                location === '/menu-management' 
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              <ChefHat className="w-4 h-4" />
-              <span>Menu Management</span>
-            </button>
-          </Link>
-          
-          <Link href="/orders">
-            <button 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                location === '/orders' 
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Orders</span>
-            </button>
-          </Link>
-          
-          <Link href="/vendor/analytics">
-            <button 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                location === '/vendor/analytics' 
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>Analytics</span>
-            </button>
-          </Link>
-
-          <Link href="/vendor/settings">
-            <button 
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                location === '/vendor/settings' 
-                  ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              <Settings className="w-4 h-4" />
-              <span>Settings</span>
-            </button>
-          </Link>
-        </div>
-      </div>
-
       {/* Analytics Header */}
       <div className="bg-gradient-to-br from-white via-purple-50/40 to-blue-50/40 dark:from-gray-900 dark:via-purple-950/30 dark:to-blue-950/30 rounded-2xl p-6 border border-purple-200/50 dark:border-purple-800/30 shadow-xl">
         <div className="flex items-center justify-between">
