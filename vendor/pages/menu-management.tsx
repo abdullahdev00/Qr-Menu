@@ -129,6 +129,9 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
     const processedData = {
       ...data,
       restaurantId: data.restaurantId || item.restaurantId,
+      price: data.price === "" ? "0" : data.price,
+      preparationTime: data.preparationTime === undefined ? null : data.preparationTime,
+      calories: data.calories === undefined ? null : data.calories,
       ingredients: typeof data.ingredients === 'string' 
         ? data.ingredients.split(',').map(i => i.trim()).filter(Boolean)
         : data.ingredients || [],
@@ -490,9 +493,13 @@ function AddItemDialog() {
     }
     
     // Convert ingredients and allergens from comma-separated strings to arrays
+    // Fix price field - convert empty string to 0
     const processedData = {
       ...data,
       restaurantId: restaurantId,
+      price: data.price === "" ? "0" : data.price,
+      preparationTime: data.preparationTime === undefined ? null : data.preparationTime,
+      calories: data.calories === undefined ? null : data.calories,
       ingredients: typeof data.ingredients === 'string' 
         ? data.ingredients.split(',').map(i => i.trim()).filter(Boolean)
         : data.ingredients || [],
