@@ -12,7 +12,6 @@ import DashboardPage from '../pages/dashboard';
 // Debug dashboard import
 console.log('📦 DashboardPage imported:', typeof DashboardPage);
 import RestaurantDashboardPage from '../pages/restaurant-dashboard';
-import MenuManagement from '../../vendor/pages/api/menu-management';
 import RestaurantsPage from '../pages/restaurants';
 import PaymentsPage from '../pages/payments';
 import MenuTemplatesPage from '../pages/menu-templates';
@@ -84,7 +83,6 @@ function App() {
                     </Route>
                     <Route path="/dashboard" component={DashboardPage} />
                     <Route path="/restaurant-dashboard" component={RestaurantDashboardPage} />
-                    <Route path="/menu-management" component={MenuManagement} />
                     <Route path="/restaurants" component={RestaurantsPage} />
                     <Route path="/payments" component={PaymentsPage} />
                     <Route path="/menu-templates" component={MenuTemplatesPage} />
