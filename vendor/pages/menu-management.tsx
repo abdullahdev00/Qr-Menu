@@ -33,6 +33,7 @@ import { queryClient } from '../../admin/lib/queryClient'
 import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../shared/schema'
 import { ClearStorageButton } from '../../admin/components/clear-storage'
 import { MenuItemSkeleton, StatsSkeleton } from '../../admin/components/ui/loading-skeleton'
+import { ForceRefreshButton } from '../../admin/components/force-refresh'
 
 interface RestaurantUser {
   id: string
@@ -60,7 +61,7 @@ interface MenuItem {
 
 
 // Edit Item Dialog Component
-function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void, refetchItems: () => void }) {
   const { toast } = useToast();
   
   const form = useForm<InsertMenuItem>({
@@ -106,15 +107,19 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
       return response.json();
     },
     onSuccess: async () => {
-      // Aggressive cache invalidation for instant updates
-      await queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      await queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      // Force immediate data refresh
+      refetchItems();
       
       onOpenChange(false);
       toast({
         title: "Item Updated!",
         description: "Menu item has been successfully updated.",
       });
+      
+      // Double-check refresh after short delay
+      setTimeout(() => {
+        refetchItems();
+      }, 100);
     },
     onError: (error) => {
       toast({
@@ -403,7 +408,7 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
 }
 
 // Add Item Dialog Component
-function AddItemDialog() {
+function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   
@@ -460,11 +465,10 @@ function AddItemDialog() {
       return response.json();
     },
     onSuccess: async (newItem) => {
-      // Aggressive cache invalidation for instant updates
-      await queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      await queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      // Force immediate data refresh by calling refetch directly
+      refetchItems();
       
-      // Also refetch categories in case new ones were added
+      // Also refetch categories 
       queryClient.invalidateQueries({ queryKey: ['/api/menu-categories'] });
       
       setIsOpen(false);
@@ -473,6 +477,11 @@ function AddItemDialog() {
         title: "Item Added!",
         description: "Menu item has been successfully added.",
       });
+      
+      // Force component re-render by updating a local state
+      setTimeout(() => {
+        refetchItems();
+      }, 100);
     },
     onError: (error) => {
       toast({
@@ -756,7 +765,7 @@ function AddItemDialog() {
 }
 
 // Delete Confirmation Dialog Component
-function DeleteConfirmationDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+function DeleteConfirmationDialog({ item, isOpen, onOpenChange, refetchItems }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void, refetchItems: () => void }) {
   const [confirmText, setConfirmText] = useState("");
   const { toast } = useToast();
   
@@ -776,10 +785,10 @@ function DeleteConfirmationDialog({ item, isOpen, onOpenChange }: { item: any, i
       return result;
     },
     onSuccess: async () => {
-      console.log('Delete mutation successful, invalidating cache...');
-      // Aggressive cache invalidation for instant updates
-      await queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      await queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      console.log('Delete mutation successful, forcing immediate refresh...');
+      
+      // Force immediate data refresh
+      refetchItems();
       
       // Close dialog and reset form
       onOpenChange(false);
@@ -791,7 +800,12 @@ function DeleteConfirmationDialog({ item, isOpen, onOpenChange }: { item: any, i
         description: "Menu item has been successfully deleted.",
       });
       
-      console.log('Cache invalidated and refetched');
+      // Double-check refresh
+      setTimeout(() => {
+        refetchItems();
+      }, 100);
+      
+      console.log('Data forcefully refreshed');
     },
     onError: (error) => {
       toast({
@@ -955,7 +969,8 @@ export default function MenuManagement() {
             </p>
           </div>
           <div className="flex gap-3">
-            <AddItemDialog />
+            <AddItemDialog refetchItems={refetchMenuItems} />
+            <ForceRefreshButton onRefresh={refetchMenuItems} isLoading={isLoading} />
             <ClearStorageButton />
           </div>
         </div>
@@ -1169,6 +1184,7 @@ export default function MenuManagement() {
         item={editingItem} 
         isOpen={isEditDialogOpen} 
         onOpenChange={setIsEditDialogOpen}
+        refetchItems={refetchMenuItems}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -1176,6 +1192,7 @@ export default function MenuManagement() {
         item={deletingItem} 
         isOpen={isDeleteDialogOpen} 
         onOpenChange={setIsDeleteDialogOpen}
+        refetchItems={refetchMenuItems}
       />
 
     </div>
