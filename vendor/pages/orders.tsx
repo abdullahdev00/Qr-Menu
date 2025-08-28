@@ -182,7 +182,6 @@ export default function OrdersPage() {
   const stats = {
     total: orders.length,
     pending: orders.filter(o => o.status === 'pending').length,
-    preparing: orders.filter(o => o.status === 'preparing').length,
     completed: orders.filter(o => o.status === 'completed').length,
     cancelled: orders.filter(o => o.status === 'cancelled').length
   }
@@ -324,7 +323,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-900 dark:to-blue-950/30 rounded-xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-lg">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
@@ -345,15 +344,6 @@ export default function OrdersPage() {
           <p className="text-sm text-gray-600 dark:text-gray-300">Pending</p>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-purple-50/50 dark:from-gray-900 dark:to-purple-950/30 rounded-xl p-6 border border-purple-200/50 dark:border-purple-800/30 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-              <ChefHat className="w-6 h-6 text-white" />
-            </div>
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.preparing}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Preparing</p>
-        </div>
 
         <div className="bg-gradient-to-br from-white to-green-50/50 dark:from-gray-900 dark:to-green-950/30 rounded-xl p-6 border border-green-200/50 dark:border-green-800/30 shadow-lg">
           <div className="flex items-center justify-between mb-4">
@@ -399,7 +389,6 @@ export default function OrdersPage() {
                   <SelectItem value="all">All Orders</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="confirmed">Confirmed</SelectItem>
-                  <SelectItem value="preparing">Preparing</SelectItem>
                   <SelectItem value="ready">Ready</SelectItem>
                   <SelectItem value="delivered">Delivered</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
