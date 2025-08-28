@@ -76,7 +76,7 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
       isSpicy: item?.isSpicy || false,
       preparationTime: item?.preparationTime || undefined,
       calories: item?.calories || undefined,
-      isAvailable: item?.isAvailable !== undefined ? item.isAvailable : true,
+      isAvailable: item?.isAvailable || false,
       displayOrder: item?.displayOrder || 0,
       restaurantId: item?.restaurantId || "",
       categoryId: item?.categoryId || undefined
@@ -152,7 +152,7 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
         isSpicy: item.isSpicy || false,
         preparationTime: item.preparationTime || undefined,
         calories: item.calories || undefined,
-        isAvailable: item.isAvailable !== undefined ? item.isAvailable : true,
+        isAvailable: item.isAvailable || false,
         displayOrder: item.displayOrder || 0,
         restaurantId: item.restaurantId || "",
         categoryId: item.categoryId || undefined
@@ -414,7 +414,7 @@ function AddItemDialog() {
       isSpicy: false,
       preparationTime: undefined,
       calories: undefined,
-      isAvailable: true,
+      isAvailable: false,
       displayOrder: 0,
       restaurantId: "", // Will be set dynamically
       categoryId: undefined
