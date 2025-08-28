@@ -65,7 +65,7 @@ export default function Dashboard() {
     if (storedUser) {
       const userData = JSON.parse(storedUser)
       if (userData.role === 'restaurant') {
-        setLocation('/restaurant-dashboard')
+        setLocation('/vendor/dashboard')
       } else {
         setUser(userData)
       }

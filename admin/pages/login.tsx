@@ -73,8 +73,12 @@ export default function Login() {
           title: "Login successful", 
           description: `Welcome back${loginType === 'restaurant' ? ' to your restaurant panel' : ' to admin panel'}!`,
         })
-        // Refresh the page to update authentication status
-        window.location.href = '/dashboard'
+        // Redirect based on user role
+        if (data.user.role === 'restaurant') {
+          window.location.href = '/vendor/dashboard'
+        } else {
+          window.location.href = '/dashboard'
+        }
       } else {
         toast({
           title: "Login failed",
