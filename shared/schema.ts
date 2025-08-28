@@ -124,6 +124,41 @@ export const menuCategories = pgTable("menu_categories", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Orders Tables
+export const orders = pgTable("orders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  tableId: varchar("table_id").references(() => restaurantTables.id),
+  customerName: text("customer_name"),
+  customerPhone: text("customer_phone"),
+  orderNumber: integer("order_number").notNull(),
+  status: text("status").notNull().default("pending"), // pending, confirmed, preparing, ready, delivered, completed, cancelled
+  totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").notNull().default("PKR"),
+  deliveryType: text("delivery_type").notNull().default("dine_in"), // dine_in, takeaway, delivery
+  deliveryAddress: text("delivery_address"),
+  paymentMethod: text("payment_method").notNull().default("cash"), // cash, card, online
+  paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, failed
+  specialInstructions: text("special_instructions"),
+  estimatedTime: integer("estimated_time"), // in minutes
+  completedAt: timestamp("completed_at"),
+  cancelledAt: timestamp("cancelled_at"),
+  cancellationReason: text("cancellation_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const orderItems = pgTable("order_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  orderId: varchar("order_id").references(() => orders.id).notNull(),
+  menuItemId: varchar("menu_item_id").references(() => menuItems.id).notNull(),
+  quantity: integer("quantity").notNull(),
+  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+  specialRequests: text("special_requests"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 
 // Insert Schemas
 export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({ id: true, createdAt: true });
@@ -142,6 +177,13 @@ export const insertMenuCategorySchema = createInsertSchema(menuCategories).omit(
 export const insertMenuItemSchema = createInsertSchema(menuItems, {
   price: z.union([z.string(), z.number()]).transform(val => String(val)),
 }).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertOrderSchema = createInsertSchema(orders, {
+  totalAmount: z.union([z.string(), z.number()]).transform(val => String(val)),
+}).omit({ id: true, createdAt: true, updatedAt: true, completedAt: true, cancelledAt: true });
+export const insertOrderItemSchema = createInsertSchema(orderItems, {
+  unitPrice: z.union([z.string(), z.number()]).transform(val => String(val)),
+  totalPrice: z.union([z.string(), z.number()]).transform(val => String(val)),
+}).omit({ id: true, createdAt: true });
 
 // Payment Requests Table - for vendor payment submissions
 export const paymentRequests = pgTable('payment_requests', {
@@ -201,6 +243,10 @@ export type MenuCategory = typeof menuCategories.$inferSelect;
 export type InsertMenuCategory = z.infer<typeof insertMenuCategorySchema>;
 export type MenuItem = typeof menuItems.$inferSelect;
 export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type PaymentRequest = typeof paymentRequests.$inferSelect;
 export type InsertPaymentRequest = z.infer<typeof insertPaymentRequestSchema>;
 export type UpdatePaymentRequest = z.infer<typeof updatePaymentRequestSchema>;
