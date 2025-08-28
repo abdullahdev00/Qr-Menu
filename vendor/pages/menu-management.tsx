@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { Button } from '../../admin/components/ui/button'
 import { Input } from '../../admin/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../admin/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../admin/components/ui/dialog'
 import { Label } from '../../admin/components/ui/label'
 import { Textarea } from '../../admin/components/ui/textarea'
 import { Checkbox } from '../../admin/components/ui/checkbox'
@@ -178,6 +178,9 @@ function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: an
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Menu Item</DialogTitle>
+          <DialogDescription>
+            Update the details for this menu item. Make changes to price, description, or availability.
+          </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>

@@ -19,7 +19,7 @@ import {
   Clock,
   ChefHat
 } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
@@ -133,6 +133,9 @@ function AddItemDialog({ restaurantId }: { restaurantId: string }) {
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Menu Item</DialogTitle>
+          <DialogDescription>
+            Create a new menu item for your restaurant. Fill in the details below.
+          </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>
@@ -497,18 +500,22 @@ export default function RestaurantDashboard() {
                 <span className="text-sm font-medium text-center">Generate QR</span>
               </button>
               
-              <button className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                  <BarChart3 className="w-6 h-6" />
+              <button 
+                onClick={() => setLocation('/vendor/analytics')}
+                className="flex flex-col items-center p-5 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                  <BarChart3 className="w-7 h-7" />
                 </div>
-                <span className="text-sm font-medium text-center">View Analytics</span>
+                <span className="text-base font-medium text-center">View Analytics</span>
               </button>
               
-              <button className="flex flex-col items-center p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                  <Settings className="w-6 h-6" />
+              <button 
+                onClick={() => setLocation('/vendor/settings')}
+                className="flex flex-col items-center p-5 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                  <Settings className="w-7 h-7" />
                 </div>
-                <span className="text-sm font-medium text-center">Settings</span>
+                <span className="text-base font-medium text-center">Settings</span>
               </button>
               
               <button className="flex flex-col items-center p-4 bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
