@@ -385,11 +385,21 @@ export default function MenuManagement() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
   
+  // MOVE ALL HOOKS TO TOP LEVEL - Fix for React Error #310
   // Load menu items from database
   const { data: menuItems = [], isLoading } = useQuery({
     queryKey: ['/api/menu-items'],
     queryFn: async () => {
       const response = await fetch('/api/menu-items');
+      return response.json();
+    },
+  });
+
+  // Get categories for filtering - combining with database categories
+  const { data: dbCategories = [] } = useQuery({
+    queryKey: ['/api/menu-categories'],
+    queryFn: async (): Promise<MenuCategory[]> => {
+      const response = await fetch('/api/menu-categories');
       return response.json();
     },
   });
@@ -407,8 +417,9 @@ export default function MenuManagement() {
     } else {
       setLocation('/login')
     }
-  }, [])
+  }, [setLocation])
 
+  // Early return AFTER all hooks are declared
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -418,15 +429,6 @@ export default function MenuManagement() {
       </div>
     )
   }
-
-  // Get categories for filtering - combining with database categories
-  const { data: dbCategories = [] } = useQuery({
-    queryKey: ['/api/menu-categories'],
-    queryFn: async (): Promise<MenuCategory[]> => {
-      const response = await fetch('/api/menu-categories');
-      return response.json();
-    },
-  });
 
   const categories = ['All', ...dbCategories.map(cat => cat.name)]
   
