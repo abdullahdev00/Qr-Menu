@@ -37,8 +37,8 @@ interface RestaurantUser {
   name: string
   email: string
   role: string
-  restaurantId: string
-  restaurantName: string
+  restaurantId?: string
+  restaurantName?: string
 }
 
 interface MenuItem {
@@ -79,7 +79,7 @@ function AddItemDialog() {
       calories: undefined,
       isAvailable: true,
       displayOrder: 0,
-      restaurantId: "a7477822-2020-425e-b984-94b05f367568", // Al-Baik Restaurant ID
+      restaurantId: "", // Will be set dynamically
       categoryId: undefined
     },
   });
@@ -126,6 +126,8 @@ function AddItemDialog() {
     // Convert ingredients and allergens from comma-separated strings to arrays
     const processedData = {
       ...data,
+      // Use first available restaurant if admin, or user's restaurant if restaurant user
+      restaurantId: data.restaurantId || "a7477822-2020-425e-b984-94b05f367568", // Default to Al-Baik Restaurant
       ingredients: typeof data.ingredients === 'string' 
         ? data.ingredients.split(',').map(i => i.trim()).filter(Boolean)
         : data.ingredients || [],
@@ -396,7 +398,8 @@ export default function MenuManagement() {
     const storedUser = localStorage.getItem('user')
     if (storedUser) {
       const userData = JSON.parse(storedUser)
-      if (userData.role === 'restaurant') {
+      // Allow both admin and restaurant users
+      if (userData.role === 'restaurant' || userData.role === 'super_admin' || userData.role === 'admin') {
         setUser(userData)
       } else {
         setLocation('/dashboard')
