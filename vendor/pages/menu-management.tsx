@@ -57,6 +57,343 @@ interface MenuItem {
 }
 
 
+// Edit Item Dialog Component
+function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+  const { toast } = useToast();
+  
+  const form = useForm<InsertMenuItem>({
+    resolver: zodResolver(insertMenuItemSchema),
+    defaultValues: {
+      name: item?.name || "",
+      description: item?.description || "",
+      price: item?.price || "",
+      currency: item?.currency || "PKR",
+      image: item?.image || "",
+      ingredients: item?.ingredients || [],
+      allergens: item?.allergens || [],
+      isVegan: item?.isVegan || false,
+      isVegetarian: item?.isVegetarian || false,
+      isSpicy: item?.isSpicy || false,
+      preparationTime: item?.preparationTime || undefined,
+      calories: item?.calories || undefined,
+      isAvailable: item?.isAvailable || true,
+      displayOrder: item?.displayOrder || 0,
+      restaurantId: item?.restaurantId || "",
+      categoryId: item?.categoryId || undefined
+    },
+  });
+
+  // Get categories for select dropdown
+  const { data: categories = [] } = useQuery({
+    queryKey: ['/api/menu-categories'],
+    queryFn: async (): Promise<MenuCategory[]> => {
+      const response = await fetch('/api/menu-categories');
+      return response.json();
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: InsertMenuItem) => {
+      const response = await fetch(`/api/menu-items/${item.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      onOpenChange(false);
+      toast({
+        title: "Item Updated!",
+        description: "Menu item has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update menu item. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = async (data: InsertMenuItem) => {
+    // Convert ingredients and allergens from comma-separated strings to arrays
+    const processedData = {
+      ...data,
+      restaurantId: data.restaurantId || item.restaurantId,
+      ingredients: typeof data.ingredients === 'string' 
+        ? data.ingredients.split(',').map(i => i.trim()).filter(Boolean)
+        : data.ingredients || [],
+      allergens: typeof data.allergens === 'string'
+        ? data.allergens.split(',').map(a => a.trim()).filter(Boolean) 
+        : data.allergens || [],
+    };
+    
+    updateMutation.mutate(processedData);
+  };
+
+  // Update form when item changes
+  React.useEffect(() => {
+    if (item) {
+      form.reset({
+        name: item.name || "",
+        description: item.description || "",
+        price: item.price || "",
+        currency: item.currency || "PKR",
+        image: item.image || "",
+        ingredients: item.ingredients || [],
+        allergens: item.allergens || [],
+        isVegan: item.isVegan || false,
+        isVegetarian: item.isVegetarian || false,
+        isSpicy: item.isSpicy || false,
+        preparationTime: item.preparationTime || undefined,
+        calories: item.calories || undefined,
+        isAvailable: item.isAvailable || true,
+        displayOrder: item.displayOrder || 0,
+        restaurantId: item.restaurantId || "",
+        categoryId: item.categoryId || undefined
+      });
+    }
+  }, [item, form]);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Menu Item</DialogTitle>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Basic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Item Name *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Chicken Karahi" {...field} data-testid="input-edit-name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-edit-category">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Delicious traditional chicken curry with aromatic spices..."
+                      rows={3}
+                      {...field}
+                      value={field.value || ""}
+                      data-testid="textarea-edit-description"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Price and Details */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price (PKR) *</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="850" 
+                        {...field}
+                        data-testid="input-edit-price"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="preparationTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Prep Time (minutes)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="25"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value || ""}
+                        data-testid="input-edit-prep-time"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="calories"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Calories</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="650"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        value={field.value || ""}
+                        data-testid="input-edit-calories"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Dietary Options */}
+            <div className="space-y-4">
+              <Label>Dietary Information</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <FormField
+                  control={form.control}
+                  name="isVegetarian"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-edit-vegetarian"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Vegetarian</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="isVegan"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-edit-vegan"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Vegan</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="isSpicy"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-edit-spicy"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Spicy</FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="isAvailable"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          data-testid="checkbox-edit-available"
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">Available</FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+                data-testid="button-edit-cancel"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={updateMutation.isPending}
+                data-testid="button-edit-submit"
+              >
+                {updateMutation.isPending ? "Updating..." : "Update Item"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // Add Item Dialog Component
 function AddItemDialog() {
   const [isOpen, setIsOpen] = useState(false);
@@ -384,6 +721,8 @@ export default function MenuManagement() {
   const [user, setUser] = useState<RestaurantUser | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
+  const [editingItem, setEditingItem] = useState<any>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   
   // MOVE ALL HOOKS TO TOP LEVEL - Fix for React Error #310
   // Load menu items from database
@@ -622,7 +961,14 @@ export default function MenuManagement() {
                   <span className="text-xl font-bold text-gray-900 dark:text-white">{item.currency} {item.price}</span>
                 </div>
                 <div className="flex space-x-2">
-                  <button className="p-2 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900 transition-colors" data-testid={`button-edit-${item.id}`}>
+                  <button 
+                    onClick={() => {
+                      setEditingItem(item);
+                      setIsEditDialogOpen(true);
+                    }}
+                    className="p-2 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900 transition-colors" 
+                    data-testid={`button-edit-${item.id}`}
+                  >
                     <Edit3 className="w-4 h-4" />
                   </button>
                   <button className="p-2 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900 transition-colors" data-testid={`button-delete-${item.id}`}>
@@ -649,6 +995,13 @@ export default function MenuManagement() {
           </div>
         )}
       </div>
+
+      {/* Edit Dialog */}
+      <EditItemDialog 
+        item={editingItem} 
+        isOpen={isEditDialogOpen} 
+        onOpenChange={setIsEditDialogOpen}
+      />
 
     </div>
   )
