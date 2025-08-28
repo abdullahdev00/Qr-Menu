@@ -22,6 +22,7 @@ import AnalyticsPage from '../pages/analytics';
 import SupportPage from '../pages/support';
 import TestButtonPage from '../pages/test-button';
 import MenuManagementPage from '../../vendor/pages/menu-management';
+import VendorDashboardPage from '../../vendor/pages/dashboard';
 
 import MainLayout from '../components/layout/main-layout';
 
@@ -93,6 +94,7 @@ function App() {
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
                     <Route path="/test-button" component={TestButtonPage} />
+                    <Route path="/vendor/dashboard" component={VendorDashboardPage} />
                     <Route path="/vendor/menu-management" component={MenuManagementPage} />
                   </Switch>
                 </MainLayout>

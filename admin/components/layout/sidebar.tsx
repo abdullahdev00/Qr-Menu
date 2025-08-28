@@ -33,12 +33,12 @@ const adminNavigation = [
 ];
 
 const restaurantNavigation = [
-  { name: "Dashboard", href: "/restaurant-dashboard", icon: BarChart3 },
+  { name: "Dashboard", href: "/vendor/dashboard", icon: BarChart3 },
   { name: "Menu Management", href: "/vendor/menu-management", icon: Utensils },
-  { name: "QR Codes", href: "/qr-codes", icon: QrCode },
-  { name: "Analytics", href: "/analytics", icon: PieChart },
-  { name: "Orders", href: "/orders", icon: Store, badge: "5" },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "QR Codes", href: "/vendor/qr-codes", icon: QrCode },
+  { name: "Analytics", href: "/vendor/analytics", icon: PieChart },
+  { name: "Orders", href: "/vendor/orders", icon: Store, badge: "5" },
+  { name: "Settings", href: "/vendor/settings", icon: Settings },
 ];
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -106,7 +106,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Navigation Menu - with controlled height and hidden overflow */}
           <nav className="space-y-1 flex-1 overflow-y-hidden pb-32">
             {navigation.map((item, index) => {
-              const isActive = location === item.href || (location === "/" && item.href === "/dashboard");
+              const isActive = location === item.href || 
+                (location === "/" && item.href === "/dashboard") ||
+                (location === "/" && user?.role === 'restaurant' && item.href === "/vendor/dashboard");
               const gradients = [
                 'from-blue-500 to-blue-600',
                 'from-emerald-500 to-emerald-600', 
