@@ -79,7 +79,7 @@ function AddItemDialog() {
       calories: undefined,
       isAvailable: true,
       displayOrder: 0,
-      restaurantId: "cb076ec8-d052-4176-928e-c914eb11af04", // This should come from context/auth
+      restaurantId: "a7477822-2020-425e-b984-94b05f367568", // Al-Baik Restaurant ID
       categoryId: undefined
     },
   });
