@@ -33,6 +33,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
         return 'Support Tickets';
       case '/analytics':
         return 'Analytics';
+      case '/vendor/dashboard':
+        return 'Restaurant Dashboard';
+      case '/vendor/menu-management':
+        return 'Menu Management';
+      case '/vendor/analytics':
+        return 'Analytics';
+      case '/vendor/orders':
+        return 'Orders';
+      case '/vendor/settings':
+        return 'Settings';
       default:
         return 'Dashboard';
     }
