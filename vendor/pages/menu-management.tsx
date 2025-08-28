@@ -104,7 +104,10 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
       return response.json();
     },
     onSuccess: () => {
+      // Force refetch menu items immediately
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      
       onOpenChange(false);
       toast({
         title: "Item Updated!",
@@ -399,6 +402,16 @@ function AddItemDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   
+  // Get user from localStorage to access restaurantId
+  const [currentUser, setCurrentUser] = useState<RestaurantUser | null>(null);
+  
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    }
+  }, []);
+  
   const form = useForm<InsertMenuItem>({
     resolver: zodResolver(insertMenuItemSchema),
     defaultValues: {
@@ -441,8 +454,11 @@ function AddItemDialog() {
       });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (newItem) => {
+      // Force refetch menu items immediately
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      
       setIsOpen(false);
       form.reset();
       toast({
@@ -460,11 +476,22 @@ function AddItemDialog() {
   });
 
   const onSubmit = async (data: InsertMenuItem) => {
+    // Get the correct restaurant ID from current user or use the first available restaurant
+    let restaurantId = data.restaurantId;
+    
+    if (!restaurantId) {
+      if (currentUser && currentUser.restaurantId) {
+        restaurantId = currentUser.restaurantId;
+      } else {
+        // Use first available restaurant ID from database
+        restaurantId = "74afb71f-89fb-4cd6-94b8-c43b09e93118"; // Al-Baik Restaurant - correct ID
+      }
+    }
+    
     // Convert ingredients and allergens from comma-separated strings to arrays
     const processedData = {
       ...data,
-      // Use first available restaurant if admin, or user's restaurant if restaurant user  
-      restaurantId: data.restaurantId || "da22f73c-ef6f-42a2-9718-ce989f8e579a", // Default to Al-Baik Restaurant
+      restaurantId: restaurantId,
       ingredients: typeof data.ingredients === 'string' 
         ? data.ingredients.split(',').map(i => i.trim()).filter(Boolean)
         : data.ingredients || [],
@@ -836,12 +863,14 @@ export default function MenuManagement() {
   
   // MOVE ALL HOOKS TO TOP LEVEL - Fix for React Error #310
   // Load menu items from database
-  const { data: menuItems = [], isLoading } = useQuery({
+  const { data: menuItems = [], isLoading, refetch: refetchMenuItems } = useQuery({
     queryKey: ['/api/menu-items'],
     queryFn: async () => {
       const response = await fetch('/api/menu-items');
       return response.json();
     },
+    staleTime: 0, // Always refetch data when component mounts
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
   });
 
   // Get categories for filtering - combining with database categories
@@ -851,6 +880,8 @@ export default function MenuManagement() {
       const response = await fetch('/api/menu-categories');
       return response.json();
     },
+    staleTime: 0, // Always fresh data
+    refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
