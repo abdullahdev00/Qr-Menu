@@ -27,7 +27,8 @@ import {
   Utensils,
   TrendingUp,
   AlertCircle,
-  Timer
+  Timer,
+  MoreVertical
 } from 'lucide-react'
 import { Order, OrderItem } from '@shared/schema'
 import { format } from 'date-fns'
@@ -44,7 +45,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../admin/components/ui/dropdown-menu"
-import { StatsSkeleton, OrdersListSkeleton } from '../../admin/components/ui/loading-skeleton'
+import { StatsSkeleton, OrdersListSkeleton, TableRowSkeleton } from '../../admin/components/ui/loading-skeleton'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../admin/components/ui/table"
 
 interface User {
   id: string
@@ -109,6 +118,7 @@ export default function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null)
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards')
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
@@ -401,6 +411,30 @@ export default function OrdersPage() {
                 </SelectContent>
               </Select>
             </div>
+            
+            {/* View Toggle */}
+            <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                  viewMode === 'cards'
+                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                Cards
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                  viewMode === 'table'
+                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                Table
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -408,7 +442,30 @@ export default function OrdersPage() {
       {/* Orders List */}
       <div className="space-y-4">
         {isLoading ? (
-          <OrdersListSkeleton items={6} />
+          viewMode === 'cards' ? (
+            <OrdersListSkeleton items={6} />
+          ) : (
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Order</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Items</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <TableRowSkeleton key={i} cols={7} />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )
         ) : filteredOrders.length === 0 ? (
           <Card className="text-center p-12">
             <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -421,11 +478,118 @@ export default function OrdersPage() {
                 : 'You haven\'t received any orders yet.'}
             </p>
           </Card>
-        ) : (
+        ) : viewMode === 'cards' ? (
           <div className="grid gap-6">
             {filteredOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))}
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Order</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Items</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredOrders.map((order) => (
+                  <TableRow key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer" onClick={() => setSelectedOrder(order)}>
+                    <TableCell>
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 bg-gradient-to-br ${statusConfig[order.status as keyof typeof statusConfig].gradient} rounded-lg flex items-center justify-center`}>
+                          <Package className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium">#{order.orderNumber}</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{order.deliveryType.replace('_', ' ')}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{order.customerName || 'Walk-in Customer'}</div>
+                        {order.customerPhone && (
+                          <div className="text-sm text-gray-500 dark:text-gray-400">{order.customerPhone}</div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={statusConfig[order.status as keyof typeof statusConfig].color}>
+                        {statusConfig[order.status as keyof typeof statusConfig].label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {order.items && order.items.length > 0 ? (
+                          <div>
+                            <div className="font-medium">{order.items[0].menuItem.name}</div>
+                            {order.items.length > 1 && (
+                              <div className="text-gray-500 dark:text-gray-400">+{order.items.length - 1} more items</div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">No items</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-bold text-lg">PKR {order.totalAmount}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{order.paymentMethod}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {order.createdAt ? format(new Date(order.createdAt), 'MMM dd, yyyy') : 'N/A'}
+                        <div className="text-gray-500 dark:text-gray-400">
+                          {order.createdAt ? format(new Date(order.createdAt), 'hh:mm a') : ''}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedOrder(order)
+                          }}
+                          className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg transition-colors"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                            >
+                              <MoreVertical className="w-4 h-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => console.log('Update status', order.id)}>
+                              Update Status
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => console.log('Print receipt', order.id)}>
+                              Print Receipt
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => console.log('Contact customer', order.id)}>
+                              Contact Customer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>
