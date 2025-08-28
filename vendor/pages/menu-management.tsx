@@ -32,6 +32,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { queryClient } from '../../admin/lib/queryClient'
 import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../shared/schema'
 import { ClearStorageButton } from '../../admin/components/clear-storage'
+import { MenuItemSkeleton, StatsSkeleton } from '../../admin/components/ui/loading-skeleton'
 
 interface RestaurantUser {
   id: string
@@ -104,10 +105,10 @@ function EditItemDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boo
       });
       return response.json();
     },
-    onSuccess: () => {
-      // Force refetch menu items immediately
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+    onSuccess: async () => {
+      // Aggressive cache invalidation for instant updates
+      await queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
       
       onOpenChange(false);
       toast({
@@ -458,10 +459,13 @@ function AddItemDialog() {
       });
       return response.json();
     },
-    onSuccess: (newItem) => {
-      // Force refetch menu items immediately
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+    onSuccess: async (newItem) => {
+      // Aggressive cache invalidation for instant updates
+      await queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      
+      // Also refetch categories in case new ones were added
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-categories'] });
       
       setIsOpen(false);
       form.reset();
@@ -771,11 +775,11 @@ function DeleteConfirmationDialog({ item, isOpen, onOpenChange }: { item: any, i
       console.log('Delete successful:', result);
       return result;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       console.log('Delete mutation successful, invalidating cache...');
-      // Invalidate and refetch the menu items cache
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      // Aggressive cache invalidation for instant updates
+      await queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
       
       // Close dialog and reset form
       onOpenChange(false);
@@ -870,15 +874,17 @@ export default function MenuManagement() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   
   // MOVE ALL HOOKS TO TOP LEVEL - Fix for React Error #310
-  // Load menu items from database
+  // Load menu items from database with aggressive refetching
   const { data: menuItems = [], isLoading, refetch: refetchMenuItems } = useQuery({
     queryKey: ['/api/menu-items'],
     queryFn: async () => {
       const response = await fetch('/api/menu-items');
       return response.json();
     },
-    staleTime: 0, // Always refetch data when component mounts
+    staleTime: 0, // Always consider data stale
     refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchOnMount: true, // Always refetch on mount
+    refetchInterval: 10000, // Refetch every 10 seconds
   });
 
   // Get categories for filtering - combining with database categories
@@ -956,47 +962,51 @@ export default function MenuManagement() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-900 dark:to-blue-950/30 rounded-xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-              <Package className="w-6 h-6 text-white" />
+      {isLoading ? (
+        <StatsSkeleton />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-900 dark:to-blue-950/30 rounded-xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                <Package className="w-6 h-6 text-white" />
+              </div>
             </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalItems}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Total Items</p>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalItems}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Total Items</p>
-        </div>
 
-        <div className="bg-gradient-to-br from-white to-green-50/50 dark:from-gray-900 dark:to-green-950/30 rounded-xl p-6 border border-green-200/50 dark:border-green-800/30 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-              <ChefHat className="w-6 h-6 text-white" />
+          <div className="bg-gradient-to-br from-white to-green-50/50 dark:from-gray-900 dark:to-green-950/30 rounded-xl p-6 border border-green-200/50 dark:border-green-800/30 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                <ChefHat className="w-6 h-6 text-white" />
+              </div>
             </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.availableItems}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Available</p>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.availableItems}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Available</p>
-        </div>
 
-        <div className="bg-gradient-to-br from-white to-purple-50/50 dark:from-gray-900 dark:to-purple-950/30 rounded-xl p-6 border border-purple-200/50 dark:border-purple-800/30 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <Star className="w-6 h-6 text-white" />
+          <div className="bg-gradient-to-br from-white to-purple-50/50 dark:from-gray-900 dark:to-purple-950/30 rounded-xl p-6 border border-purple-200/50 dark:border-purple-800/30 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <Star className="w-6 h-6 text-white" />
+              </div>
             </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.popularItems}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Popular Items</p>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.popularItems}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Popular Items</p>
-        </div>
 
-        <div className="bg-gradient-to-br from-white to-orange-50/50 dark:from-gray-900 dark:to-orange-950/30 rounded-xl p-6 border border-orange-200/50 dark:border-orange-800/30 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-white" />
+          <div className="bg-gradient-to-br from-white to-orange-50/50 dark:from-gray-900 dark:to-orange-950/30 rounded-xl p-6 border border-orange-200/50 dark:border-orange-800/30 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
             </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.avgRating}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Avg Rating</p>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.avgRating}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Avg Rating</p>
         </div>
-      </div>
+      )}
 
       {/* Search and Filter */}
       <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
@@ -1031,11 +1041,10 @@ export default function MenuManagement() {
       {/* Menu Items Grid */}
       <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600 dark:text-gray-300">Loading menu items...</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <MenuItemSkeleton key={i} />
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
