@@ -44,6 +44,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../admin/components/ui/dropdown-menu"
+import { StatsSkeleton, OrdersListSkeleton } from '../../admin/components/ui/loading-skeleton'
 
 interface User {
   id: string
@@ -323,6 +324,9 @@ export default function OrdersPage() {
       </div>
 
       {/* Stats Cards */}
+      {isLoading ? (
+        <StatsSkeleton />
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-gradient-to-br from-white to-blue-50/50 dark:from-gray-900 dark:to-blue-950/30 rounded-xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-lg">
           <div className="flex items-center justify-between mb-4">
@@ -365,6 +369,7 @@ export default function OrdersPage() {
           <p className="text-sm text-gray-600 dark:text-gray-300">Cancelled</p>
         </div>
       </div>
+      )}
 
       {/* Search and Filter */}
       <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
@@ -402,7 +407,9 @@ export default function OrdersPage() {
 
       {/* Orders List */}
       <div className="space-y-4">
-        {filteredOrders.length === 0 ? (
+        {isLoading ? (
+          <OrdersListSkeleton items={6} />
+        ) : filteredOrders.length === 0 ? (
           <Card className="text-center p-12">
             <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Package className="w-8 h-8 text-gray-400" />

@@ -150,3 +150,64 @@ export function ListSkeleton({ items = 5 }: { items?: number }) {
     </div>
   )
 }
+
+// Order card skeleton
+export function OrderCardSkeleton() {
+  return (
+    <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 border-gray-200/50 dark:border-gray-700/50 shadow-lg rounded-xl overflow-hidden">
+      {/* Header */}
+      <div className="p-6 pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded-xl animate-pulse" />
+            <div>
+              <Skeleton className="h-5 w-32 mb-1" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-md" />
+          </div>
+        </div>
+      </div>
+      
+      {/* Content */}
+      <div className="px-6 pb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-4 w-36" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+        </div>
+        
+        {/* Order items section */}
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <Skeleton className="h-4 w-20 mb-2" />
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-6 w-16 rounded-full" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-6 w-14 rounded-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Orders list skeleton
+export function OrdersListSkeleton({ items = 6 }: { items?: number }) {
+  return (
+    <div className="space-y-6">
+      {Array.from({ length: items }).map((_, i) => (
+        <OrderCardSkeleton key={i} />
+      ))}
+    </div>
+  )
+}
