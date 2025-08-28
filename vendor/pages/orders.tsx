@@ -334,10 +334,10 @@ export default function OrdersPage() {
           <p className="text-sm text-gray-600 dark:text-gray-300">Total Orders</p>
         </div>
 
-        <div className="bg-gradient-to-br from-white to-yellow-50/50 dark:from-gray-900 dark:to-yellow-950/30 rounded-xl p-6 border border-yellow-200/50 dark:border-yellow-800/30 shadow-lg">
+        <div className="bg-gradient-to-br from-white to-orange-50/50 dark:from-gray-900 dark:to-orange-950/30 rounded-xl p-6 border border-orange-200/50 dark:border-orange-800/30 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
-              <Timer className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Timer className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
           </div>
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stats.pending}</h3>
