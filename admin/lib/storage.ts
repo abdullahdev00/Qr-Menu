@@ -12,6 +12,8 @@ import {
   users,
   menuCategories,
   menuItems,
+  orders,
+  orderItems,
   type AdminUser, type InsertAdminUser,
   type Restaurant, type InsertRestaurant,
   type SubscriptionPlan, type InsertSubscriptionPlan,
@@ -21,7 +23,9 @@ import {
   type RestaurantTable, type InsertRestaurantTable,
   type User, type InsertUser,
   type MenuCategory, type InsertMenuCategory,
-  type MenuItem, type InsertMenuItem
+  type MenuItem, type InsertMenuItem,
+  type Order, type InsertOrder,
+  type OrderItem, type InsertOrderItem
 } from "../../shared/schema";
 
 const sql = postgres(process.env.DATABASE_URL!);
@@ -202,6 +206,128 @@ class Storage {
             isActive: true,
           }
         ]);
+      }
+
+      // Check if orders exist and add demo orders with available menu items
+      const existingOrders = await db.select().from(orders).limit(1);
+      
+      if (existingOrders.length === 0) {
+        const restaurantsList = await db.select().from(restaurants);
+        const availableMenuItems = await db.select().from(menuItems).where(eq(menuItems.isAvailable, true));
+        
+        if (restaurantsList.length > 0 && availableMenuItems.length > 0) {
+          const restaurant = restaurantsList[0]; // Al-Baik Restaurant
+          
+          // Create demo orders with available menu items
+          const order1 = await db.insert(orders).values({
+            restaurantId: restaurant.id,
+            customerName: "Ali Ahmed",
+            customerPhone: "03001234567",
+            orderNumber: 1001,
+            status: "completed",
+            totalAmount: "1650.00",
+            currency: "PKR",
+            deliveryType: "dine_in",
+            paymentMethod: "cash",
+            paymentStatus: "paid",
+            specialInstructions: "Extra spicy please",
+            estimatedTime: 25,
+          }).returning();
+
+          const order2 = await db.insert(orders).values({
+            restaurantId: restaurant.id,
+            customerName: "Fatima Khan",
+            customerPhone: "03009876543",
+            orderNumber: 1002,
+            status: "preparing",
+            totalAmount: "2100.00",
+            currency: "PKR",
+            deliveryType: "takeaway",
+            paymentMethod: "card",
+            paymentStatus: "paid",
+            specialInstructions: "No onions",
+            estimatedTime: 30,
+          }).returning();
+
+          const order3 = await db.insert(orders).values({
+            restaurantId: restaurant.id,
+            customerName: "Ahmed Hassan",
+            customerPhone: "03007654321",
+            orderNumber: 1003,
+            status: "pending",
+            totalAmount: "1200.00",
+            currency: "PKR",
+            deliveryType: "delivery",
+            deliveryAddress: "Model Town, Lahore",
+            paymentMethod: "online",
+            paymentStatus: "pending",
+            specialInstructions: "Call before delivery",
+            estimatedTime: 45,
+          }).returning();
+
+          // Add order items using available menu items
+          if (order1.length > 0 && availableMenuItems.length >= 2) {
+            // Order 1 items
+            await db.insert(orderItems).values([
+              {
+                orderId: order1[0].id,
+                menuItemId: availableMenuItems[0].id, // Pizza
+                quantity: 2,
+                unitPrice: availableMenuItems[0].price,
+                totalPrice: (parseFloat(availableMenuItems[0].price) * 2).toFixed(2),
+                specialRequests: "Extra cheese"
+              },
+              {
+                orderId: order1[0].id,
+                menuItemId: availableMenuItems[1].id, // Chicken
+                quantity: 1,
+                unitPrice: availableMenuItems[1].price,
+                totalPrice: availableMenuItems[1].price,
+                specialRequests: "Well done"
+              }
+            ]);
+          }
+
+          if (order2.length > 0 && availableMenuItems.length >= 3) {
+            // Order 2 items
+            await db.insert(orderItems).values([
+              {
+                orderId: order2[0].id,
+                menuItemId: availableMenuItems[2].id, // Special Pizza
+                quantity: 2,
+                unitPrice: availableMenuItems[2].price,
+                totalPrice: (parseFloat(availableMenuItems[2].price) * 2).toFixed(2),
+              },
+              {
+                orderId: order2[0].id,
+                menuItemId: availableMenuItems[1].id, // Chicken
+                quantity: 1,
+                unitPrice: availableMenuItems[1].price,
+                totalPrice: availableMenuItems[1].price,
+              }
+            ]);
+          }
+
+          if (order3.length > 0 && availableMenuItems.length >= 2) {
+            // Order 3 items
+            await db.insert(orderItems).values([
+              {
+                orderId: order3[0].id,
+                menuItemId: availableMenuItems[0].id, // Pizza
+                quantity: 1,
+                unitPrice: availableMenuItems[0].price,
+                totalPrice: availableMenuItems[0].price,
+              },
+              {
+                orderId: order3[0].id,
+                menuItemId: availableMenuItems[1].id, // Chicken
+                quantity: 1,
+                unitPrice: availableMenuItems[1].price,
+                totalPrice: availableMenuItems[1].price,
+              }
+            ]);
+          }
+        }
       }
 
       console.log('✅ Database initialized');
@@ -488,6 +614,59 @@ class Storage {
   async getUserByUsername(username: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
     return result[0];
+  }
+
+  // Orders Methods
+  async getOrders(restaurantId?: string): Promise<Order[]> {
+    const query = db.select().from(orders);
+    if (restaurantId) {
+      return await query.where(eq(orders.restaurantId, restaurantId)).orderBy(desc(orders.createdAt));
+    }
+    return await query.orderBy(desc(orders.createdAt));
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+    return result[0];
+  }
+
+  async createOrder(order: InsertOrder): Promise<Order> {
+    const result = await db.insert(orders).values(order).returning();
+    return result[0];
+  }
+
+  async updateOrder(id: string, order: Partial<Order>): Promise<Order | undefined> {
+    const result = await db.update(orders).set(order).where(eq(orders.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteOrder(id: string): Promise<boolean> {
+    const result = await db.delete(orders).where(eq(orders.id, id));
+    return result.length > 0;
+  }
+
+  // Order Items Methods
+  async getOrderItems(orderId?: string): Promise<OrderItem[]> {
+    const query = db.select().from(orderItems);
+    if (orderId) {
+      return await query.where(eq(orderItems.orderId, orderId));
+    }
+    return await query;
+  }
+
+  async createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem> {
+    const result = await db.insert(orderItems).values(orderItem).returning();
+    return result[0];
+  }
+
+  async updateOrderItem(id: string, orderItem: Partial<OrderItem>): Promise<OrderItem | undefined> {
+    const result = await db.update(orderItems).set(orderItem).where(eq(orderItems.id, id)).returning();
+    return result[0];
+  }
+
+  async deleteOrderItem(id: string): Promise<boolean> {
+    const result = await db.delete(orderItems).where(eq(orderItems.id, id));
+    return result.length > 0;
   }
 }
 
