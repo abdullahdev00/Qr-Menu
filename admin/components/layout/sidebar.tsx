@@ -34,7 +34,7 @@ const adminNavigation = [
 
 const restaurantNavigation = [
   { name: "Dashboard", href: "/restaurant-dashboard", icon: BarChart3 },
-  { name: "Menu Management", href: "/menu-management", icon: Utensils },
+  { name: "Menu Management", href: "/vendor/menu-management", icon: Utensils },
   { name: "QR Codes", href: "/qr-codes", icon: QrCode },
   { name: "Analytics", href: "/analytics", icon: PieChart },
   { name: "Orders", href: "/orders", icon: Store, badge: "5" },

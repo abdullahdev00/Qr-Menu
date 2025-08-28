@@ -93,7 +93,7 @@ function App() {
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
                     <Route path="/test-button" component={TestButtonPage} />
-                    <Route path="/menu-management" component={MenuManagementPage} />
+                    <Route path="/vendor/menu-management" component={MenuManagementPage} />
                   </Switch>
                 </MainLayout>
               </Route>
