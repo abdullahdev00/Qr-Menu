@@ -716,6 +716,100 @@ function AddItemDialog() {
   );
 }
 
+// Delete Confirmation Dialog Component
+function DeleteConfirmationDialog({ item, isOpen, onOpenChange }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+  const [confirmText, setConfirmText] = useState("");
+  const { toast } = useToast();
+  
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/menu-items/${item.id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete item');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      onOpenChange(false);
+      setConfirmText("");
+      toast({
+        title: "Item Deleted!",
+        description: "Menu item has been successfully deleted.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete menu item. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDelete = () => {
+    if (confirmText === "DELETE") {
+      deleteMutation.mutate();
+    }
+  };
+
+  const isDeleteEnabled = confirmText === "DELETE";
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-red-600">Delete Menu Item</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Are you sure you want to delete <strong>"{item?.name}"</strong>? This action cannot be undone.
+          </p>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Type <span className="font-bold text-red-600">DELETE</span> to confirm:
+            </label>
+            <input
+              type="text"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:text-white"
+              placeholder="Type DELETE here"
+              data-testid="input-delete-confirm"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-2 pt-4">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => {
+              onOpenChange(false);
+              setConfirmText("");
+            }}
+            data-testid="button-cancel-delete"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDelete}
+            disabled={!isDeleteEnabled || deleteMutation.isPending}
+            variant="destructive"
+            data-testid="button-confirm-delete"
+          >
+            {deleteMutation.isPending ? "Deleting..." : "Delete Item"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function MenuManagement() {
   const [, setLocation] = useLocation()
   const [user, setUser] = useState<RestaurantUser | null>(null)
@@ -723,6 +817,8 @@ export default function MenuManagement() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [editingItem, setEditingItem] = useState<any>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [deletingItem, setDeletingItem] = useState<any>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   
   // MOVE ALL HOOKS TO TOP LEVEL - Fix for React Error #310
   // Load menu items from database
@@ -971,7 +1067,14 @@ export default function MenuManagement() {
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
-                  <button className="p-2 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900 transition-colors" data-testid={`button-delete-${item.id}`}>
+                  <button 
+                    onClick={() => {
+                      setDeletingItem(item);
+                      setIsDeleteDialogOpen(true);
+                    }}
+                    className="p-2 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900 transition-colors" 
+                    data-testid={`button-delete-${item.id}`}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -1001,6 +1104,13 @@ export default function MenuManagement() {
         item={editingItem} 
         isOpen={isEditDialogOpen} 
         onOpenChange={setIsEditDialogOpen}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog 
+        item={deletingItem} 
+        isOpen={isDeleteDialogOpen} 
+        onOpenChange={setIsDeleteDialogOpen}
       />
 
     </div>
