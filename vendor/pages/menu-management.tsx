@@ -723,22 +723,36 @@ function DeleteConfirmationDialog({ item, isOpen, onOpenChange }: { item: any, i
   
   const deleteMutation = useMutation({
     mutationFn: async () => {
+      console.log('Deleting item with ID:', item.id);
       const response = await fetch(`/api/menu-items/${item.id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
-        throw new Error('Failed to delete item');
+        const errorText = await response.text();
+        console.error('Delete failed:', response.status, errorText);
+        throw new Error(`Failed to delete item: ${response.status}`);
       }
-      return response.json();
+      const result = await response.json();
+      console.log('Delete successful:', result);
+      return result;
     },
     onSuccess: () => {
+      console.log('Delete mutation successful, invalidating cache...');
+      // Invalidate and refetch the menu items cache
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      
+      // Close dialog and reset form
       onOpenChange(false);
       setConfirmText("");
+      
+      // Show success message
       toast({
         title: "Item Deleted!",
         description: "Menu item has been successfully deleted.",
       });
+      
+      console.log('Cache invalidated and refetched');
     },
     onError: (error) => {
       toast({
