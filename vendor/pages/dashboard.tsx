@@ -44,10 +44,8 @@ export default function VendorDashboard() {
     enabled: !!user,
   }) as { data: any[] }
 
-  const { data: analytics = {} } = useQuery({
-    queryKey: ['/api/qr/analytics'],
-    enabled: !!user,
-  }) as { data: any }
+  // Removed QR analytics since QR functionality was deleted
+  const analytics = {}
 
   if (!user) {
     return (
@@ -62,7 +60,7 @@ export default function VendorDashboard() {
   const stats = {
     totalItems: Array.isArray(menuItems) ? menuItems.length : 0,
     activeItems: Array.isArray(menuItems) ? menuItems.filter((item: any) => item.isAvailable).length : 0,
-    totalViews: analytics?.totalScans || 245,
+    totalViews: 245, // Static since QR functionality removed
     revenue: "PKR 45,000"
   }
 
@@ -207,8 +205,8 @@ export default function VendorDashboard() {
               <span className="font-semibold text-green-600">Main Course</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-300">QR Codes</span>
-              <span className="font-semibold text-purple-600">{analytics?.totalQrCodes || 5}</span>
+              <span className="text-gray-600 dark:text-gray-300">Total Orders</span>
+              <span className="font-semibold text-purple-600">42</span>
             </div>
           </div>
         </div>

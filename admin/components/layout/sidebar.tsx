@@ -6,7 +6,6 @@ import {
   Store, 
   CreditCard, 
   Utensils, 
-  QrCode, 
   Headphones, 
   PieChart, 
   Settings,
@@ -25,8 +24,6 @@ const adminNavigation = [
   { name: "Payment Requests", href: "/payments", icon: CreditCard, badge: "5", badgeColor: "bg-orange-500" },
   { name: "Subscriptions", href: "/subscriptions", icon: CreditCard },
   { name: "Menu Templates", href: "/menu-templates", icon: Utensils },
-  { name: "QR Templates", href: "/qr-templates", icon: QrCode },
-  { name: "QR Codes", href: "/qr-codes", icon: QrCode },
   { name: "Support", href: "/support", icon: Headphones, badge: "3", badgeColor: "bg-warning" },
   { name: "Analytics", href: "/analytics", icon: PieChart },
   { name: "Settings", href: "/settings", icon: Settings },
@@ -35,7 +32,6 @@ const adminNavigation = [
 const restaurantNavigation = [
   { name: "Dashboard", href: "/vendor/dashboard", icon: BarChart3 },
   { name: "Menu Management", href: "/vendor/menu-management", icon: Utensils },
-  { name: "QR Codes", href: "/vendor/qr-codes", icon: QrCode },
   { name: "Analytics", href: "/vendor/analytics", icon: PieChart },
   { name: "Orders", href: "/vendor/orders", icon: Store, badge: "5" },
   { name: "Settings", href: "/vendor/settings", icon: Settings },
@@ -92,7 +88,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="flex items-center mb-8 px-3 group flex-shrink-0">
             <div className="relative w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-3 shadow-xl transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 cursor-pointer">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-pink-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-              <QrCode className="text-white w-6 h-6 relative z-10 drop-shadow-lg" />
+              <Utensils className="text-white w-6 h-6 relative z-10 drop-shadow-lg" />
               <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             <div className="transition-all duration-300 group-hover:translate-x-1">
