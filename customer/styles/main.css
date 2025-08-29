@@ -1068,7 +1068,16 @@ body {
     background: var(--accent-amber);
 }
 
-/* Navbar Search for Large Screens */
+/* Navbar Search Responsive Rules */
+.navbar-search {
+    display: none; /* Hidden by default on mobile */
+}
+
+.mobile-search-bar {
+    display: none; /* Hidden by default */
+}
+
+/* Show navbar search on large screens, hide mobile search icon */
 @media (min-width: 768px) {
     .navbar-search {
         display: block;
@@ -1076,6 +1085,17 @@ body {
     
     .search-toggle {
         display: none;
+    }
+}
+
+/* Show mobile search icon on small screens, hide navbar search */
+@media (max-width: 767px) {
+    .navbar-search {
+        display: none;
+    }
+    
+    .search-toggle {
+        display: flex;
     }
 }
 
