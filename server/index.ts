@@ -9,7 +9,7 @@ const app = express();
 const port = parseInt(process.env.PORT || '5000', 10);
 
 // Initialize storage to ensure database is set up
-import('../admin/lib/storage.js').then(() => {
+import('../admin/lib/storage').then(() => {
   console.log('✅ Database initialized');
 }).catch((error) => {
   console.error('❌ Database initialization failed:', error);
