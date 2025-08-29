@@ -208,6 +208,137 @@ class Storage {
         ]);
       }
 
+      // Check if menu items exist and create sample items with multiple images
+      const existingMenuItems = await db.select().from(menuItems).limit(1);
+      
+      if (existingMenuItems.length === 0) {
+        const restaurantsList = await db.select().from(restaurants);
+        const categoriesList = await db.select().from(menuCategories);
+        
+        if (restaurantsList.length > 0 && categoriesList.length > 0) {
+          const restaurant = restaurantsList[0]; // Al-Baik Restaurant
+          const mainCourseCategory = categoriesList.find(c => c.name === "Main Courses");
+          const appetizersCategory = categoriesList.find(c => c.name === "Appetizers");
+          const beveragesCategory = categoriesList.find(c => c.name === "Beverages");
+          const dessertsCategory = categoriesList.find(c => c.name === "Desserts");
+          
+          await db.insert(menuItems).values([
+            {
+              restaurantId: restaurant.id,
+              categoryId: mainCourseCategory?.id,
+              name: "Chicken Karahi",
+              description: "Traditional Pakistani chicken curry cooked with tomatoes, ginger, and aromatic spices",
+              price: "850.00",
+              currency: "PKR",
+              image: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop",
+              images: [
+                "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1574484284002-952d92456975?w=400&h=300&fit=crop"
+              ],
+              ingredients: ["chicken", "tomatoes", "ginger", "garlic", "onions", "spices"],
+              allergens: ["none"],
+              isVegan: false,
+              isVegetarian: false,
+              isSpicy: true,
+              preparationTime: 25,
+              calories: 420,
+              isAvailable: true,
+              displayOrder: 1,
+            },
+            {
+              restaurantId: restaurant.id,
+              categoryId: mainCourseCategory?.id,
+              name: "Beef Biryani",
+              description: "Aromatic basmati rice layered with tender beef and traditional spices",
+              price: "950.00",
+              currency: "PKR",
+              image: "https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop",
+              images: [
+                "https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=300&fit=crop"
+              ],
+              ingredients: ["beef", "basmati rice", "saffron", "yogurt", "spices", "onions"],
+              allergens: ["dairy"],
+              isVegan: false,
+              isVegetarian: false,
+              isSpicy: true,
+              preparationTime: 45,
+              calories: 620,
+              isAvailable: true,
+              displayOrder: 2,
+            },
+            {
+              restaurantId: restaurant.id,
+              categoryId: appetizersCategory?.id,
+              name: "Chicken Samosa",
+              description: "Crispy pastry filled with spiced chicken and vegetables",
+              price: "250.00",
+              currency: "PKR",
+              image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop",
+              images: [
+                "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1630383249896-424e482df921?w=400&h=300&fit=crop"
+              ],
+              ingredients: ["chicken", "pastry", "onions", "peas", "spices"],
+              allergens: ["gluten"],
+              isVegan: false,
+              isVegetarian: false,
+              isSpicy: false,
+              preparationTime: 15,
+              calories: 180,
+              isAvailable: true,
+              displayOrder: 1,
+            },
+            {
+              restaurantId: restaurant.id,
+              categoryId: beveragesCategory?.id,
+              name: "Fresh Mango Lassi",
+              description: "Creamy yogurt drink blended with fresh mangoes and cardamom",
+              price: "350.00",
+              currency: "PKR",
+              image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop",
+              images: [
+                "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop"
+              ],
+              ingredients: ["mango", "yogurt", "sugar", "cardamom", "ice"],
+              allergens: ["dairy"],
+              isVegan: false,
+              isVegetarian: true,
+              isSpicy: false,
+              preparationTime: 5,
+              calories: 120,
+              isAvailable: true,
+              displayOrder: 1,
+            },
+            {
+              restaurantId: restaurant.id,
+              categoryId: dessertsCategory?.id,
+              name: "Gulab Jamun",
+              description: "Soft milk dumplings in rose-scented sugar syrup",
+              price: "300.00",
+              currency: "PKR",
+              image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop",
+              images: [
+                "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop",
+                "https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=400&h=300&fit=crop"
+              ],
+              ingredients: ["milk", "flour", "sugar", "rose water", "cardamom"],
+              allergens: ["dairy", "gluten"],
+              isVegan: false,
+              isVegetarian: true,
+              isSpicy: false,
+              preparationTime: 10,
+              calories: 250,
+              isAvailable: true,
+              displayOrder: 1,
+            }
+          ]);
+        }
+      }
+
       // Check if orders exist and add demo orders with available menu items
       const existingOrders = await db.select().from(orders).limit(1);
       

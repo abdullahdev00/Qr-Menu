@@ -100,6 +100,7 @@ export const menuItems = pgTable("menu_items", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   currency: text("currency").notNull().default("PKR"),
   image: text("image"),
+  images: jsonb("images"), // Array of multiple images
   ingredients: jsonb("ingredients"), // Array of ingredients
   allergens: jsonb("allergens"), // Array of allergens
   isVegan: boolean("is_vegan").notNull().default(false),

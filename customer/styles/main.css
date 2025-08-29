@@ -276,9 +276,10 @@ body {
     height: 100%;
     padding: 0 var(--spacing-md);
     gap: var(--spacing-sm);
-    overflow-x: auto;
+    overflow-x: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    overflow-x: hidden;
 }
 
 .category-container::-webkit-scrollbar {

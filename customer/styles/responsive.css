@@ -63,7 +63,7 @@
     
     .category-container {
         justify-content: center;
-        overflow-x: visible;
+        overflow-x: hidden;
     }
     
     .header-container {
