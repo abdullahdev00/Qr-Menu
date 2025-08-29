@@ -266,8 +266,9 @@ class AuthenticationManager {
 
             let data = await response.json();
 
-            // If login fails, try registration
+            // If login fails because user not found, try registration flow
             if (!response.ok && data.error && data.error.includes('not found')) {
+                this.showSuccess('Phone verified! Please complete your profile.');
                 this.showStep('detailsStep');
                 return;
             }
@@ -276,9 +277,11 @@ class AuthenticationManager {
                 this.currentUser = data.user;
                 this.saveUserToStorage();
                 
-                if (data.isNewUser) {
+                if (data.isNewUser || !data.user.name) {
+                    this.showSuccess('Login successful! Please add your address.');
                     this.showStep('addressStep');
                 } else {
+                    this.showSuccess('Welcome back! You are signed in.');
                     this.completeAuthentication();
                 }
             } else {
@@ -521,13 +524,67 @@ class AuthenticationManager {
     }
 
     showError(message) {
-        // Simple error display - you can enhance this
-        alert(message);
+        // Create a toast notification for errors
+        this.showToast(message, 'error');
     }
 
     showSuccess(message) {
-        // Simple success display - you can enhance this
-        console.log('Success:', message);
+        // Create a toast notification for success
+        this.showToast(message, 'success');
+    }
+
+    showToast(message, type = 'success') {
+        // Remove any existing toasts
+        const existingToasts = document.querySelectorAll('.auth-toast');
+        existingToasts.forEach(toast => toast.remove());
+
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `auth-toast ${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+
+        // Add toast styles
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10b981' : '#ef4444'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 300px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+
+        document.body.appendChild(toast);
+
+        // Show toast with animation
+        setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        }, 4000);
     }
 
     completeAuthentication() {

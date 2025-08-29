@@ -57,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .set({ isUsed: true })
       .where(eq(otpVerifications.id, otpRecord[0].id));
 
-    let user;
+    let user: any = null;
 
     if (purpose === 'registration') {
       // For registration, create user without name/email first
