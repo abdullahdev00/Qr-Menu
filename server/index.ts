@@ -77,10 +77,16 @@ async function startServer() {
     }
   });
 
+  // Serve customer website
+  app.use('/customer', express.static(join(__dirname, '../customer')));
+  app.get('/customer/*', (req, res) => {
+    res.sendFile(join(__dirname, '../customer/index.html'));
+  });
+
   // Serve built static files and fallback (for both dev and production since we have the built files)
   app.use(express.static(join(__dirname, '../dist')));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api/')) {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/customer')) {
       return next();
     }
     res.sendFile(join(__dirname, '../dist/index.html'));
