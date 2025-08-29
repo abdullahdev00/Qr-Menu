@@ -60,24 +60,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let user;
 
     if (purpose === 'registration') {
-      // Create new user
-      if (!name) {
-        return res.status(400).json({ 
-          error: 'Name is required for registration' 
-        });
+      // For registration, create user without name/email first
+      // Name and email will be added in profile completion step
+      const existingUser = await db.select()
+        .from(customerUsers)
+        .where(eq(customerUsers.phoneNumber, phoneNumber))
+        .limit(1);
+
+      if (existingUser.length === 0) {
+        const newUser = await db.insert(customerUsers)
+          .values({
+            phoneNumber,
+            name: name || null,
+            email: email || null,
+            isPhoneVerified: true,
+            isActive: true
+          })
+          .returning();
+
+        user = newUser[0];
+      } else {
+        user = existingUser[0];
+        // Update phone verification status
+        await db.update(customerUsers)
+          .set({ 
+            isPhoneVerified: true,
+            updatedAt: new Date()
+          })
+          .where(eq(customerUsers.id, user.id));
       }
-
-      const newUser = await db.insert(customerUsers)
-        .values({
-          phoneNumber,
-          name,
-          email: email || null,
-          isPhoneVerified: true,
-          isActive: true
-        })
-        .returning();
-
-      user = newUser[0];
     } else if (purpose === 'login') {
       // Get existing user
       const existingUser = await db.select()

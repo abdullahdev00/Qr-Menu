@@ -16,7 +16,92 @@ const updateProfileSchema = z.object({
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    if (req.method === 'GET') {
+    if (req.method === 'POST') {
+      // Handle profile creation after OTP verification
+      const createProfileSchema = z.object({
+        phoneNumber: z.string(),
+        name: z.string().min(1, "Name is required"),
+        email: z.string().email().optional()
+      });
+
+      const { phoneNumber, name, email } = createProfileSchema.parse(req.body);
+
+      // Check if user exists
+      const existingUser = await db.select()
+        .from(customerUsers)
+        .where(eq(customerUsers.phoneNumber, phoneNumber))
+        .limit(1);
+
+      if (existingUser.length === 0) {
+        return res.status(404).json({ error: 'User not found. Please verify your phone number first.' });
+      }
+
+      // Update user profile
+      const updatedUser = await db.update(customerUsers)
+        .set({ 
+          name, 
+          email: email || null,
+          updatedAt: new Date()
+        })
+        .where(eq(customerUsers.phoneNumber, phoneNumber))
+        .returning();
+
+      const userResponse = {
+        id: updatedUser[0].id,
+        phoneNumber: updatedUser[0].phoneNumber,
+        name: updatedUser[0].name,
+        email: updatedUser[0].email,
+        isPhoneVerified: updatedUser[0].isPhoneVerified,
+        isActive: updatedUser[0].isActive,
+        createdAt: updatedUser[0].createdAt,
+        updatedAt: updatedUser[0].updatedAt
+      };
+
+      return res.status(200).json({ 
+        success: true,
+        user: userResponse 
+      });
+
+    } else if (req.method === 'PUT') {
+      // Handle profile updates
+      const updateProfileSchema = z.object({
+        phoneNumber: z.string(),
+        name: z.string().min(1, "Name is required").optional(),
+        email: z.string().email().optional()
+      });
+
+      const { phoneNumber, name, email } = updateProfileSchema.parse(req.body);
+
+      const updates: any = { updatedAt: new Date() };
+      if (name) updates.name = name;
+      if (email !== undefined) updates.email = email;
+
+      const updatedUser = await db.update(customerUsers)
+        .set(updates)
+        .where(eq(customerUsers.phoneNumber, phoneNumber))
+        .returning();
+
+      if (updatedUser.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const userResponse = {
+        id: updatedUser[0].id,
+        phoneNumber: updatedUser[0].phoneNumber,
+        name: updatedUser[0].name,
+        email: updatedUser[0].email,
+        isPhoneVerified: updatedUser[0].isPhoneVerified,
+        isActive: updatedUser[0].isActive,
+        createdAt: updatedUser[0].createdAt,
+        updatedAt: updatedUser[0].updatedAt
+      };
+
+      return res.status(200).json({ 
+        success: true,
+        user: userResponse 
+      });
+
+    } else if (req.method === 'GET') {
       const { userId } = getProfileSchema.parse(req.query);
 
       const user = await db.select()

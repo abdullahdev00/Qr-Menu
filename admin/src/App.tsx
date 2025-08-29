@@ -8,6 +8,7 @@ import { ThemeProvider } from './lib/theme-provider';
 // Import pages
 import LoginPage from '../pages/login';
 import DashboardPage from '../pages/dashboard';
+import CustomerAuthTestPage from '../pages/customer-auth-test';
 
 // Debug dashboard import
 console.log('📦 DashboardPage imported:', typeof DashboardPage);
@@ -71,6 +72,7 @@ function App() {
           {!isAuthenticated ? (
             <Switch>
               <Route path="/login" component={LoginPage} />
+              <Route path="/customer-auth-test" component={CustomerAuthTestPage} />
               <Route>
                 <Redirect to="/login" />
               </Route>
@@ -98,6 +100,7 @@ function App() {
                     <Route path="/vendor/menu-management" component={MenuManagementPage} />
                     <Route path="/vendor/analytics" component={VendorAnalyticsPage} />
                     <Route path="/vendor/orders" component={OrdersPage} />
+                    <Route path="/customer-auth-test" component={CustomerAuthTestPage} />
                   </Switch>
                 </MainLayout>
               </Route>
