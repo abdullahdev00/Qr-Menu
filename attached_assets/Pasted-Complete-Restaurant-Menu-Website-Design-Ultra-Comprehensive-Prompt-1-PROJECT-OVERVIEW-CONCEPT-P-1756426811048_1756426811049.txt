@@ -1,0 +1,667 @@
+Complete Restaurant Menu Website Design - Ultra Comprehensive Prompt
+1. PROJECT OVERVIEW & CONCEPT
+Project Type: Restaurant Menu Display Website
+Primary Purpose: Display restaurant food items with complete details for customer browsing
+Target Audience: Restaurant customers, food enthusiasts, mobile users
+Core Philosophy: Mobile-first, content-focused, clean and professional design
+Business Goal: Increase customer engagement and streamline menu browsing experience
+
+2. TECHNICAL SPECIFICATIONS
+Framework Requirements:
+
+Responsive HTML5/CSS3/JavaScript
+Mobile-first approach (min-width media queries)
+Progressive Web App capabilities
+Cross-browser compatibility (Chrome, Safari, Firefox, Edge)
+Touch-optimized interface
+Fast loading performance (<3 seconds)
+
+Device Support:
+
+Smartphones: 320px - 480px
+Tablets: 481px - 768px
+Small laptops: 769px - 1024px
+Desktop: 1025px+
+
+Performance Standards:
+
+Lighthouse score: 90+
+Core Web Vitals optimization
+Image compression and lazy loading
+Minimal JavaScript bundle size
+CDN integration ready
+
+
+3. DESIGN SYSTEM & VISUAL IDENTITY
+Color Palette:
+
+Primary Dark: #0a0a0a (main background)
+Secondary Dark: #1a1a1a (card backgrounds)
+Accent Gold: #ffa500 (prices, highlights)
+Accent Amber: #ffd700 (buttons, active states)
+Text Primary: #ffffff (main text)
+Text Secondary: #cccccc (descriptions)
+Success Green: #00c851 (available items)
+Warning Red: #ff4444 (out of stock)
+Card Background: #2a2a2a (elevated surfaces)
+
+Typography System:
+
+Primary Font: Inter/Poppins (clean, modern sans-serif)
+Secondary Font: Playfair Display (elegant headers)
+Font Weights: 300 (light), 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
+
+Mobile Typography Scale:
+
+H1 (Restaurant Name): 28px/700
+H2 (Section Headers): 24px/600
+H3 (Item Names): 18px/600
+H4 (Prices): 16px/700
+Body Text: 14px/400
+Small Text: 12px/400
+Button Text: 16px/500
+
+Desktop Typography Scale:
+
+H1: 48px/700
+H2: 36px/600
+H3: 24px/600
+H4: 20px/700
+Body: 16px/400
+Small: 14px/400
+Button: 18px/500
+
+
+4. LAYOUT ARCHITECTURE
+4.1 Mobile Layout (320px - 768px)
+Header Structure:
+
+Height: 64px fixed
+Background: rgba(10,10,10,0.95) with backdrop blur
+Content: Logo center, search right, menu left
+Z-index: 1000 (always on top)
+
+Category Navigation:
+
+Height: 56px
+Horizontal scroll container
+Snap scroll behavior
+Padding: 16px horizontal
+Gap between items: 12px
+Sticky positioning below header
+
+Main Content Area:
+
+Single column layout
+Padding: 16px sides, 24px top/bottom
+Card spacing: 16px vertical
+Full-width cards with 8px border radius
+
+Footer:
+
+Padding: 32px 16px
+Contact info, links
+Background: #1a1a1a
+
+4.2 Tablet Layout (768px - 1024px)
+Grid System:
+
+2-column card layout
+24px gap between cards
+32px container padding
+Cards: flexible width with max-width
+
+4.3 Desktop Layout (1024px+)
+Container:
+
+Max-width: 1400px
+Centered with auto margins
+48px horizontal padding
+
+Grid System:
+
+3-4 column layout
+32px gaps
+Masonry-style arrangement
+Sidebar for filters (optional)
+
+
+5. COMPONENT SPECIFICATIONS
+5.1 Navigation Header
+Mobile Header Components:
+
+Logo: 120px width, optimized SVG
+Search Icon: 24px, tap target 44px
+Menu Toggle: Hamburger, 24px lines, 44px tap target
+Animations: Smooth 0.3s transitions
+
+Desktop Header Components:
+
+Logo: 180px width
+Navigation Menu: Horizontal links with hover effects
+Search Bar: Expandable input field
+User Actions: Login/Register buttons
+
+5.2 Category Navigation
+Mobile Category Tabs:
+
+Tab Width: Auto-fit content + 24px padding
+Height: 40px
+Active State: Gold underline (3px) + background highlight
+Scroll Behavior: Smooth horizontal scroll
+Touch Feedback: Haptic feedback on selection
+
+Category List:
+
+Appetizers 🥗
+Main Course 🍖
+Chinese 🥢
+Fast Food 🍔
+Desserts 🍰
+Beverages 🥤
+Chef's Special ⭐
+
+5.3 Menu Item Cards
+Mobile Card Structure (Detailed):
+┌─────────────────────────────────┐
+│        Food Image (16:9)        │ ← 343px × 193px
+├─────────────────────────────────┤
+│ Item Name              $Price   │ ← 18px/600, 16px/700
+│ ⭐⭐⭐⭐☆ (4.2) • 25 reviews   │ ← 12px rating
+│                                 │
+│ Description text here that      │ ← 14px/400, 2 lines max
+│ explains the dish details...    │
+│                                 │
+│ 🌱 Vegan • 🌶️ Spicy • 30min   │ ← Icons + info
+│                                 │
+│ [        Add to Cart          ] │ ← Full width button
+└─────────────────────────────────┘
+Card Dimensions:
+
+Mobile: Full width - 32px margins
+Tablet: (50% - 12px gap)
+Desktop: (33.33% - 22px gap)
+
+Card States:
+
+Default: Subtle shadow, white background
+Hover: Lift effect (translateY(-4px)), increased shadow
+Active: Scale down slightly (0.98)
+Loading: Skeleton animation
+
+5.4 Menu Item Details
+Information Hierarchy:
+
+Item Name (primary heading)
+Price (prominent, right-aligned)
+Rating & Reviews (social proof)
+Description (detailed explanation)
+Dietary Information (icons + text)
+Availability Status (in stock/out of stock)
+Preparation Time (estimated minutes)
+Ingredients (expandable list)
+Nutritional Info (calories, allergens)
+Customization Options (size, spice level)
+
+Interactive Elements:
+
+Quantity Selector: +/- buttons with number display
+Size Options: Radio buttons (Small/Medium/Large)
+Spice Level: Star rating system
+Special Requests: Text area
+Add to Favorites: Heart icon toggle
+
+
+6. INTERACTIVE FEATURES & FUNCTIONALITY
+6.1 Search Functionality
+Search Input:
+
+Placeholder: "Search menu items..."
+Icon: Magnifying glass (left side)
+Clear Button: X icon (right side)
+Auto-complete: Dropdown suggestions
+Recent Searches: Local storage cache
+
+Search Filters:
+
+By Category: Dropdown selection
+By Price: Range slider
+By Dietary: Checkbox filters (vegan, gluten-free)
+By Rating: Star rating filter
+By Preparation Time: Quick/Medium/Slow
+
+6.2 Sorting Options
+Sort By Menu:
+
+Popular First (default)
+Price: Low to High
+Price: High to Low
+Newest Items
+Highest Rated
+Preparation Time
+
+6.3 Filter System
+Mobile Filter Drawer:
+
+Trigger: Filter icon in header
+Animation: Slide in from left
+Overlay: Dark backdrop (0.5 opacity)
+Close: Swipe left or backdrop tap
+
+Filter Categories:
+
+Price Range: Dual slider
+Dietary Preferences: Toggle switches
+Availability: In stock only toggle
+Rating: Minimum star selection
+Restaurant Branch: Multi-select
+
+6.4 Loading States
+Skeleton Screens:
+
+Card Skeleton: Gray placeholder blocks
+Image Skeleton: Shimmer animation
+Text Skeleton: Multiple line placeholders
+Duration: 1.5s loading cycle
+
+Progressive Loading:
+
+Images: Blur-to-sharp transition
+Content: Fade-in animations
+Staggered: Sequential card loading
+
+
+7. RESPONSIVE BEHAVIOR
+7.1 Breakpoint Strategy
+Mobile First Approach:
+css/* Base styles (mobile) */
+.menu-card { width: 100%; }
+
+/* Tablet */
+@media (min-width: 768px) {
+  .menu-card { width: calc(50% - 12px); }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .menu-card { width: calc(33.333% - 22px); }
+}
+
+/* Large Desktop */
+@media (min-width: 1400px) {
+  .menu-card { width: calc(25% - 24px); }
+}
+7.2 Touch Interactions
+Gesture Support:
+
+Swipe Left/Right: Navigate categories
+Pull to Refresh: Reload menu data
+Long Press: Quick add to favorites
+Double Tap: Zoom product image
+Pinch to Zoom: Image gallery
+
+Touch Targets:
+
+Minimum Size: 44px × 44px
+Comfortable Size: 48px × 48px
+Button Padding: 12px minimum
+Spacing: 8px between interactive elements
+
+7.3 Adaptive Content
+Text Adaptation:
+
+Mobile: Truncate long descriptions
+Tablet: Show more content
+Desktop: Full descriptions visible
+
+Image Adaptation:
+
+Mobile: 16:9 aspect ratio
+Tablet: Square format
+Desktop: 4:3 aspect ratio
+
+
+8. PERFORMANCE OPTIMIZATION
+8.1 Image Strategy
+Image Formats:
+
+WebP: Primary format (modern browsers)
+JPEG: Fallback format
+SVG: Icons and logos
+Progressive JPEG: Large images
+
+Image Sizes:
+
+Mobile: 343px × 193px (1x), 686px × 386px (2x)
+Tablet: 400px × 400px (1x), 800px × 800px (2x)
+Desktop: 320px × 240px (1x), 640px × 480px (2x)
+
+Loading Strategy:
+
+Above Fold: Eager loading
+Below Fold: Lazy loading
+Intersection Observer: Visibility-based loading
+Placeholder: Blur-up technique
+
+8.2 Data Management
+API Strategy:
+
+Initial Load: Essential menu data
+Pagination: Load more on scroll
+Caching: Service worker implementation
+Offline: Cached menu fallback
+
+State Management:
+
+Local State: Component-level data
+Global State: User preferences, cart
+Persistence: LocalStorage for preferences
+Session: Temporary cart data
+
+
+9. ACCESSIBILITY STANDARDS
+9.1 WCAG 2.1 AA Compliance
+Color Contrast:
+
+Normal Text: 4.5:1 ratio minimum
+Large Text: 3:1 ratio minimum
+UI Elements: 3:1 ratio minimum
+
+Keyboard Navigation:
+
+Tab Order: Logical flow
+Focus Indicators: Visible outlines
+Skip Links: Navigate to main content
+Escape Key: Close modals/drawers
+
+Screen Reader Support:
+
+Alt Text: All images described
+ARIA Labels: Interactive elements
+Semantic HTML: Proper heading structure
+Live Regions: Dynamic content announcements
+
+9.2 Inclusive Design
+Motor Impairments:
+
+Large Touch Targets: 44px minimum
+Gesture Alternatives: Button equivalents
+Timeout Extensions: User control
+Error Prevention: Clear validation
+
+Cognitive Accessibility:
+
+Simple Language: Clear descriptions
+Consistent Layout: Predictable patterns
+Progress Indicators: Multi-step processes
+Help Text: Context-sensitive guidance
+
+
+10. CONTENT MANAGEMENT
+10.1 Menu Data Structure
+Item Object Schema:
+json{
+  "id": "item_001",
+  "name": "Chicken Tikka Masala",
+  "category": "main_course",
+  "subcategory": "indian",
+  "description": "Tender chicken pieces in creamy tomato curry",
+  "price": {
+    "small": 12.99,
+    "medium": 15.99,
+    "large": 18.99
+  },
+  "images": [
+    {
+      "url": "image.jpg",
+      "alt": "Chicken Tikka Masala in bowl",
+      "size": "large"
+    }
+  ],
+  "rating": 4.2,
+  "reviews_count": 89,
+  "preparation_time": 25,
+  "dietary": ["halal", "dairy", "nuts"],
+  "spice_level": 3,
+  "allergens": ["dairy", "nuts"],
+  "calories": 420,
+  "availability": true,
+  "restaurant_id": "rest_001",
+  "created_at": "2025-01-15T10:00:00Z",
+  "updated_at": "2025-01-20T14:30:00Z"
+}
+10.2 Content Guidelines
+Item Descriptions:
+
+Length: 50-120 characters
+Style: Appetizing, descriptive
+Keywords: Include searchable terms
+Ingredients: Highlight main components
+
+Image Requirements:
+
+Resolution: Minimum 800px wide
+Format: JPG/WebP
+Lighting: Well-lit, appetizing
+Composition: Food-focused, clean background
+
+
+11. USER EXPERIENCE FLOWS
+11.1 Primary User Journey
+
+Landing: User opens website
+Browse: Scroll through categories
+Search: Find specific items (optional)
+View Details: Tap item for more info
+Customize: Select size/options
+Add to Cart: Confirm selection
+Continue: Browse more or checkout
+
+11.2 Error Handling
+Network Errors:
+
+Offline Mode: Show cached content
+Retry Button: Manual refresh option
+Error Message: Clear explanation
+
+Content Errors:
+
+Missing Images: Placeholder graphic
+Out of Stock: Clear indication
+Price Issues: Contact restaurant message
+
+11.3 Loading Patterns
+Initial Load:
+
+Skeleton Screen: 2 seconds maximum
+Progressive Enhancement: Core content first
+Background Loading: Additional data
+
+Infinite Scroll:
+
+Load Trigger: 200px before end
+Batch Size: 20 items per load
+Loading Indicator: Spinner at bottom
+
+
+12. ANIMATION & MICRO-INTERACTIONS
+12.1 Page Transitions
+Route Changes:
+
+Duration: 300ms
+Easing: cubic-bezier(0.25, 0.46, 0.45, 0.94)
+Effect: Slide up for new content
+
+Category Switches:
+
+Duration: 200ms
+Effect: Fade cross-dissolve
+Stagger: 50ms delay between cards
+
+12.2 Interactive Feedback
+Button Presses:
+
+Duration: 150ms
+Effect: Scale down to 0.95
+Color: Brightness increase
+
+Card Interactions:
+
+Hover: Lift effect (4px up)
+Active: Subtle scale (0.98)
+Duration: 200ms ease-out
+
+12.3 Loading Animations
+Skeleton Shimmer:
+
+Duration: 1.5s loop
+Effect: Left-to-right gradient sweep
+Colors: #f0f0f0 to #e0e0e0
+
+Progress Indicators:
+
+Spinner: 360° rotation, 1s duration
+Progress Bar: 0-100% width animation
+Pulse: Opacity 0.5-1.0 cycle
+
+
+13. SEO & MARKETING OPTIMIZATION
+13.1 Meta Tags
+Essential Meta Tags:
+
+Title: "Restaurant Name - Menu | City Location"
+Description: "Browse our delicious menu with detailed descriptions, prices, and nutritional information. Order online for delivery or pickup."
+Keywords: "restaurant menu, food delivery, [city name], [cuisine type]"
+
+Open Graph:
+
+og:title: Restaurant menu page
+og:description: Menu browsing experience
+og:image: Hero restaurant image
+og:type: website
+
+13.2 Structured Data
+Schema.org Implementation:
+
+Restaurant: Business information
+Menu: Complete menu structure
+MenuItem: Individual dish details
+Review: Customer ratings/reviews
+
+13.3 Performance Metrics
+Core Web Vitals:
+
+LCP: <2.5s (menu cards visible)
+FID: <100ms (interactive elements)
+CLS: <0.1 (stable layout)
+
+
+14. TESTING STRATEGY
+14.1 Device Testing Matrix
+Mobile Devices:
+
+iPhone SE (375×667)
+iPhone 12 Pro (390×844)
+Samsung Galaxy S21 (360×800)
+iPad (768×1024)
+iPad Pro (834×1194)
+
+Desktop Screens:
+
+1366×768 (laptop)
+1920×1080 (desktop)
+2560×1440 (large desktop)
+Ultrawide formats
+
+14.2 Browser Compatibility
+Primary Support:
+
+Chrome 90+
+Safari 14+
+Firefox 88+
+Edge 90+
+
+Fallback Support:
+
+Basic functionality for older browsers
+Progressive enhancement approach
+Polyfills for critical features
+
+14.3 Performance Testing
+Load Testing:
+
+Menu Size: 500+ items
+Image Load: Concurrent requests
+Scroll Performance: 60fps maintenance
+Memory Usage: <50MB typical
+
+Network Testing:
+
+3G: Acceptable performance
+Offline: Cached content access
+Slow Connection: Graceful degradation
+
+
+15. DEPLOYMENT & MAINTENANCE
+15.1 Build Process
+Asset Optimization:
+
+Image Compression: 80% quality JPEG
+CSS Minification: Remove whitespace/comments
+JS Bundle: Code splitting by route
+Service Worker: Cache static assets
+
+15.2 CDN Strategy
+Static Assets:
+
+Images: Global CDN distribution
+Fonts: Google Fonts or self-hosted
+CSS/JS: Versioned file names
+Cache Headers: Long-term caching
+
+15.3 Analytics Integration
+Event Tracking:
+
+Menu Views: Category interactions
+Item Clicks: Popular dish tracking
+Search Usage: Query analysis
+Performance: Load time monitoring
+
+User Behavior:
+
+Scroll Depth: Content engagement
+Time on Page: Interest measurement
+Exit Points: Optimization opportunities
+Conversion: Add-to-cart rates
+
+
+16. FUTURE ENHANCEMENTS
+16.1 Advanced Features
+Phase 2 Additions:
+
+AR Menu: 3D food visualization
+Voice Search: "Show me spicy dishes"
+AI Recommendations: Personal suggestions
+Social Sharing: Instagram integration
+
+Phase 3 Possibilities:
+
+Nutritional Calculator: Dietary tracking
+Allergen Alerts: Personal warnings
+Live Inventory: Real-time availability
+Multi-language: Localization support
+
+16.2 Integration Opportunities
+Third-party Services:
+
+Payment Processing: Stripe/PayPal
+Delivery Tracking: Real-time updates
+Review System: Google/Yelp integration
+Loyalty Program: Points/rewards
+
+Business Intelligence:
+
+Sales Analytics: Popular items tracking
+Customer Insights: Preference analysis
+Inventory Management: Stock optimization
+Marketing Automation: Targeted campaigns
