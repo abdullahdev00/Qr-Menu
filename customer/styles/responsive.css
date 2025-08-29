@@ -28,12 +28,17 @@
 
 /* Tablet Portrait: 481px - 768px */
 @media (min-width: 481px) and (max-width: 768px) {
-    .menu-grid {
+    .menu-grid,
+    .loading-state {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-lg);
     }
     
     .item-image {
+        height: 200px;
+    }
+    
+    .skeleton-image {
         height: 200px;
     }
     
@@ -52,18 +57,22 @@
         margin-top: 120px; /* Reduced top margin for larger screens */
     }
     
-    .menu-grid {
+    .menu-grid,
+    .loading-state {
         grid-template-columns: repeat(3, 1fr);
         gap: var(--spacing-lg);
     }
     
-    .item-image {
+    .item-image,
+    .skeleton-image {
         height: 220px;
     }
     
     .category-container {
-        justify-content: center;
-        overflow-x: hidden;
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
     
     .header-container {
@@ -103,12 +112,14 @@
         font-size: 32px;
     }
     
-    .menu-grid {
+    .menu-grid,
+    .loading-state {
         grid-template-columns: repeat(4, 1fr);
         gap: var(--spacing-xl);
     }
     
-    .item-image {
+    .item-image,
+    .skeleton-image {
         height: 240px;
     }
     
@@ -131,8 +142,15 @@
     }
     
     .category-container {
-        justify-content: center;
+        justify-content: flex-start;
         padding: 0 var(--spacing-2xl);
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .category-container::-webkit-scrollbar {
+        display: none;
     }
     
     .category-tab {
@@ -206,29 +224,19 @@
         width: 100%;
     }
     
-    /* Desktop search bar */
-    .search-bar {
-        position: relative;
-        transform: none;
-        opacity: 1;
-        visibility: visible;
-        background: none;
-        border: none;
-        top: 0;
-        flex: 1;
-        max-width: 400px;
-        margin: 0 var(--spacing-xl);
+    /* Show navbar search on desktop */
+    .navbar-search {
+        display: flex;
     }
     
-    .search-container {
-        padding: 0;
+    /* Hide mobile search toggle on desktop */
+    .search-toggle {
+        display: none;
     }
     
-    .search-container input {
-        height: 40px;
-        font-size: 14px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Hide mobile search bar on desktop */
+    .mobile-search-bar {
+        display: none;
     }
     
     /* Hover effects for desktop */
@@ -243,7 +251,8 @@
 
 /* Large Desktop: 1400px+ */
 @media (min-width: 1400px) {
-    .menu-grid {
+    .menu-grid,
+    .loading-state {
         grid-template-columns: repeat(5, 1fr);
     }
     
@@ -255,14 +264,16 @@
         font-size: 36px;
     }
     
-    .item-image {
+    .item-image,
+    .skeleton-image {
         height: 260px;
     }
 }
 
 /* Ultra-wide Desktop: 1800px+ */
 @media (min-width: 1800px) {
-    .menu-grid {
+    .menu-grid,
+    .loading-state {
         grid-template-columns: repeat(6, 1fr);
     }
     

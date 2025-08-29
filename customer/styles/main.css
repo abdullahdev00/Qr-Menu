@@ -170,8 +170,87 @@ body {
     min-width: 18px;
 }
 
-/* Search Bar */
-.search-bar {
+/* Navbar Search Bar for Large Screens */
+.navbar-search {
+    display: none;
+    flex: 1;
+    max-width: 600px;
+    margin: 0 var(--spacing-xl);
+}
+
+.navbar-search .search-container {
+    position: relative;
+    width: 100%;
+}
+
+.navbar-search .search-container input {
+    width: 100%;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 0 var(--spacing-md) 0 48px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 400;
+    transition: var(--transition-fast);
+    backdrop-filter: blur(10px);
+}
+
+.navbar-search .search-container input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 4px rgba(255, 165, 0, 0.1);
+}
+
+.navbar-search .search-container input::placeholder {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.navbar-search .search-container::before {
+    content: '\f002';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 16px;
+    z-index: 1;
+}
+
+.navbar-search .search-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: var(--transition-fast);
+    display: none;
+}
+
+.navbar-search .search-clear.visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-search .search-clear:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+/* Mobile Search Bar */
+.mobile-search-bar {
     position: absolute;
     top: 100%;
     left: 0;
@@ -185,7 +264,7 @@ body {
     z-index: 999;
 }
 
-.search-bar.active {
+.mobile-search-bar.active {
     transform: translateY(0);
     opacity: 1;
     visibility: visible;
@@ -276,10 +355,9 @@ body {
     height: 100%;
     padding: 0 var(--spacing-md);
     gap: var(--spacing-sm);
-    overflow-x: hidden;
+    overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    overflow-x: hidden;
 }
 
 .category-container::-webkit-scrollbar {
