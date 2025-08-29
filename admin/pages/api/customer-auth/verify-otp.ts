@@ -21,17 +21,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { phoneNumber, otp, purpose, name, email } = verifyOtpSchema.parse(req.body);
 
-    // Development bypass - accept any 6 digit OTP in development mode
-    let otpRecord = [];
-    
+    // DEVELOPMENT MODE: Accept any 6-digit number as valid OTP
     if (process.env.NODE_ENV === 'development') {
-      // In development, create a fake OTP record if valid 6-digit OTP
-      if (/^[0-9]{6}$/.test(otp)) {
-        otpRecord = [{ id: 'dev-bypass', phoneNumber, otp, purpose }];
+      // Skip all OTP validation in development
+      if (!/^[0-9]{6}$/.test(otp)) {
+        return res.status(400).json({ 
+          error: 'OTP must be 6 digits' 
+        });
       }
+      // In development, any 6-digit number is valid - proceed to user creation/login
     } else {
-      // Production validation
-      otpRecord = await db.select()
+      // Production OTP validation
+      const otpRecord = await db.select()
         .from(otpVerifications)
         .where(
           and(
@@ -43,11 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           )
         )
         .limit(1);
-    }
 
-    if (otpRecord.length === 0) {
-      // Increment attempt count for existing OTP (only in production)
-      if (process.env.NODE_ENV !== 'development') {
+      if (otpRecord.length === 0) {
         await db.update(otpVerifications)
           .set({ attemptsCount: sql`${otpVerifications.attemptsCount} + 1` })
           .where(
@@ -57,19 +55,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               eq(otpVerifications.isUsed, false)
             )
           );
+
+        return res.status(400).json({ 
+          error: 'Invalid or expired OTP' 
+        });
       }
 
-      return res.status(400).json({ 
-        error: 'Invalid or expired OTP' 
-      });
-    }
-
-    // Mark OTP as used (skip in development bypass mode)
-    if (process.env.NODE_ENV !== 'development' || otpRecord[0].id !== 'dev-bypass') {
+      // Mark OTP as used in production
       await db.update(otpVerifications)
         .set({ isUsed: true })
         .where(eq(otpVerifications.id, otpRecord[0].id));
     }
+
+    // OTP validation completed above
 
     let user: any = null;
 
