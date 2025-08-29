@@ -18,12 +18,14 @@ class MenuApp {
         this.currentPage = 1;
         this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
         this.categories = [];
+        this.currentLayout = localStorage.getItem('menuLayout') || 'single-column';
         
         this.init();
     }
 
     async init() {
         this.bindEvents();
+        this.initializeLayout();
         this.generateSkeletonCards();
         await this.loadMenuItems();
         this.renderMenuItems();
@@ -89,6 +91,12 @@ class MenuApp {
         // Clear filters
         const clearFiltersBtn = document.getElementById('clearFiltersBtn');
         if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', this.clearAllFilters.bind(this));
+
+        // Layout toggle
+        const layoutToggle = document.getElementById('layoutToggle');
+        if (layoutToggle) {
+            layoutToggle.addEventListener('click', this.toggleLayout.bind(this));
+        }
 
         // Escape key handling
         document.addEventListener('keydown', (e) => {
@@ -362,6 +370,11 @@ class MenuApp {
         const isFavorite = this.favorites.includes(item.id);
         const defaultPrice = item.price.medium || item.price.small || Object.values(item.price)[0];
         
+        // Truncate description to approximately one line (50 characters)
+        const truncatedDescription = item.description.length > 50 
+            ? item.description.substring(0, 50) + '...' 
+            : item.description;
+
         itemDiv.innerHTML = `
             <div class="item-image">
                 <img src="${item.image}" alt="${item.name}" loading="lazy">
@@ -376,22 +389,7 @@ class MenuApp {
                     <h3 class="item-name" data-testid="text-item-name-${item.id}">${item.name}</h3>
                     <span class="item-price" data-testid="text-item-price-${item.id}">₨${defaultPrice.toFixed(0)}</span>
                 </div>
-                <div class="item-rating">
-                    <div class="stars">
-                        ${this.generateStars(item.rating)}
-                    </div>
-                    <span>(${item.rating.toFixed(1)}) • ${item.reviewsCount} reviews</span>
-                </div>
-                <p class="item-description" data-testid="text-item-description-${item.id}">${item.description}</p>
-                <div class="item-tags">
-                    ${item.dietary.map(tag => `
-                        <span class="tag ${tag}">${this.getDietaryIcon(tag)} ${this.formatTag(tag)}</span>
-                    `).join('')}
-                    ${item.spiceLevel > 0 ? `
-                        <span class="tag spicy">${'🌶️'.repeat(item.spiceLevel)} ${this.getSpiceText(item.spiceLevel)}</span>
-                    ` : ''}
-                    <span class="tag">⏱️ ${item.preparationTime}min</span>
-                </div>
+                <p class="item-description" data-testid="text-item-description-${item.id}">${truncatedDescription}</p>
                 <button class="add-to-cart" ${!item.availability ? 'disabled' : ''} 
                         data-id="${item.id}" data-testid="button-add-to-cart-${item.id}">
                     <i class="fas fa-plus"></i>
@@ -945,6 +943,48 @@ class MenuApp {
             button.addEventListener('click', this.handleCategoryChange.bind(this));
             categoryNav.appendChild(button);
         });
+    }
+    
+    initializeLayout() {
+        const menuGrid = document.getElementById('menuGrid');
+        if (menuGrid) {
+            menuGrid.className = `menu-grid ${this.currentLayout}`;
+        }
+        
+        const layoutToggle = document.getElementById('layoutToggle');
+        if (layoutToggle) {
+            const icon = layoutToggle.querySelector('i');
+            if (this.currentLayout === 'single-column') {
+                icon.className = 'fas fa-th';
+                layoutToggle.setAttribute('title', 'Switch to 2 columns');
+            } else {
+                icon.className = 'fas fa-bars';
+                layoutToggle.setAttribute('title', 'Switch to 1 column');
+            }
+        }
+    }
+    
+    toggleLayout() {
+        this.currentLayout = this.currentLayout === 'single-column' ? 'double-column' : 'single-column';
+        localStorage.setItem('menuLayout', this.currentLayout);
+        
+        const menuGrid = document.getElementById('menuGrid');
+        if (menuGrid) {
+            menuGrid.className = `menu-grid ${this.currentLayout}`;
+        }
+        
+        const layoutToggle = document.getElementById('layoutToggle');
+        if (layoutToggle) {
+            const icon = layoutToggle.querySelector('i');
+            
+            if (this.currentLayout === 'single-column') {
+                icon.className = 'fas fa-th';
+                layoutToggle.setAttribute('title', 'Switch to 2 columns');
+            } else {
+                icon.className = 'fas fa-bars';
+                layoutToggle.setAttribute('title', 'Switch to 1 column');
+            }
+        }
     }
 }
 

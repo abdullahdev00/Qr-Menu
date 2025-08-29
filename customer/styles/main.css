@@ -461,6 +461,26 @@ html::-webkit-scrollbar {
     color: var(--accent-gold);
 }
 
+.layout-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin-left: var(--spacing-xs);
+}
+
+.layout-toggle:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
 .sort-dropdown select {
     background: var(--secondary-dark);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -493,6 +513,11 @@ html::-webkit-scrollbar {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
+}
+
+.menu-grid.double-column {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
 }
 
 /* Menu Item Card */
@@ -634,7 +659,7 @@ html::-webkit-scrollbar {
     line-height: 1.4;
     margin-bottom: var(--spacing-md);
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
