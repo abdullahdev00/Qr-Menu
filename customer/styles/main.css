@@ -1075,6 +1075,24 @@ body {
 
 .mobile-search-bar {
     display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--secondary-dark);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-normal);
+    z-index: 999;
+}
+
+.mobile-search-bar.active {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Show navbar search on large screens, hide mobile search icon */
