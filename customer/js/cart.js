@@ -177,7 +177,7 @@ class ShoppingCart {
                         </div>
                     ` : ''}
                 </div>
-                <div class="cart-item-price" data-testid="text-cart-item-price-${item.id}">$${item.price.toFixed(2)} each</div>
+                <div class="cart-item-price" data-testid="text-cart-item-price-${item.id}">₨${item.price.toFixed(0)} each</div>
             </div>
             <div class="cart-item-controls">
                 <div class="quantity-controls">
@@ -189,7 +189,7 @@ class ShoppingCart {
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <div class="cart-item-total" data-testid="text-cart-item-total-${item.id}">$${itemTotal.toFixed(2)}</div>
+                <div class="cart-item-total" data-testid="text-cart-item-total-${item.id}">₨${itemTotal.toFixed(0)}</div>
                 <button class="remove-item-btn" data-id="${item.id}" data-testid="button-remove-${item.id}">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -222,9 +222,9 @@ class ShoppingCart {
         const tax = this.getTax();
         const total = this.getTotal();
 
-        document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
-        document.getElementById('cartTax').textContent = `$${tax.toFixed(2)}`;
-        document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('cartSubtotal').textContent = `₨${subtotal.toFixed(0)}`;
+        document.getElementById('cartTax').textContent = `₨${tax.toFixed(0)}`;
+        document.getElementById('cartTotal').textContent = `₨${total.toFixed(0)}`;
     }
 
     updateCartCount() {

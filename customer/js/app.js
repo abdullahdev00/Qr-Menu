@@ -321,7 +321,21 @@ class MenuApp {
 
     generateSkeletonCards() {
         const skeletonContainer = document.querySelector('.skeleton-cards');
-        const skeletonCount = window.innerWidth < 768 ? 4 : 8;
+        if (!skeletonContainer) return;
+        
+        // Clear existing skeletons
+        skeletonContainer.innerHTML = '';
+        
+        // Apply current layout to skeleton container
+        skeletonContainer.className = `skeleton-cards menu-grid ${this.currentLayout}`;
+        
+        // Determine skeleton count based on layout and screen size
+        let skeletonCount;
+        if (window.innerWidth < 768) {
+            skeletonCount = 4;
+        } else {
+            skeletonCount = this.currentLayout === 'double-column' ? 8 : 6;
+        }
         
         for (let i = 0; i < skeletonCount; i++) {
             const skeleton = document.createElement('div');
@@ -329,10 +343,10 @@ class MenuApp {
             skeleton.innerHTML = `
                 <div class="skeleton-image"></div>
                 <div class="skeleton-content">
-                    <div class="skeleton-line"></div>
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line medium"></div>
-                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line title"></div>
+                    <div class="skeleton-line price"></div>
+                    <div class="skeleton-line description"></div>
+                    <div class="skeleton-line button"></div>
                 </div>
             `;
             skeletonContainer.appendChild(skeleton);
@@ -951,6 +965,12 @@ class MenuApp {
             menuGrid.className = `menu-grid ${this.currentLayout}`;
         }
         
+        // Update skeleton layout too
+        const skeletonContainer = document.querySelector('.skeleton-cards');
+        if (skeletonContainer) {
+            skeletonContainer.className = `skeleton-cards menu-grid ${this.currentLayout}`;
+        }
+        
         const layoutToggle = document.getElementById('layoutToggle');
         if (layoutToggle) {
             const icon = layoutToggle.querySelector('i');
@@ -971,6 +991,12 @@ class MenuApp {
         const menuGrid = document.getElementById('menuGrid');
         if (menuGrid) {
             menuGrid.className = `menu-grid ${this.currentLayout}`;
+        }
+        
+        // Update skeleton layout too
+        const skeletonContainer = document.querySelector('.skeleton-cards');
+        if (skeletonContainer) {
+            skeletonContainer.className = `skeleton-cards menu-grid ${this.currentLayout}`;
         }
         
         const layoutToggle = document.getElementById('layoutToggle');

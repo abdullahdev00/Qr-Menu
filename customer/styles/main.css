@@ -741,6 +741,21 @@ html::-webkit-scrollbar {
     gap: var(--spacing-md);
 }
 
+/* Skeleton Cards with Layout Support */
+.skeleton-cards {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.skeleton-cards.single-column {
+    grid-template-columns: 1fr;
+}
+
+.skeleton-cards.double-column {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+}
+
 .skeleton-card {
     background: var(--card-background);
     border-radius: var(--radius-xl);
