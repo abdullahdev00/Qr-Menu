@@ -51,6 +51,9 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cartCount" data-testid="text-cart-count">0</span>
                 </button>
+                <button class="profile-toggle" id="profileToggle" data-testid="button-profile-toggle" aria-label="User profile">
+                    <i class="fas fa-user"></i>
+                </button>
             </div>
         </div>
         
@@ -271,8 +274,200 @@
         </div>
     </div>
 
+    <!-- Authentication Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="modal-overlay" id="authModalOverlay"></div>
+        <div class="modal-content">
+            <!-- Phone Number Step -->
+            <div class="auth-step" id="phoneStep">
+                <div class="auth-header">
+                    <h3>Sign In / Sign Up</h3>
+                    <button class="modal-close" id="authClose" data-testid="button-auth-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="auth-body">
+                    <p>Enter your mobile number to continue</p>
+                    <form id="phoneForm">
+                        <div class="form-group">
+                            <label for="phoneInput">Mobile Number</label>
+                            <input type="tel" id="phoneInput" data-testid="input-phone" placeholder="03xxxxxxxxx" required>
+                        </div>
+                        <button type="submit" class="auth-btn" id="sendOtpBtn" data-testid="button-send-otp">
+                            <span class="btn-text">Send OTP</span>
+                            <span class="btn-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- OTP Verification Step -->
+            <div class="auth-step" id="otpStep" style="display: none;">
+                <div class="auth-header">
+                    <h3>Verify OTP</h3>
+                    <button class="modal-close" id="otpClose" data-testid="button-otp-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="auth-body">
+                    <p>Enter the 6-digit code sent to <span id="phoneDisplay"></span></p>
+                    <form id="otpForm">
+                        <div class="form-group">
+                            <label for="otpInput">Verification Code</label>
+                            <input type="text" id="otpInput" data-testid="input-otp" placeholder="000000" maxlength="6" required>
+                        </div>
+                        <button type="submit" class="auth-btn" id="verifyOtpBtn" data-testid="button-verify-otp">
+                            <span class="btn-text">Verify Code</span>
+                            <span class="btn-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+                        </button>
+                        <button type="button" class="resend-btn" id="resendOtpBtn" data-testid="button-resend-otp">
+                            Resend Code
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User Details Step (for new users) -->
+            <div class="auth-step" id="detailsStep" style="display: none;">
+                <div class="auth-header">
+                    <h3>Complete Your Profile</h3>
+                    <button class="modal-close" id="detailsClose" data-testid="button-details-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="auth-body">
+                    <p>Please provide your details to continue</p>
+                    <form id="detailsForm">
+                        <div class="form-group">
+                            <label for="nameInput">Full Name</label>
+                            <input type="text" id="nameInput" data-testid="input-name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailInput">Email (Optional)</label>
+                            <input type="email" id="emailInput" data-testid="input-email" placeholder="Enter your email">
+                        </div>
+                        <button type="submit" class="auth-btn" id="saveDetailsBtn" data-testid="button-save-details">
+                            <span class="btn-text">Continue</span>
+                            <span class="btn-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Address Step -->
+            <div class="auth-step" id="addressStep" style="display: none;">
+                <div class="auth-header">
+                    <h3>Add Delivery Address</h3>
+                    <button class="modal-close" id="addressClose" data-testid="button-address-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="auth-body">
+                    <p>Add your address for delivery</p>
+                    <form id="addressForm">
+                        <div class="form-group">
+                            <label for="addressTitleInput">Address Title</label>
+                            <input type="text" id="addressTitleInput" data-testid="input-address-title" placeholder="Home, Office, etc." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addressLine1Input">Address Line 1</label>
+                            <input type="text" id="addressLine1Input" data-testid="input-address-line1" placeholder="Street address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addressLine2Input">Address Line 2 (Optional)</label>
+                            <input type="text" id="addressLine2Input" data-testid="input-address-line2" placeholder="Apartment, suite, etc.">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cityInput">City</label>
+                                <input type="text" id="cityInput" data-testid="input-city" placeholder="City" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="areaInput">Area</label>
+                                <input type="text" id="areaInput" data-testid="input-area" placeholder="Area/Locality">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="landmarkInput">Landmark (Optional)</label>
+                            <input type="text" id="landmarkInput" data-testid="input-landmark" placeholder="Nearby landmark">
+                        </div>
+                        <button type="submit" class="auth-btn" id="saveAddressBtn" data-testid="button-save-address">
+                            <span class="btn-text">Save & Continue</span>
+                            <span class="btn-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+                        </button>
+                        <button type="button" class="skip-btn" id="skipAddressBtn" data-testid="button-skip-address">
+                            Skip for Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Sidebar -->
+    <div class="profile-sidebar" id="profileSidebar">
+        <div class="profile-overlay" id="profileOverlay"></div>
+        <div class="profile-content">
+            <div class="profile-header">
+                <h3>Profile</h3>
+                <button class="profile-close" id="profileClose" data-testid="button-profile-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Not Signed In State -->
+            <div class="profile-body" id="profileNotSignedIn">
+                <div class="profile-empty">
+                    <i class="fas fa-user"></i>
+                    <p>Please sign in to view your profile</p>
+                    <button class="auth-btn" id="signInBtn" data-testid="button-sign-in">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Signed In State -->
+            <div class="profile-body" id="profileSignedIn" style="display: none;">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-details">
+                        <h4 id="profileName" data-testid="text-profile-name">John Doe</h4>
+                        <p id="profilePhone" data-testid="text-profile-phone">+92 300 1234567</p>
+                        <p id="profileEmail" data-testid="text-profile-email">john@example.com</p>
+                    </div>
+                    <button class="profile-edit-btn" id="profileEditBtn" data-testid="button-profile-edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                
+                <!-- Addresses Section -->
+                <div class="profile-section">
+                    <div class="section-header">
+                        <h4>Saved Addresses</h4>
+                        <button class="add-address-btn" id="addAddressBtn" data-testid="button-add-address">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="addresses-list" id="addressesList">
+                        <!-- Addresses will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Sign Out Button -->
+                <div class="profile-footer">
+                    <button class="signout-btn" id="signOutBtn" data-testid="button-sign-out">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Cart Sidebar -->
-    <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-overlay" id="cartOverlay"></div>
         <div class="cart-content">
             <div class="cart-header">
@@ -355,5 +550,6 @@
     <script src="js/app.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/filters.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>

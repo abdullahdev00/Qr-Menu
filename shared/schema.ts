@@ -252,6 +252,83 @@ export type PaymentRequest = typeof paymentRequests.$inferSelect;
 export type InsertPaymentRequest = z.infer<typeof insertPaymentRequestSchema>;
 export type UpdatePaymentRequest = z.infer<typeof updatePaymentRequestSchema>;
 
+// Customer User Management for Mobile Authentication
+export const customerUsers = pgTable("customer_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  phoneNumber: text("phone_number").notNull().unique(),
+  name: text("name"),
+  email: text("email"),
+  isPhoneVerified: boolean("is_phone_verified").notNull().default(false),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const customerAddresses = pgTable("customer_addresses", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  customerId: varchar("customer_id").references(() => customerUsers.id).notNull(),
+  title: text("title").notNull(), // Home, Office, etc.
+  addressLine1: text("address_line_1").notNull(),
+  addressLine2: text("address_line_2"),
+  city: text("city").notNull(),
+  area: text("area"),
+  postalCode: text("postal_code"),
+  landmark: text("landmark"),
+  isDefault: boolean("is_default").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const otpVerifications = pgTable("otp_verifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  phoneNumber: text("phone_number").notNull(),
+  otp: text("otp").notNull(),
+  purpose: text("purpose").notNull(), // "registration", "login", "phone_change"
+  expiresAt: timestamp("expires_at").notNull(),
+  isUsed: boolean("is_used").notNull().default(false),
+  attemptsCount: integer("attempts_count").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Customer Insert Schemas
+export const insertCustomerUserSchema = createInsertSchema(customerUsers).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+export const updateCustomerUserSchema = createInsertSchema(customerUsers).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+}).partial();
+
+export const insertCustomerAddressSchema = createInsertSchema(customerAddresses).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true 
+});
+export const updateCustomerAddressSchema = createInsertSchema(customerAddresses).omit({ 
+  id: true, 
+  customerId: true,
+  createdAt: true, 
+  updatedAt: true 
+}).partial();
+
+export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).omit({ 
+  id: true, 
+  createdAt: true 
+});
+
+// Customer Types
+export type CustomerUser = typeof customerUsers.$inferSelect;
+export type InsertCustomerUser = z.infer<typeof insertCustomerUserSchema>;
+export type UpdateCustomerUser = z.infer<typeof updateCustomerUserSchema>;
+export type CustomerAddress = typeof customerAddresses.$inferSelect;
+export type InsertCustomerAddress = z.infer<typeof insertCustomerAddressSchema>;
+export type UpdateCustomerAddress = z.infer<typeof updateCustomerAddressSchema>;
+export type OtpVerification = typeof otpVerifications.$inferSelect;
+export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
+
 // Legacy user schema for compatibility
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

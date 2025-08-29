@@ -380,7 +380,7 @@ class MenuApp {
                     <div class="stars">
                         ${this.generateStars(item.rating)}
                     </div>
-                    <span>(${item.rating}) • ${item.reviewsCount} reviews</span>
+                    <span>(${item.rating.toFixed(1)}) • ${item.reviewsCount} reviews</span>
                 </div>
                 <p class="item-description" data-testid="text-item-description-${item.id}">${item.description}</p>
                 <div class="item-tags">
@@ -817,7 +817,7 @@ class MenuApp {
                     <div class="modal-price" data-testid="text-modal-item-price">₨${defaultPrice.toFixed(0)}</div>
                     <div class="modal-rating">
                         <div class="stars">${this.generateStars(item.rating)}</div>
-                        <span>(${item.rating}) • ${item.reviewsCount} reviews</span>
+                        <span>(${item.rating.toFixed(1)}) • ${item.reviewsCount} reviews</span>
                     </div>
                     <p class="modal-description">${item.description}</p>
                     
