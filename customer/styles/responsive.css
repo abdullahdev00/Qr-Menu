@@ -266,9 +266,17 @@
 
 /* Large Desktop: 1400px+ */
 @media (min-width: 1400px) {
-    .menu-grid,
-    .loading-state {
+    /* Respect layout toggle on large desktop */
+    .menu-grid.single-column,
+    .skeleton-cards.menu-grid.single-column {
         grid-template-columns: repeat(5, 1fr);
+        gap: var(--spacing-xl);
+    }
+    
+    .menu-grid.double-column,
+    .skeleton-cards.menu-grid.double-column {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-xl);
     }
     
     .container {
@@ -287,9 +295,17 @@
 
 /* Ultra-wide Desktop: 1800px+ */
 @media (min-width: 1800px) {
-    .menu-grid,
-    .loading-state {
+    /* Respect layout toggle on ultra-wide desktop */
+    .menu-grid.single-column,
+    .skeleton-cards.menu-grid.single-column {
         grid-template-columns: repeat(6, 1fr);
+        gap: var(--spacing-xl);
+    }
+    
+    .menu-grid.double-column,
+    .skeleton-cards.menu-grid.double-column {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-xl);
     }
     
     .container {
