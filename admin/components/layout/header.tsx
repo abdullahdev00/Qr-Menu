@@ -3,8 +3,16 @@ import { useTheme } from "../../src/lib/theme-provider";
 import { useLocation } from "wouter";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { getCurrentUser } from "../../lib/auth";
-import { Menu, Moon, Sun, Bell, Search, X } from "lucide-react";
+import { getCurrentUser, logout } from "../../lib/auth";
+import { Menu, Moon, Sun, Bell, Search, X, User, Settings, LogOut, Shield } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 interface HeaderProps {
   onMenuClick: () => void;
