@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useTheme } from "../../src/lib/theme-provider";
 import { useLocation } from "wouter";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { getCurrentUser } from "../../lib/auth";
-import { Menu, Moon, Sun, Bell } from "lucide-react";
+import { Menu, Moon, Sun, Bell, Search, X } from "lucide-react";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -14,6 +15,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const user = getCurrentUser();
   const [notifications] = useState(2);
   const [location] = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Get page title based on current route
   const getPageTitle = () => {
@@ -80,7 +83,47 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </div>
           </div>
 
+          {/* Desktop Search Bar - visible on large screens */}
+          <div className="hidden lg:flex flex-1 max-w-md mx-8">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Search restaurants, plans, tickets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full bg-white/80 dark:bg-gray-800/80 border-gray-200/50 dark:border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 backdrop-blur-sm shadow-sm"
+                data-testid="input-search-desktop"
+              />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 h-6 w-6 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                  data-testid="button-clear-search"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+
           <div className="flex items-center space-x-3">
+            {/* Mobile Search Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="lg:hidden group relative p-3 rounded-2xl bg-gradient-to-br from-green-100/80 via-emerald-100/80 to-green-50/80 dark:from-green-900/40 dark:via-emerald-900/40 dark:to-teal-900/40 text-green-600 dark:text-green-400 hover:from-green-200 hover:via-emerald-200 hover:to-green-100 dark:hover:from-green-800/50 dark:hover:via-emerald-800/50 dark:hover:to-teal-800/50 transition-all duration-300 hover:scale-110 shadow-xl hover:shadow-2xl border border-green-200/50 dark:border-green-500/20 backdrop-blur-sm"
+              data-testid="button-search-toggle"
+            >
+              <div className="relative z-10">
+                <Search className="w-5 h-5 transition-all duration-300 group-hover:scale-110 drop-shadow-sm" />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-green-300/20 to-emerald-300/20 dark:from-green-400/20 dark:to-teal-400/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </Button>
+
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -146,6 +189,38 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </div>
           </div>
         </div>
+
+        {/* Mobile Search Bar - expandable */}
+        {isSearchOpen && (
+          <div className="lg:hidden border-t border-gray-200/50 dark:border-gray-700/50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
+            <div className="px-4 py-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  type="text"
+                  placeholder="Search restaurants, plans, tickets..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-10 py-2 w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 shadow-sm"
+                  data-testid="input-search-mobile"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setIsSearchOpen(false);
+                  }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 h-6 w-6 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                  data-testid="button-close-mobile-search"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
