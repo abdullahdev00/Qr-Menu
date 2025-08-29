@@ -326,8 +326,8 @@ class MenuApp {
         // Clear existing skeletons
         skeletonContainer.innerHTML = '';
         
-        // Apply current layout to skeleton container - exact same as menu-grid
-        skeletonContainer.className = `skeleton-cards ${this.currentLayout}`;
+        // Apply exact same layout classes as menu-grid
+        skeletonContainer.className = `skeleton-cards menu-grid ${this.currentLayout}`;
         
         // Determine skeleton count based on layout and screen size
         let skeletonCount;

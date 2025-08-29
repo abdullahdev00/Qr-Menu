@@ -741,14 +741,15 @@ html::-webkit-scrollbar {
     gap: var(--spacing-md);
 }
 
-/* Skeleton Cards with Layout Support */
+/* Skeleton Cards with Layout Support - Match Menu Grid Exactly */
 .skeleton-cards {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--spacing-md);
 }
 
-.skeleton-cards.double-column {
+.skeleton-cards.double-column,
+.skeleton-cards.menu-grid.double-column {
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-lg);
 }
@@ -756,7 +757,9 @@ html::-webkit-scrollbar {
 /* Mobile Responsive for Skeleton Cards */
 @media (max-width: 768px) {
     .skeleton-cards,
-    .skeleton-cards.double-column {
+    .skeleton-cards.double-column,
+    .skeleton-cards.menu-grid,
+    .skeleton-cards.menu-grid.double-column {
         grid-template-columns: 1fr;
         gap: var(--spacing-md);
     }
