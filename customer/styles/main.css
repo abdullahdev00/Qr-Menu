@@ -242,7 +242,7 @@ html::-webkit-scrollbar {
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     position: absolute;
-    left: 16px;
+    left: 20px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-secondary);
