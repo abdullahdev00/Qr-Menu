@@ -184,6 +184,8 @@ class AuthenticationManager {
 
             if (response.ok) {
                 this.currentPhoneNumber = phoneNumber;
+                // Show password login option for existing users
+                this.showPasswordLogin();
                 document.getElementById('phoneDisplay').textContent = phoneNumber;
                 this.showStep('otpStep');
                 
@@ -314,9 +316,13 @@ class AuthenticationManager {
 
         const nameInput = document.getElementById('nameInput');
         const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
         
         const name = nameInput.value.trim();
         const email = emailInput.value.trim();
+        const password = passwordInput ? passwordInput.value : '';
+        const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
 
         if (!name) {
             this.showError('Please enter your name');
@@ -326,6 +332,19 @@ class AuthenticationManager {
         if (email && !this.validateEmail(email)) {
             this.showError('Please enter a valid email address');
             return;
+        }
+
+        // Validate password if provided
+        if (password) {
+            if (password.length < 6) {
+                this.showError('Password must be at least 6 characters long');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                this.showError('Passwords do not match');
+                return;
+            }
         }
 
         this.setLoading('saveDetailsBtn', true);
@@ -350,8 +369,32 @@ class AuthenticationManager {
             if (response.ok) {
                 this.currentUser = data.user;
                 this.saveUserToStorage();
+                
+                // If password was provided, set it
+                if (password) {
+                    try {
+                        const passwordResponse = await fetch('/api/customer-auth/set-password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                phoneNumber: this.currentPhoneNumber,
+                                password: password,
+                                confirmPassword: confirmPassword
+                            })
+                        });
+                        
+                        if (!passwordResponse.ok) {
+                            console.error('Failed to set password during registration');
+                        }
+                    } catch (passwordError) {
+                        console.error('Password setting error:', passwordError);
+                    }
+                }
+                
                 this.showStep('addressStep');
-                this.showSuccess('Profile created successfully');
+                this.showSuccess('Profile created successfully!');
             } else {
                 this.showError(data.error || 'Failed to create profile');
             }
@@ -504,6 +547,82 @@ class AuthenticationManager {
             }
         });
         this.currentStep = stepId;
+    }
+
+    showPasswordLogin() {
+        const phoneStep = document.getElementById('phoneStep');
+        const currentPhoneDisplay = phoneStep.querySelector('p');
+        currentPhoneDisplay.innerHTML = `Account found for <strong>${this.currentPhoneNumber}</strong>`;
+        
+        // Add password login option
+        const existingPasswordOption = document.getElementById('passwordLoginOption');
+        if (!existingPasswordOption) {
+            const passwordOptionHtml = `
+                <div id="passwordLoginOption" class="password-login-option">
+                    <hr style="margin: var(--spacing-lg) 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <h4 style="color: var(--accent-gold); margin-bottom: var(--spacing-md);">Quick Login with Password</h4>
+                    <form id="passwordLoginForm">
+                        <div class="form-group">
+                            <input type="password" id="quickPasswordInput" placeholder="Enter your password" data-testid="input-quick-password" required>
+                        </div>
+                        <button type="submit" class="auth-btn secondary" style="margin-bottom: var(--spacing-sm);" data-testid="button-password-login">
+                            <span class="btn-text">Login with Password</span>
+                            <div class="btn-loading" style="display: none;">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </button>
+                    </form>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center;">
+                        Or continue with OTP verification below
+                    </p>
+                </div>
+            `;
+            
+            const phoneForm = document.getElementById('phoneForm');
+            phoneForm.insertAdjacentHTML('afterend', passwordOptionHtml);
+            
+            // Add event listener for password login
+            document.getElementById('passwordLoginForm').addEventListener('submit', (e) => this.handlePasswordLogin(e));
+        }
+    }
+
+    async handlePasswordLogin(e) {
+        e.preventDefault();
+        
+        const passwordInput = document.getElementById('quickPasswordInput');
+        const password = passwordInput.value;
+        
+        if (!password) {
+            this.showError('Please enter your password');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/customer-auth/password-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    phoneNumber: this.currentPhoneNumber,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.currentUser = data.user;
+                this.saveUserToStorage();
+                this.showSuccess('Welcome back! You are signed in.');
+                this.completeAuthentication();
+            } else {
+                this.showError(data.error || 'Invalid password');
+            }
+        } catch (error) {
+            console.error('Password login error:', error);
+            this.showError('Network error. Please try again.');
+        }
     }
 
     setLoading(buttonId, isLoading) {
@@ -661,14 +780,59 @@ class AuthenticationManager {
 
     // Address Management Methods
     async addAddress() {
-        const addressTitle = prompt('Address Title (e.g., Home, Office):');
-        if (!addressTitle) return;
+        this.showAddAddressModal();
+    }
 
-        const addressLine1 = prompt('Address Line 1:');
-        if (!addressLine1) return;
+    showAddAddressModal() {
+        const modalHtml = `
+            <div class="edit-modal" id="addAddressModal">
+                <div class="modal-overlay" onclick="window.auth.closeAddressModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New Address</h3>
+                        <button class="modal-close" onclick="window.auth.closeAddressModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addAddressForm">
+                            <div class="form-group">
+                                <label for="addTitle">Address Title</label>
+                                <input type="text" id="addTitle" placeholder="e.g., Home, Office" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addAddressLine1">Address Line 1</label>
+                                <input type="text" id="addAddressLine1" placeholder="Street address" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="addCity">City</label>
+                                <input type="text" id="addCity" placeholder="City name" required>
+                            </div>
+                            <button type="submit" class="auth-btn primary">
+                                <span class="btn-text">Add Address</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('addAddressModal').style.display = 'flex';
+        
+        // Add form submit handler
+        document.getElementById('addAddressForm').addEventListener('submit', (e) => this.handleAddAddressSubmit(e));
+    }
 
-        const city = prompt('City:');
-        if (!city) return;
+    async handleAddAddressSubmit(e) {
+        e.preventDefault();
+        
+        const addressTitle = document.getElementById('addTitle').value.trim();
+        const addressLine1 = document.getElementById('addAddressLine1').value.trim();
+        const city = document.getElementById('addCity').value.trim();
 
         try {
             const response = await fetch('/api/customer-auth/addresses', {
@@ -688,6 +852,7 @@ class AuthenticationManager {
             const data = await response.json();
 
             if (response.ok) {
+                this.closeAddressModal();
                 this.showSuccess('Address added successfully');
                 this.loadUserAddresses(); // Refresh address list
             } else {
@@ -696,6 +861,13 @@ class AuthenticationManager {
         } catch (error) {
             console.error('Add address error:', error);
             this.showError('Network error. Please try again.');
+        }
+    }
+
+    closeAddressModal() {
+        const modal = document.getElementById('addAddressModal');
+        if (modal) {
+            modal.remove();
         }
     }
 
@@ -754,9 +926,14 @@ class AuthenticationManager {
     }
 
     async deleteAddress(addressId) {
-        if (!confirm('Are you sure you want to delete this address?')) {
-            return;
-        }
+        this.showConfirmDialog(
+            'Delete Address', 
+            'Are you sure you want to delete this address?', 
+            () => this.confirmDeleteAddress(addressId)
+        );
+    }
+
+    async confirmDeleteAddress(addressId) {
 
         try {
             const response = await fetch(`/api/customer-auth/addresses/${addressId}`, {
@@ -781,11 +958,55 @@ class AuthenticationManager {
     }
 
     async editProfile() {
-        const newName = prompt('Enter your name:', this.currentUser.name || '');
-        if (newName === null) return; // User cancelled
+        this.showEditProfileModal();
+    }
 
-        const newEmail = prompt('Enter your email:', this.currentUser.email || '');
-        if (newEmail === null) return;
+    showEditProfileModal() {
+        // Create edit profile modal
+        const modalHtml = `
+            <div class="edit-modal" id="editProfileModal">
+                <div class="modal-overlay" onclick="window.auth.closeEditModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit Profile</h3>
+                        <button class="modal-close" onclick="window.auth.closeEditModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProfileForm">
+                            <div class="form-group">
+                                <label for="editName">Full Name</label>
+                                <input type="text" id="editName" value="${this.currentUser.name || ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Email (Optional)</label>
+                                <input type="email" id="editEmail" value="${this.currentUser.email || ''}">
+                            </div>
+                            <button type="submit" class="auth-btn primary">
+                                <span class="btn-text">Update Profile</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('editProfileModal').style.display = 'flex';
+        
+        // Add form submit handler
+        document.getElementById('editProfileForm').addEventListener('submit', (e) => this.handleEditProfileSubmit(e));
+    }
+
+    async handleEditProfileSubmit(e) {
+        e.preventDefault();
+        
+        const newName = document.getElementById('editName').value.trim();
+        const newEmail = document.getElementById('editEmail').value.trim();
 
         // Validate email if provided
         if (newEmail && !this.validateEmail(newEmail)) {
@@ -813,6 +1034,7 @@ class AuthenticationManager {
                 this.currentUser = { ...this.currentUser, ...data.user };
                 this.saveUserToStorage();
                 this.updateUI();
+                this.closeEditModal();
                 this.showSuccess('Profile updated successfully');
             } else {
                 this.showError(data.error || 'Failed to update profile');
@@ -823,17 +1045,58 @@ class AuthenticationManager {
         }
     }
 
+    closeEditModal() {
+        const modal = document.getElementById('editProfileModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+    }
+
     async deleteAccount() {
-        if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        this.showConfirmDialog(
+            'Delete Account', 
+            'Are you sure you want to delete your account? This action cannot be undone.', 
+            () => this.showDeleteConfirmation()
+        );
+    }
+
+    showDeleteConfirmation() {
+        const modalHtml = `
+            <div class="edit-modal" id="deleteConfirmModal">
+                <div class="modal-overlay"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Confirm Account Deletion</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>Type <strong>DELETE</strong> to confirm:</p>
+                        <input type="text" id="deleteConfirmInput" placeholder="Type DELETE">
+                        <div class="modal-actions">
+                            <button class="auth-btn danger" onclick="window.auth.confirmDeleteAccount()">
+                                Delete Account
+                            </button>
+                            <button class="auth-btn secondary" onclick="window.auth.closeDeleteModal()">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('deleteConfirmModal').style.display = 'flex';
+    }
+
+    async confirmDeleteAccount() {
+        const confirmText = document.getElementById('deleteConfirmInput').value;
+        if (confirmText !== 'DELETE') {
+            this.showError('Please type DELETE to confirm');
             return;
         }
 
-        // Additional confirmation
-        const confirmText = prompt('Type "DELETE" to confirm account deletion:');
-        if (confirmText !== 'DELETE') {
-            this.showError('Account deletion cancelled');
-            return;
-        }
+        this.closeDeleteModal();
 
         try {
             const response = await fetch('/api/customer-auth/profile', {
@@ -995,15 +1258,60 @@ class AuthenticationManager {
             return;
         }
 
-        const password = prompt('Enter a new password (minimum 6 characters):');
-        if (!password) return;
+        this.showSetPasswordModal();
+    }
+
+    showSetPasswordModal() {
+        const modalHtml = `
+            <div class="edit-modal" id="setPasswordModal">
+                <div class="modal-overlay" onclick="window.auth.closePasswordModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Set Password</h3>
+                        <button class="modal-close" onclick="window.auth.closePasswordModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="setPasswordForm">
+                            <div class="form-group">
+                                <label for="newPassword">New Password</label>
+                                <input type="password" id="newPassword" placeholder="Minimum 6 characters" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmNewPassword">Confirm Password</label>
+                                <input type="password" id="confirmNewPassword" placeholder="Re-enter password" required>
+                            </div>
+                            <button type="submit" class="auth-btn primary">
+                                <span class="btn-text">Set Password</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('setPasswordModal').style.display = 'flex';
+        
+        // Add form submit handler
+        document.getElementById('setPasswordForm').addEventListener('submit', (e) => this.handleSetPasswordSubmit(e));
+    }
+
+    async handleSetPasswordSubmit(e) {
+        e.preventDefault();
+        
+        const password = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmNewPassword').value;
 
         if (password.length < 6) {
             this.showError('Password must be at least 6 characters long');
             return;
         }
 
-        const confirmPassword = prompt('Confirm your password:');
         if (password !== confirmPassword) {
             this.showError('Passwords do not match');
             return;
@@ -1025,6 +1333,7 @@ class AuthenticationManager {
             const data = await response.json();
 
             if (response.ok) {
+                this.closePasswordModal();
                 this.showSuccess('Password set successfully! You can now login with your password.');
             } else {
                 this.showError(data.error || 'Failed to set password');
@@ -1033,6 +1342,63 @@ class AuthenticationManager {
             console.error('Set password error:', error);
             this.showError('Network error. Please try again.');
         }
+    }
+
+    closePasswordModal() {
+        const modal = document.getElementById('setPasswordModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    closeDeleteModal() {
+        const modal = document.getElementById('deleteConfirmModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    showConfirmDialog(title, message, onConfirm) {
+        const modalHtml = `
+            <div class="edit-modal" id="confirmDialog">
+                <div class="modal-overlay"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>${title}</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>${message}</p>
+                        <div class="modal-actions">
+                            <button class="auth-btn danger" onclick="window.auth.confirmDialogAction()">
+                                Yes
+                            </button>
+                            <button class="auth-btn secondary" onclick="window.auth.closeConfirmDialog()">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        this.confirmCallback = onConfirm;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('confirmDialog').style.display = 'flex';
+    }
+
+    confirmDialogAction() {
+        this.closeConfirmDialog();
+        if (this.confirmCallback) {
+            this.confirmCallback();
+        }
+    }
+
+    closeConfirmDialog() {
+        const modal = document.getElementById('confirmDialog');
+        if (modal) {
+            modal.remove();
+        }
+        this.confirmCallback = null;
     }
 
     // Additional Methods
@@ -1076,9 +1442,114 @@ class AuthenticationManager {
         this.showError('Adding new address not implemented yet');
     }
 
-    editAddress(addressId) {
-        // TODO: Implement address editing
-        this.showError('Address editing not implemented yet');
+    async editAddress(addressId) {
+        try {
+            // Get current address data
+            const response = await fetch(`/api/customer-auth/addresses?customerId=${this.currentUser.id}`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                this.showError('Failed to load address data');
+                return;
+            }
+
+            const address = data.addresses.find(addr => addr.id === addressId);
+            if (!address) {
+                this.showError('Address not found');
+                return;
+            }
+
+            this.showEditAddressModal(address);
+        } catch (error) {
+            console.error('Edit address error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+
+    showEditAddressModal(address) {
+        const modalHtml = `
+            <div class="edit-modal" id="editAddressModal">
+                <div class="modal-overlay" onclick="window.auth.closeEditAddressModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit Address</h3>
+                        <button class="modal-close" onclick="window.auth.closeEditAddressModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editAddressForm">
+                            <div class="form-group">
+                                <label for="editAddressTitle">Address Title</label>
+                                <input type="text" id="editAddressTitle" value="${address.title}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editAddressLine1">Address Line 1</label>
+                                <input type="text" id="editAddressLine1" value="${address.addressLine1}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editAddressCity">City</label>
+                                <input type="text" id="editAddressCity" value="${address.city}" required>
+                            </div>
+                            <button type="submit" class="auth-btn primary">
+                                <span class="btn-text">Update Address</span>
+                                <div class="btn-loading" style="display: none;">
+                                    <div class="loading-spinner"></div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.getElementById('editAddressModal').style.display = 'flex';
+        
+        // Add form submit handler
+        document.getElementById('editAddressForm').addEventListener('submit', (e) => this.handleEditAddressSubmit(e, address.id));
+    }
+
+    async handleEditAddressSubmit(e, addressId) {
+        e.preventDefault();
+        
+        const title = document.getElementById('editAddressTitle').value.trim();
+        const addressLine1 = document.getElementById('editAddressLine1').value.trim();
+        const city = document.getElementById('editAddressCity').value.trim();
+
+        try {
+            const response = await fetch(`/api/customer-auth/addresses/${addressId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: title,
+                    addressLine1: addressLine1,
+                    city: city
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.closeEditAddressModal();
+                this.showSuccess('Address updated successfully');
+                this.loadUserAddresses(); // Refresh address list
+            } else {
+                this.showError(data.error || 'Failed to update address');
+            }
+        } catch (error) {
+            console.error('Edit address error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+
+    closeEditAddressModal() {
+        const modal = document.getElementById('editAddressModal');
+        if (modal) {
+            modal.remove();
+        }
     }
 
     async deleteAddress(addressId) {

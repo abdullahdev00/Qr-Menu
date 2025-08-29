@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { db } from '@shared/db';
+import { db } from '../../../server/db.js';
 import { customerUsers } from '@shared/schema';
 import bcrypt from 'bcryptjs';
 

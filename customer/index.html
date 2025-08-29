@@ -350,6 +350,15 @@
                             <label for="emailInput">Email (Optional)</label>
                             <input type="email" id="emailInput" data-testid="input-email" placeholder="Enter your email">
                         </div>
+                        <div class="form-group">
+                            <label for="passwordInput">Password (Optional)</label>
+                            <input type="password" id="passwordInput" data-testid="input-password" placeholder="Create a password (minimum 6 characters)">
+                            <small style="color: var(--text-secondary); font-size: 0.8rem;">Setting a password allows you to login faster next time</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPasswordInput">Confirm Password</label>
+                            <input type="password" id="confirmPasswordInput" data-testid="input-confirm-password" placeholder="Re-enter your password">
+                        </div>
                         <button type="submit" class="auth-btn" id="saveDetailsBtn" data-testid="button-save-details">
                             <span class="btn-text">Continue</span>
                             <span class="btn-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
