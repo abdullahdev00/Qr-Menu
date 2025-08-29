@@ -18,6 +18,7 @@ class MenuApp {
         this.currentPage = 1;
         this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
         this.categories = [];
+        // Default to single-column which means multi-column grid on desktop (confusing naming)
         this.currentLayout = localStorage.getItem('menuLayout') || 'single-column';
         
         this.init();

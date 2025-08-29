@@ -28,9 +28,10 @@
 
 /* Tablet Portrait: 481px - 768px */
 @media (min-width: 481px) and (max-width: 768px) {
+    /* Force 2 columns on tablet portrait regardless of layout toggle */
     .menu-grid,
-    .loading-state {
-        grid-template-columns: repeat(2, 1fr);
+    .skeleton-cards.menu-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: var(--spacing-lg);
     }
     
@@ -57,9 +58,16 @@
         margin-top: 120px; /* Reduced top margin for larger screens */
     }
     
-    .menu-grid,
-    .loading-state {
+    /* Respect layout toggle on tablet landscape */
+    .menu-grid.single-column,
+    .skeleton-cards.menu-grid.single-column {
         grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-lg);
+    }
+    
+    .menu-grid.double-column,
+    .skeleton-cards.menu-grid.double-column {
+        grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-lg);
     }
     
@@ -112,9 +120,16 @@
         font-size: 32px;
     }
     
-    .menu-grid,
-    .loading-state {
+    /* Remove fixed grid layout - let layout toggle control it */
+    .menu-grid.single-column,
+    .skeleton-cards.menu-grid.single-column {
         grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-xl);
+    }
+    
+    .menu-grid.double-column,
+    .skeleton-cards.menu-grid.double-column {
+        grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-xl);
     }
     
