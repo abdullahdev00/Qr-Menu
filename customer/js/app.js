@@ -31,14 +31,18 @@ class MenuApp {
 
     bindEvents() {
         // Header events
-        document.getElementById('menuToggle').addEventListener('click', this.toggleMobileMenu.bind(this));
         document.getElementById('searchToggle').addEventListener('click', this.toggleSearch.bind(this));
         document.getElementById('cartToggle').addEventListener('click', this.toggleCart.bind(this));
 
-        // Search events
+        // Search events (both desktop and mobile)
         const searchInput = document.getElementById('searchInput');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        
         searchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
+        mobileSearchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
+        
         document.getElementById('searchClear').addEventListener('click', this.clearSearch.bind(this));
+        document.getElementById('mobileSearchClear').addEventListener('click', this.clearSearch.bind(this));
 
         // Category events
         document.querySelectorAll('.category-tab').forEach(tab => {
@@ -46,12 +50,12 @@ class MenuApp {
         });
 
         // Filter events
-        document.getElementById('filterToggle').addEventListener('click', this.toggleFilterDrawer.bind(this));
+        document.getElementById('filterToggle').addEventListener('click', this.toggleFilterSidebar.bind(this));
         document.getElementById('sortSelect').addEventListener('change', this.handleSortChange.bind(this));
 
-        // Filter drawer events
-        document.getElementById('filterClose').addEventListener('click', this.closeFilterDrawer.bind(this));
-        document.getElementById('filterOverlay').addEventListener('click', this.closeFilterDrawer.bind(this));
+        // Filter sidebar events
+        document.getElementById('filterClose').addEventListener('click', this.closeFilterSidebar.bind(this));
+        document.getElementById('filterOverlay').addEventListener('click', this.closeFilterSidebar.bind(this));
         document.getElementById('applyFilters').addEventListener('click', this.applyFilters.bind(this));
         document.getElementById('resetFilters').addEventListener('click', this.resetFilters.bind(this));
 
@@ -69,7 +73,7 @@ class MenuApp {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
-                this.closeFilterDrawer();
+                this.closeFilterSidebar();
                 this.closeSearch();
             }
         });
@@ -473,8 +477,23 @@ class MenuApp {
 
     handleSearch(e) {
         this.searchQuery = e.target.value.toLowerCase();
+        
+        // Update both search inputs to keep them in sync
+        const desktopInput = document.getElementById('searchInput');
+        const mobileInput = document.getElementById('mobileSearchInput');
+        
+        if (e.target.id === 'searchInput') {
+            mobileInput.value = e.target.value;
+        } else {
+            desktopInput.value = e.target.value;
+        }
+        
+        // Show/hide clear buttons
         const clearBtn = document.getElementById('searchClear');
+        const mobileClearBtn = document.getElementById('mobileSearchClear');
+        
         clearBtn.classList.toggle('visible', this.searchQuery.length > 0);
+        mobileClearBtn.classList.toggle('visible', this.searchQuery.length > 0);
         
         this.filterItems();
         this.currentPage = 1;
@@ -482,8 +501,14 @@ class MenuApp {
     }
 
     clearSearch() {
+        // Clear both search inputs
         document.getElementById('searchInput').value = '';
+        document.getElementById('mobileSearchInput').value = '';
+        
+        // Hide both clear buttons
         document.getElementById('searchClear').classList.remove('visible');
+        document.getElementById('mobileSearchClear').classList.remove('visible');
+        
         this.searchQuery = '';
         this.filterItems();
         this.currentPage = 1;
@@ -596,7 +621,9 @@ class MenuApp {
         
         // Reset UI
         document.getElementById('searchInput').value = '';
+        document.getElementById('mobileSearchInput').value = '';
         document.getElementById('searchClear').classList.remove('visible');
+        document.getElementById('mobileSearchClear').classList.remove('visible');
         document.querySelectorAll('.category-tab').forEach(tab => {
             tab.classList.toggle('active', tab.getAttribute('data-category') === 'all');
         });
@@ -608,24 +635,33 @@ class MenuApp {
     }
 
     // UI Toggle Methods
-    toggleMobileMenu() {
-        document.getElementById('menuToggle').classList.toggle('active');
-        // Add mobile menu implementation if needed
-    }
+    // Removed mobile menu functionality as hamburger menu is removed
 
     toggleSearch() {
-        const searchBar = document.getElementById('searchBar');
-        const isActive = searchBar.classList.toggle('active');
+        const mobileSearchBar = document.getElementById('mobileSearchBar');
+        const isActive = mobileSearchBar.classList.toggle('active');
         
         if (isActive) {
             setTimeout(() => {
-                document.getElementById('searchInput').focus();
+                document.getElementById('mobileSearchInput').focus();
             }, 300);
         }
     }
 
     closeSearch() {
-        document.getElementById('searchBar').classList.remove('active');
+        document.getElementById('mobileSearchBar').classList.remove('active');
+    }
+
+    toggleFilterSidebar() {
+        const filterSidebar = document.getElementById('filterSidebar');
+        filterSidebar.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeFilterSidebar() {
+        const filterSidebar = document.getElementById('filterSidebar');
+        filterSidebar.classList.remove('active');
+        document.body.style.overflow = '';
     }
 
     toggleCart() {
@@ -634,19 +670,9 @@ class MenuApp {
         }
     }
 
-    toggleFilterDrawer() {
-        document.getElementById('filterDrawer').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    closeFilterDrawer() {
-        document.getElementById('filterDrawer').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
     applyFilters() {
         // Apply filter logic here (implemented in filters.js)
-        this.closeFilterDrawer();
+        this.closeFilterSidebar();
         this.filterItems();
         this.currentPage = 1;
         this.renderMenuItems();
@@ -671,6 +697,33 @@ class MenuApp {
         const modalBody = document.getElementById('modalBody');
         
         modalBody.innerHTML = this.createModalContent(item);
+        
+        // Add event listeners for modal buttons
+        const favoriteBtn = modalBody.querySelector('.favorite-modal-btn');
+        const addToCartBtn = modalBody.querySelector('.add-to-cart-modal');
+        
+        if (favoriteBtn) {
+            favoriteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleFavorite(item.id);
+                // Update button text and state
+                const isNowFavorite = this.favorites.includes(item.id);
+                favoriteBtn.classList.toggle('active', isNowFavorite);
+                favoriteBtn.innerHTML = `
+                    <i class="fas fa-heart"></i>
+                    ${isNowFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                `;
+            });
+        }
+        
+        if (addToCartBtn && item.availability) {
+            addToCartBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.addToCart(item);
+                this.closeModal();
+            });
+        }
+        
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }

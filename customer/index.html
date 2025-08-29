@@ -29,14 +29,18 @@
     <!-- Header -->
     <header class="header" id="header">
         <div class="header-container">
-            <button class="menu-toggle" id="menuToggle" data-testid="button-menu-toggle" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            
             <div class="logo">
                 <h1 data-testid="text-restaurant-name">Taste Paradise</h1>
+            </div>
+            
+            <!-- Search Bar in Navbar for Large Screens -->
+            <div class="navbar-search" id="navbarSearch">
+                <div class="search-container">
+                    <input type="text" id="searchInput" data-testid="input-search" placeholder="Search menu items..." autocomplete="off">
+                    <button class="search-clear" id="searchClear" data-testid="button-search-clear" aria-label="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="header-actions">
@@ -50,11 +54,11 @@
             </div>
         </div>
         
-        <!-- Search Bar -->
-        <div class="search-bar" id="searchBar">
+        <!-- Mobile Search Bar -->
+        <div class="mobile-search-bar" id="mobileSearchBar">
             <div class="search-container">
-                <input type="text" id="searchInput" data-testid="input-search" placeholder="Search menu items..." autocomplete="off">
-                <button class="search-clear" id="searchClear" data-testid="button-search-clear" aria-label="Clear search">
+                <input type="text" id="mobileSearchInput" data-testid="input-mobile-search" placeholder="Search menu items..." autocomplete="off">
+                <button class="search-clear" id="mobileSearchClear" data-testid="button-mobile-search-clear" aria-label="Clear search">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -65,6 +69,11 @@
     <!-- Category Navigation -->
     <nav class="category-nav" id="categoryNav">
         <div class="category-container">
+            <button class="filter-toggle" id="filterToggle" data-testid="button-filter-toggle">
+                <i class="fas fa-filter"></i>
+                Filters
+            </button>
+            
             <button class="category-tab active" data-category="all" data-testid="button-category-all">
                 <i class="fas fa-utensils"></i>
                 All Items
@@ -100,25 +109,6 @@
         </div>
     </nav>
 
-    <!-- Filter Options -->
-    <div class="filter-section" id="filterSection">
-        <div class="filter-container">
-            <button class="filter-toggle" id="filterToggle" data-testid="button-filter-toggle">
-                <i class="fas fa-filter"></i>
-                Filters
-            </button>
-            
-            <div class="sort-dropdown">
-                <select id="sortSelect" data-testid="select-sort">
-                    <option value="popular">Popular First</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="rating">Highest Rated</option>
-                    <option value="time">Preparation Time</option>
-                </select>
-            </div>
-        </div>
-    </div>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -157,18 +147,32 @@
         </div>
     </main>
 
-    <!-- Filter Drawer -->
-    <div class="filter-drawer" id="filterDrawer">
+    <!-- Filter Sidebar -->
+    <div class="filter-sidebar" id="filterSidebar">
         <div class="filter-overlay" id="filterOverlay"></div>
         <div class="filter-content">
             <div class="filter-header">
-                <h3>Filter Menu</h3>
+                <h3>Filters & Sort</h3>
                 <button class="filter-close" id="filterClose" data-testid="button-filter-close">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             
             <div class="filter-body">
+                <!-- Sort Options -->
+                <div class="filter-group">
+                    <h4>Sort By</h4>
+                    <div class="sort-options">
+                        <select id="sortSelect" data-testid="select-sort">
+                            <option value="popular">Popular First</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="time">Preparation Time</option>
+                        </select>
+                    </div>
+                </div>
+                
                 <!-- Price Range -->
                 <div class="filter-group">
                     <h4>Price Range</h4>
