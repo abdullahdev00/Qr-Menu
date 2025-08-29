@@ -33,18 +33,24 @@ class MenuApp {
 
     bindEvents() {
         // Header events
-        document.getElementById('searchToggle').addEventListener('click', this.toggleSearch.bind(this));
-        document.getElementById('cartToggle').addEventListener('click', this.toggleCart.bind(this));
+        const searchToggle = document.getElementById('searchToggle');
+        const cartToggle = document.getElementById('cartToggle');
+        
+        if (searchToggle) searchToggle.addEventListener('click', this.toggleSearch.bind(this));
+        if (cartToggle) cartToggle.addEventListener('click', this.toggleCart.bind(this));
 
         // Search events (both desktop and mobile)
         const searchInput = document.getElementById('searchInput');
         const mobileSearchInput = document.getElementById('mobileSearchInput');
         
-        searchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
-        mobileSearchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
+        if (searchInput) searchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
+        if (mobileSearchInput) mobileSearchInput.addEventListener('input', this.debounce(this.handleSearch.bind(this), 300));
         
-        document.getElementById('searchClear').addEventListener('click', this.clearSearch.bind(this));
-        document.getElementById('mobileSearchClear').addEventListener('click', this.clearSearch.bind(this));
+        const searchClear = document.getElementById('searchClear');
+        const mobileSearchClear = document.getElementById('mobileSearchClear');
+        
+        if (searchClear) searchClear.addEventListener('click', this.clearSearch.bind(this));
+        if (mobileSearchClear) mobileSearchClear.addEventListener('click', this.clearSearch.bind(this));
 
         // Category events
         document.querySelectorAll('.category-tab').forEach(tab => {
@@ -52,24 +58,37 @@ class MenuApp {
         });
 
         // Filter events
-        document.getElementById('filterToggle').addEventListener('click', this.toggleFilterSidebar.bind(this));
-        document.getElementById('sortSelect').addEventListener('change', this.handleSortChange.bind(this));
+        const filterToggle = document.getElementById('filterToggle');
+        const sortSelect = document.getElementById('sortSelect');
+        
+        if (filterToggle) filterToggle.addEventListener('click', this.toggleFilterSidebar.bind(this));
+        if (sortSelect) sortSelect.addEventListener('change', this.handleSortChange.bind(this));
 
         // Filter sidebar events
-        document.getElementById('filterClose').addEventListener('click', this.closeFilterSidebar.bind(this));
-        document.getElementById('filterOverlay').addEventListener('click', this.closeFilterSidebar.bind(this));
-        document.getElementById('applyFilters').addEventListener('click', this.applyFilters.bind(this));
-        document.getElementById('resetFilters').addEventListener('click', this.resetFilters.bind(this));
+        const filterClose = document.getElementById('filterClose');
+        const filterOverlay = document.getElementById('filterOverlay');
+        const applyFilters = document.getElementById('applyFilters');
+        const resetFilters = document.getElementById('resetFilters');
+        
+        if (filterClose) filterClose.addEventListener('click', this.closeFilterSidebar.bind(this));
+        if (filterOverlay) filterOverlay.addEventListener('click', this.closeFilterSidebar.bind(this));
+        if (applyFilters) applyFilters.addEventListener('click', this.applyFilters.bind(this));
+        if (resetFilters) resetFilters.addEventListener('click', this.resetFilters.bind(this));
 
         // Modal events
-        document.getElementById('modalClose').addEventListener('click', this.closeModal.bind(this));
-        document.getElementById('modalOverlay').addEventListener('click', this.closeModal.bind(this));
+        const modalClose = document.getElementById('modalClose');
+        const modalOverlay = document.getElementById('modalOverlay');
+        
+        if (modalClose) modalClose.addEventListener('click', this.closeModal.bind(this));
+        if (modalOverlay) modalOverlay.addEventListener('click', this.closeModal.bind(this));
 
         // Load more
-        document.getElementById('loadMoreBtn').addEventListener('click', this.loadMoreItems.bind(this));
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (loadMoreBtn) loadMoreBtn.addEventListener('click', this.loadMoreItems.bind(this));
 
         // Clear filters
-        document.getElementById('clearFiltersBtn').addEventListener('click', this.clearAllFilters.bind(this));
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', this.clearAllFilters.bind(this));
 
         // Escape key handling
         document.addEventListener('keydown', (e) => {
@@ -518,9 +537,9 @@ class MenuApp {
         const desktopInput = document.getElementById('searchInput');
         const mobileInput = document.getElementById('mobileSearchInput');
         
-        if (e.target.id === 'searchInput') {
+        if (e.target.id === 'searchInput' && mobileInput) {
             mobileInput.value = e.target.value;
-        } else {
+        } else if (desktopInput) {
             desktopInput.value = e.target.value;
         }
         
@@ -528,8 +547,8 @@ class MenuApp {
         const clearBtn = document.getElementById('searchClear');
         const mobileClearBtn = document.getElementById('mobileSearchClear');
         
-        clearBtn.classList.toggle('visible', this.searchQuery.length > 0);
-        mobileClearBtn.classList.toggle('visible', this.searchQuery.length > 0);
+        if (clearBtn) clearBtn.classList.toggle('visible', this.searchQuery.length > 0);
+        if (mobileClearBtn) mobileClearBtn.classList.toggle('visible', this.searchQuery.length > 0);
         
         this.filterItems();
         this.currentPage = 1;
@@ -538,12 +557,17 @@ class MenuApp {
 
     clearSearch() {
         // Clear both search inputs
-        document.getElementById('searchInput').value = '';
-        document.getElementById('mobileSearchInput').value = '';
+        const searchInput = document.getElementById('searchInput');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const searchClear = document.getElementById('searchClear');
+        const mobileSearchClear = document.getElementById('mobileSearchClear');
+        
+        if (searchInput) searchInput.value = '';
+        if (mobileSearchInput) mobileSearchInput.value = '';
         
         // Hide both clear buttons
-        document.getElementById('searchClear').classList.remove('visible');
-        document.getElementById('mobileSearchClear').classList.remove('visible');
+        if (searchClear) searchClear.classList.remove('visible');
+        if (mobileSearchClear) mobileSearchClear.classList.remove('visible');
         
         this.searchQuery = '';
         this.filterItems();
@@ -656,14 +680,22 @@ class MenuApp {
         this.currentCategory = 'all';
         
         // Reset UI
-        document.getElementById('searchInput').value = '';
-        document.getElementById('mobileSearchInput').value = '';
-        document.getElementById('searchClear').classList.remove('visible');
-        document.getElementById('mobileSearchClear').classList.remove('visible');
+        const searchInput = document.getElementById('searchInput');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+        const searchClear = document.getElementById('searchClear');
+        const mobileSearchClear = document.getElementById('mobileSearchClear');
+        const sortSelect = document.getElementById('sortSelect');
+        
+        if (searchInput) searchInput.value = '';
+        if (mobileSearchInput) mobileSearchInput.value = '';
+        if (searchClear) searchClear.classList.remove('visible');
+        if (mobileSearchClear) mobileSearchClear.classList.remove('visible');
+        
         document.querySelectorAll('.category-tab').forEach(tab => {
             tab.classList.toggle('active', tab.getAttribute('data-category') === 'all');
         });
-        document.getElementById('sortSelect').value = 'popular';
+        
+        if (sortSelect) sortSelect.value = 'popular';
         
         this.filterItems();
         this.currentPage = 1;
@@ -675,29 +707,37 @@ class MenuApp {
 
     toggleSearch() {
         const mobileSearchBar = document.getElementById('mobileSearchBar');
+        if (!mobileSearchBar) return;
+        
         const isActive = mobileSearchBar.classList.toggle('active');
         
         if (isActive) {
             setTimeout(() => {
-                document.getElementById('mobileSearchInput').focus();
+                const mobileSearchInput = document.getElementById('mobileSearchInput');
+                if (mobileSearchInput) mobileSearchInput.focus();
             }, 300);
         }
     }
 
     closeSearch() {
-        document.getElementById('mobileSearchBar').classList.remove('active');
+        const mobileSearchBar = document.getElementById('mobileSearchBar');
+        if (mobileSearchBar) mobileSearchBar.classList.remove('active');
     }
 
     toggleFilterSidebar() {
         const filterSidebar = document.getElementById('filterSidebar');
-        filterSidebar.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        if (filterSidebar) {
+            filterSidebar.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     closeFilterSidebar() {
         const filterSidebar = document.getElementById('filterSidebar');
-        filterSidebar.classList.remove('active');
-        document.body.style.overflow = '';
+        if (filterSidebar) {
+            filterSidebar.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     }
 
     toggleCart() {
