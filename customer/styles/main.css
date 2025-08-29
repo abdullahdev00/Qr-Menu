@@ -529,6 +529,9 @@ html::-webkit-scrollbar {
     transition: var(--transition-normal);
     cursor: pointer;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .menu-item:hover {
@@ -606,6 +609,10 @@ html::-webkit-scrollbar {
 
 .item-content {
     padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
 }
 
 .item-header {
@@ -616,12 +623,18 @@ html::-webkit-scrollbar {
 }
 
 .item-name {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-primary);
     line-height: 1.3;
     flex: 1;
     margin-right: var(--spacing-sm);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .item-price {
