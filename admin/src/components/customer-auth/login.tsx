@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Card, CardHeader, CardContent, CardTitle } from '../ui/card'
-import { Label } from '../ui/label'
-import { FormError } from '../ui/form-error'
-import { useToast } from '../../lib/use-toast'
+import { Button } from '../../../components/ui/button'
+import { Input } from '../../../components/ui/input'
+import { Card, CardHeader, CardContent, CardTitle } from '../../../components/ui/card'
+import { Label } from '../../../components/ui/label'
+import { FormError } from '../../../components/ui/form-error'
+import { useToast } from '../../../lib/use-toast'
 import { Phone, ArrowLeft } from 'lucide-react'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '../../../components/ui/input-otp'
 
 interface LoginFormProps {
   onBack: () => void

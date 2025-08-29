@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-import { Card, CardHeader, CardContent, CardTitle } from '../ui/card'
-import { Label } from '../ui/label'
-import { FormError } from '../ui/form-error'
-import { useToast } from '../../lib/use-toast'
+import { Button } from '../../../components/ui/button'
+import { Input } from '../../../components/ui/input'
+import { Card, CardHeader, CardContent, CardTitle } from '../../../components/ui/card'
+import { Label } from '../../../components/ui/label'
+import { FormError } from '../../../components/ui/form-error'
+import { useToast } from '../../../lib/use-toast'
 import { User, Phone, Mail, LogOut, Edit2, Check, X } from 'lucide-react'
-import { Separator } from '../ui/separator'
+import { Separator } from '../../../components/ui/separator'
 
 interface CustomerUser {
   id: string

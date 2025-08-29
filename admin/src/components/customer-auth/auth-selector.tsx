@@ -1,6 +1,6 @@
 import React from 'react'
-import { Button } from '../ui/button'
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '../ui/card'
+import { Button } from '../../../components/ui/button'
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '../../../components/ui/card'
 import { UserPlus, LogIn, Phone, Shield, Clock } from 'lucide-react'
 
 interface AuthSelectorProps {
