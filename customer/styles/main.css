@@ -744,11 +744,8 @@ html::-webkit-scrollbar {
 /* Skeleton Cards with Layout Support */
 .skeleton-cards {
     display: grid;
-    gap: var(--spacing-md);
-}
-
-.skeleton-cards.single-column {
     grid-template-columns: 1fr;
+    gap: var(--spacing-md);
 }
 
 .skeleton-cards.double-column {
@@ -756,11 +753,23 @@ html::-webkit-scrollbar {
     gap: var(--spacing-lg);
 }
 
+/* Mobile Responsive for Skeleton Cards */
+@media (max-width: 768px) {
+    .skeleton-cards,
+    .skeleton-cards.double-column {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+}
+
 .skeleton-card {
     background: var(--card-background);
     border-radius: var(--radius-xl);
     overflow: hidden;
     animation: pulse 1.5s ease-in-out infinite;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .skeleton-image {
@@ -772,6 +781,10 @@ html::-webkit-scrollbar {
 
 .skeleton-content {
     padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
 }
 
 .skeleton-line {
@@ -783,12 +796,26 @@ html::-webkit-scrollbar {
     margin-bottom: var(--spacing-sm);
 }
 
-.skeleton-line.short {
-    width: 60%;
+.skeleton-line.title {
+    width: 90%;
+    height: 18px;
 }
 
-.skeleton-line.medium {
-    width: 80%;
+.skeleton-line.price {
+    width: 30%;
+    height: 16px;
+}
+
+.skeleton-line.description {
+    width: 100%;
+    height: 14px;
+}
+
+.skeleton-line.button {
+    width: 100%;
+    height: 38px;
+    margin-top: var(--spacing-sm);
+    border-radius: var(--radius-md);
 }
 
 @keyframes pulse {

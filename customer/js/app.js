@@ -326,13 +326,13 @@ class MenuApp {
         // Clear existing skeletons
         skeletonContainer.innerHTML = '';
         
-        // Apply current layout to skeleton container
-        skeletonContainer.className = `skeleton-cards menu-grid ${this.currentLayout}`;
+        // Apply current layout to skeleton container - exact same as menu-grid
+        skeletonContainer.className = `skeleton-cards ${this.currentLayout}`;
         
         // Determine skeleton count based on layout and screen size
         let skeletonCount;
         if (window.innerWidth < 768) {
-            skeletonCount = 4;
+            skeletonCount = 6; // Mobile always single column
         } else {
             skeletonCount = this.currentLayout === 'double-column' ? 8 : 6;
         }
