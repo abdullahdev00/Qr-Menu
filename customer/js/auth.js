@@ -1051,7 +1051,6 @@ class AuthenticationManager {
             modal.remove();
         }
     }
-    }
 
     async deleteAccount() {
         this.showConfirmDialog(
