@@ -5,9 +5,17 @@ export default async function handler(req: any, res: any) {
     try {
       const { restaurantId } = req.query;
       
-      // Get menu items for the restaurant (or all if no specific restaurant)
-      const menuItems = await storage.getMenuItems(restaurantId);
-      const categories = await storage.getMenuCategories(restaurantId);
+      // Get menu items for the restaurant (or first available restaurant if none specified)
+      let targetRestaurantId = restaurantId;
+      if (!targetRestaurantId) {
+        const restaurants = await storage.getRestaurants();
+        if (restaurants.length > 0) {
+          targetRestaurantId = restaurants[0].id;
+        }
+      }
+      
+      const menuItems = await storage.getMenuItems(targetRestaurantId);
+      const categories = await storage.getMenuCategories(targetRestaurantId);
       
       // Format data for customer website
       const formattedItems = menuItems.map(item => ({

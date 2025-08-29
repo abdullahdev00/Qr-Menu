@@ -6,7 +6,7 @@ class MenuApp {
         this.searchQuery = '';
         this.filters = {
             priceMin: 0,
-            priceMax: 50,
+            priceMax: 2000,
             dietary: [],
             spiceLevel: null,
             minRating: 0
@@ -17,6 +17,7 @@ class MenuApp {
         this.itemsPerPage = 20;
         this.currentPage = 1;
         this.favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        this.categories = [];
         
         this.init();
     }
@@ -27,6 +28,7 @@ class MenuApp {
         await this.loadMenuItems();
         this.renderMenuItems();
         this.updateFavoriteButtons();
+        this.updateCategoryTabs();
     }
 
     bindEvents() {
@@ -84,18 +86,52 @@ class MenuApp {
 
     async loadMenuItems() {
         try {
-            // Simulate API call - In real app, this would fetch from your restaurant API
-            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate loading time
+            // Fetch menu data from API
+            const response = await fetch('/api/customer/menu');
+            const data = await response.json();
             
-            this.menuItems = this.generateSampleMenuItems();
-            this.filteredItems = [...this.menuItems];
-            this.sortItems();
+            if (data.success && data.items) {
+                this.categories = data.categories || [];
+                this.menuItems = data.items.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    category: item.category.toLowerCase().replace(/\s+/g, '-'),
+                    subcategory: item.category,
+                    description: item.description,
+                    price: { small: item.price, medium: item.price * 1.25, large: item.price * 1.5 },
+                    image: item.image,
+                    images: item.images || [item.image],
+                    rating: item.rating || 4.5,
+                    reviewsCount: item.reviewsCount || 100,
+                    preparationTime: item.preparationTime || 20,
+                    dietary: item.isVegetarian ? ['vegetarian'] : item.isVegan ? ['vegan'] : [],
+                    spiceLevel: item.spiceLevel || 1,
+                    allergens: item.allergens || [],
+                    calories: item.calories || 300,
+                    availability: item.availability,
+                    isSpecial: item.isSpecial || false,
+                    tags: item.tags || []
+                }));
+                
+                this.filteredItems = [...this.menuItems];
+                this.sortItems();
+            } else {
+                // Fallback to sample data if API fails
+                this.menuItems = this.generateSampleMenuItems();
+                this.filteredItems = [...this.menuItems];
+                this.sortItems();
+            }
             
             // Hide loading state
             document.getElementById('loadingState').style.display = 'none';
         } catch (error) {
             console.error('Error loading menu items:', error);
-            this.showError('Failed to load menu items. Please try again.');
+            // Fallback to sample data
+            this.menuItems = this.generateSampleMenuItems();
+            this.filteredItems = [...this.menuItems];
+            this.sortItems();
+            document.getElementById('loadingState').style.display = 'none';
+            this.showError('Failed to load menu items. Showing sample data.');
         }
     }
 
@@ -319,7 +355,7 @@ class MenuApp {
             <div class="item-content">
                 <div class="item-header">
                     <h3 class="item-name" data-testid="text-item-name-${item.id}">${item.name}</h3>
-                    <span class="item-price" data-testid="text-item-price-${item.id}">$${defaultPrice.toFixed(2)}</span>
+                    <span class="item-price" data-testid="text-item-price-${item.id}">₨${defaultPrice.toFixed(0)}</span>
                 </div>
                 <div class="item-rating">
                     <div class="stars">
@@ -611,7 +647,7 @@ class MenuApp {
     clearAllFilters() {
         this.filters = {
             priceMin: 0,
-            priceMax: 50,
+            priceMax: 2000,
             dietary: [],
             spiceLevel: null,
             minRating: 0
@@ -681,7 +717,7 @@ class MenuApp {
     resetFilters() {
         this.filters = {
             priceMin: 0,
-            priceMax: 50,
+            priceMax: 2000,
             dietary: [],
             spiceLevel: null,
             minRating: 0
@@ -738,7 +774,7 @@ class MenuApp {
                 </div>
                 <div class="modal-details">
                     <h2 data-testid="text-modal-item-name">${item.name}</h2>
-                    <div class="modal-price" data-testid="text-modal-item-price">$${defaultPrice.toFixed(2)}</div>
+                    <div class="modal-price" data-testid="text-modal-item-price">₨${defaultPrice.toFixed(0)}</div>
                     <div class="modal-rating">
                         <div class="stars">${this.generateStars(item.rating)}</div>
                         <span>(${item.rating}) • ${item.reviewsCount} reviews</span>
@@ -831,6 +867,44 @@ class MenuApp {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    }
+
+    updateCategoryTabs() {
+        const categoryNav = document.querySelector('.category-nav .category-container');
+        if (!categoryNav || this.categories.length === 0) return;
+
+        // Keep the filter toggle and all items button
+        const filterToggle = categoryNav.querySelector('.filter-toggle');
+        const allItemsBtn = categoryNav.querySelector('[data-category="all"]');
+        
+        // Clear existing categories except filter toggle and all items
+        categoryNav.innerHTML = '';
+        categoryNav.appendChild(filterToggle);
+        categoryNav.appendChild(allItemsBtn);
+
+        // Add categories from API
+        this.categories.forEach(category => {
+            const categorySlug = category.name.toLowerCase().replace(/\s+/g, '-');
+            const button = document.createElement('button');
+            button.className = 'category-tab';
+            button.setAttribute('data-category', categorySlug);
+            button.setAttribute('data-testid', `button-category-${categorySlug}`);
+            
+            // Choose appropriate icon based on category name
+            let icon = 'fas fa-utensils'; // default
+            if (category.name.toLowerCase().includes('appetizer')) icon = 'fas fa-leaf';
+            else if (category.name.toLowerCase().includes('main')) icon = 'fas fa-drumstick-bite';
+            else if (category.name.toLowerCase().includes('dessert')) icon = 'fas fa-ice-cream';
+            else if (category.name.toLowerCase().includes('beverage')) icon = 'fas fa-glass-water';
+            
+            button.innerHTML = `
+                <i class="${icon}"></i>
+                ${category.name}
+            `;
+            
+            button.addEventListener('click', this.handleCategoryChange.bind(this));
+            categoryNav.appendChild(button);
+        });
     }
 }
 
