@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu - Delicious Food</title>
+    <meta name="description" content="Browse our complete restaurant menu with fresh ingredients, traditional recipes, and modern flavors. Order online for delivery or pickup.">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Restaurant Menu - Delicious Food">
+    <meta property="og:description" content="Browse our complete restaurant menu with fresh ingredients and traditional recipes.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/assets/restaurant-hero.jpg">
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header-container">
+            <button class="menu-toggle" id="menuToggle" data-testid="button-menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="logo">
+                <h1 data-testid="text-restaurant-name">Taste Paradise</h1>
+            </div>
+            
+            <div class="header-actions">
+                <button class="search-toggle" id="searchToggle" data-testid="button-search-toggle" aria-label="Search menu">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="cart-toggle" id="cartToggle" data-testid="button-cart-toggle" aria-label="View cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount" data-testid="text-cart-count">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-bar" id="searchBar">
+            <div class="search-container">
+                <input type="text" id="searchInput" data-testid="input-search" placeholder="Search menu items..." autocomplete="off">
+                <button class="search-clear" id="searchClear" data-testid="button-search-clear" aria-label="Clear search">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+    </header>
+
+    <!-- Category Navigation -->
+    <nav class="category-nav" id="categoryNav">
+        <div class="category-container">
+            <button class="category-tab active" data-category="all" data-testid="button-category-all">
+                <i class="fas fa-utensils"></i>
+                All Items
+            </button>
+            <button class="category-tab" data-category="appetizers" data-testid="button-category-appetizers">
+                <i class="fas fa-leaf"></i>
+                Appetizers
+            </button>
+            <button class="category-tab" data-category="main-course" data-testid="button-category-main-course">
+                <i class="fas fa-drumstick-bite"></i>
+                Main Course
+            </button>
+            <button class="category-tab" data-category="chinese" data-testid="button-category-chinese">
+                <i class="fas fa-chopsticks"></i>
+                Chinese
+            </button>
+            <button class="category-tab" data-category="fast-food" data-testid="button-category-fast-food">
+                <i class="fas fa-hamburger"></i>
+                Fast Food
+            </button>
+            <button class="category-tab" data-category="desserts" data-testid="button-category-desserts">
+                <i class="fas fa-ice-cream"></i>
+                Desserts
+            </button>
+            <button class="category-tab" data-category="beverages" data-testid="button-category-beverages">
+                <i class="fas fa-glass-water"></i>
+                Beverages
+            </button>
+            <button class="category-tab" data-category="special" data-testid="button-category-special">
+                <i class="fas fa-star"></i>
+                Chef's Special
+            </button>
+        </div>
+    </nav>
+
+    <!-- Filter Options -->
+    <div class="filter-section" id="filterSection">
+        <div class="filter-container">
+            <button class="filter-toggle" id="filterToggle" data-testid="button-filter-toggle">
+                <i class="fas fa-filter"></i>
+                Filters
+            </button>
+            
+            <div class="sort-dropdown">
+                <select id="sortSelect" data-testid="select-sort">
+                    <option value="popular">Popular First</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="time">Preparation Time</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <div class="skeleton-cards">
+                    <!-- Skeleton cards will be generated here -->
+                </div>
+            </div>
+
+            <!-- Menu Grid -->
+            <div class="menu-grid" id="menuGrid">
+                <!-- Menu items will be dynamically loaded here -->
+            </div>
+
+            <!-- Load More Button -->
+            <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                <button class="load-more-btn" id="loadMoreBtn" data-testid="button-load-more">
+                    <i class="fas fa-plus"></i>
+                    Load More Items
+                </button>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-content">
+                    <i class="fas fa-search"></i>
+                    <h3>No items found</h3>
+                    <p>Try adjusting your search or filters</p>
+                    <button class="clear-filters-btn" id="clearFiltersBtn" data-testid="button-clear-filters">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Filter Drawer -->
+    <div class="filter-drawer" id="filterDrawer">
+        <div class="filter-overlay" id="filterOverlay"></div>
+        <div class="filter-content">
+            <div class="filter-header">
+                <h3>Filter Menu</h3>
+                <button class="filter-close" id="filterClose" data-testid="button-filter-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="filter-body">
+                <!-- Price Range -->
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <div class="price-range">
+                        <input type="range" id="priceMin" min="0" max="50" value="0" data-testid="input-price-min">
+                        <input type="range" id="priceMax" min="0" max="50" value="50" data-testid="input-price-max">
+                        <div class="price-values">
+                            <span>$<span id="priceMinValue">0</span></span>
+                            <span>$<span id="priceMaxValue">50</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dietary Preferences -->
+                <div class="filter-group">
+                    <h4>Dietary Preferences</h4>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" data-filter="vegan" data-testid="checkbox-vegan">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-leaf"></i> Vegan
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" data-filter="vegetarian" data-testid="checkbox-vegetarian">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-seedling"></i> Vegetarian
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" data-filter="halal" data-testid="checkbox-halal">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-moon"></i> Halal
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" data-filter="gluten-free" data-testid="checkbox-gluten-free">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-wheat-awn-circle-exclamation"></i> Gluten Free
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Spice Level -->
+                <div class="filter-group">
+                    <h4>Spice Level</h4>
+                    <div class="spice-level">
+                        <button class="spice-btn" data-spice="1" data-testid="button-spice-mild">
+                            <i class="fas fa-pepper-hot"></i> Mild
+                        </button>
+                        <button class="spice-btn" data-spice="2" data-testid="button-spice-medium">
+                            <i class="fas fa-pepper-hot"></i><i class="fas fa-pepper-hot"></i> Medium
+                        </button>
+                        <button class="spice-btn" data-spice="3" data-testid="button-spice-hot">
+                            <i class="fas fa-pepper-hot"></i><i class="fas fa-pepper-hot"></i><i class="fas fa-pepper-hot"></i> Hot
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rating -->
+                <div class="filter-group">
+                    <h4>Minimum Rating</h4>
+                    <div class="rating-filter">
+                        <div class="star-rating">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                        <span id="ratingValue" data-testid="text-rating-value">4.0 & up</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-footer">
+                <button class="btn-secondary" id="resetFilters" data-testid="button-reset-filters">
+                    Reset All
+                </button>
+                <button class="btn-primary" id="applyFilters" data-testid="button-apply-filters">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Detail Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" id="modalClose" data-testid="button-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Item details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-overlay" id="cartOverlay"></div>
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>Your Order</h3>
+                <button class="cart-close" id="cartClose" data-testid="button-cart-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="cart-body" id="cartBody">
+                <div class="cart-empty" id="cartEmpty">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Your cart is empty</p>
+                    <small>Add some delicious items to get started!</small>
+                </div>
+                
+                <div class="cart-items" id="cartItems">
+                    <!-- Cart items will be loaded here -->
+                </div>
+            </div>
+
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <div class="cart-total">
+                    <div class="subtotal">
+                        <span>Subtotal:</span>
+                        <span id="cartSubtotal" data-testid="text-cart-subtotal">$0.00</span>
+                    </div>
+                    <div class="tax">
+                        <span>Tax:</span>
+                        <span id="cartTax" data-testid="text-cart-tax">$0.00</span>
+                    </div>
+                    <div class="total">
+                        <span>Total:</span>
+                        <span id="cartTotal" data-testid="text-cart-total">$0.00</span>
+                    </div>
+                </div>
+                
+                <button class="checkout-btn" id="checkoutBtn" data-testid="button-checkout">
+                    <i class="fas fa-credit-card"></i>
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                    <p><i class="fas fa-envelope"></i> info@tasteparadise.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Food Street, City</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Hours</h4>
+                    <p>Monday - Thursday: 11am - 10pm</p>
+                    <p>Friday - Saturday: 11am - 11pm</p>
+                    <p>Sunday: 12pm - 9pm</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Taste Paradise. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/filters.js"></script>
+</body>
+</html>
