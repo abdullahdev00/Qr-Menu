@@ -21,41 +21,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { phoneNumber, otp, purpose, name, email } = verifyOtpSchema.parse(req.body);
 
-    // Find valid OTP
-    const otpRecord = await db.select()
-      .from(otpVerifications)
-      .where(
-        and(
-          eq(otpVerifications.phoneNumber, phoneNumber),
-          eq(otpVerifications.otp, otp),
-          eq(otpVerifications.purpose, purpose),
-          eq(otpVerifications.isUsed, false),
-          gte(otpVerifications.expiresAt, new Date())
-        )
-      )
-      .limit(1);
-
-    if (otpRecord.length === 0) {
-      // Increment attempt count for existing OTP
-      await db.update(otpVerifications)
-        .set({ attemptsCount: sql`${otpVerifications.attemptsCount} + 1` })
+    // Development bypass - accept any 6 digit OTP in development mode
+    let otpRecord = [];
+    
+    if (process.env.NODE_ENV === 'development') {
+      // In development, create a fake OTP record if valid 6-digit OTP
+      if (/^[0-9]{6}$/.test(otp)) {
+        otpRecord = [{ id: 'dev-bypass', phoneNumber, otp, purpose }];
+      }
+    } else {
+      // Production validation
+      otpRecord = await db.select()
+        .from(otpVerifications)
         .where(
           and(
             eq(otpVerifications.phoneNumber, phoneNumber),
+            eq(otpVerifications.otp, otp),
             eq(otpVerifications.purpose, purpose),
-            eq(otpVerifications.isUsed, false)
+            eq(otpVerifications.isUsed, false),
+            gte(otpVerifications.expiresAt, new Date())
           )
-        );
+        )
+        .limit(1);
+    }
+
+    if (otpRecord.length === 0) {
+      // Increment attempt count for existing OTP (only in production)
+      if (process.env.NODE_ENV !== 'development') {
+        await db.update(otpVerifications)
+          .set({ attemptsCount: sql`${otpVerifications.attemptsCount} + 1` })
+          .where(
+            and(
+              eq(otpVerifications.phoneNumber, phoneNumber),
+              eq(otpVerifications.purpose, purpose),
+              eq(otpVerifications.isUsed, false)
+            )
+          );
+      }
 
       return res.status(400).json({ 
         error: 'Invalid or expired OTP' 
       });
     }
 
-    // Mark OTP as used
-    await db.update(otpVerifications)
-      .set({ isUsed: true })
-      .where(eq(otpVerifications.id, otpRecord[0].id));
+    // Mark OTP as used (skip in development bypass mode)
+    if (process.env.NODE_ENV !== 'development' || otpRecord[0].id !== 'dev-bypass') {
+      await db.update(otpVerifications)
+        .set({ isUsed: true })
+        .where(eq(otpVerifications.id, otpRecord[0].id));
+    }
 
     let user: any = null;
 
