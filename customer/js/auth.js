@@ -124,6 +124,18 @@ class AuthenticationManager {
         if (addAddressBtn) {
             addAddressBtn.addEventListener('click', () => this.addAddress());
         }
+
+        // Delete account button
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        if (deleteAccountBtn) {
+            deleteAccountBtn.addEventListener('click', () => this.deleteAccount());
+        }
+
+        // Set password button
+        const setPasswordBtn = document.getElementById('setPasswordBtn');
+        if (setPasswordBtn) {
+            setPasswordBtn.addEventListener('click', () => this.setPassword());
+        }
     }
 
     setupOverlayHandlers() {
@@ -411,6 +423,7 @@ class AuthenticationManager {
     openAuthModal() {
         this.currentStep = 'phoneStep';
         this.showStep('phoneStep');
+        this.showPasswordLogin(); // Add password login option
         this.authModalElement.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -644,6 +657,382 @@ class AuthenticationManager {
         this.updateUI();
         this.closeProfile();
         this.showSuccess('You have been signed out');
+    }
+
+    // Address Management Methods
+    async addAddress() {
+        const addressTitle = prompt('Address Title (e.g., Home, Office):');
+        if (!addressTitle) return;
+
+        const addressLine1 = prompt('Address Line 1:');
+        if (!addressLine1) return;
+
+        const city = prompt('City:');
+        if (!city) return;
+
+        try {
+            const response = await fetch('/api/customer-auth/addresses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    customerId: this.currentUser.id,
+                    title: addressTitle,
+                    addressLine1: addressLine1,
+                    city: city,
+                    isDefault: false
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showSuccess('Address added successfully');
+                this.loadUserAddresses(); // Refresh address list
+            } else {
+                this.showError(data.error || 'Failed to add address');
+            }
+        } catch (error) {
+            console.error('Add address error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+
+    async editAddress(addressId) {
+        try {
+            // Get current address data
+            const response = await fetch(`/api/customer-auth/addresses?customerId=${this.currentUser.id}`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                this.showError('Failed to load address data');
+                return;
+            }
+
+            const address = data.addresses.find(addr => addr.id === addressId);
+            if (!address) {
+                this.showError('Address not found');
+                return;
+            }
+
+            // Prompt for new values
+            const newTitle = prompt('Address Title:', address.title);
+            if (newTitle === null) return; // User cancelled
+
+            const newAddressLine1 = prompt('Address Line 1:', address.addressLine1);
+            if (newAddressLine1 === null) return;
+
+            const newCity = prompt('City:', address.city);
+            if (newCity === null) return;
+
+            // Update address
+            const updateResponse = await fetch(`/api/customer-auth/addresses/${addressId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: newTitle,
+                    addressLine1: newAddressLine1,
+                    city: newCity
+                })
+            });
+
+            const updateData = await updateResponse.json();
+
+            if (updateResponse.ok) {
+                this.showSuccess('Address updated successfully');
+                this.loadUserAddresses(); // Refresh address list
+            } else {
+                this.showError(updateData.error || 'Failed to update address');
+            }
+        } catch (error) {
+            console.error('Edit address error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+
+    async deleteAddress(addressId) {
+        if (!confirm('Are you sure you want to delete this address?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/customer-auth/addresses/${addressId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showSuccess('Address deleted successfully');
+                this.loadUserAddresses(); // Refresh address list
+            } else {
+                this.showError(data.error || 'Failed to delete address');
+            }
+        } catch (error) {
+            console.error('Delete address error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+
+    async editProfile() {
+        const newName = prompt('Enter your name:', this.currentUser.name || '');
+        if (newName === null) return; // User cancelled
+
+        const newEmail = prompt('Enter your email:', this.currentUser.email || '');
+        if (newEmail === null) return;
+
+        // Validate email if provided
+        if (newEmail && !this.validateEmail(newEmail)) {
+            this.showError('Please enter a valid email address');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/customer-auth/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    phoneNumber: this.currentUser.phoneNumber,
+                    name: newName,
+                    email: newEmail
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Update current user data
+                this.currentUser = { ...this.currentUser, ...data.user };
+                this.saveUserToStorage();
+                this.updateUI();
+                this.showSuccess('Profile updated successfully');
+            } else {
+                this.showError(data.error || 'Failed to update profile');
+            }
+        } catch (error) {
+            console.error('Edit profile error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+
+    async deleteAccount() {
+        if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+            return;
+        }
+
+        // Additional confirmation
+        const confirmText = prompt('Type "DELETE" to confirm account deletion:');
+        if (confirmText !== 'DELETE') {
+            this.showError('Account deletion cancelled');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/customer-auth/profile', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    phoneNumber: this.currentUser.phoneNumber
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.signOut();
+                this.showSuccess('Account deleted successfully');
+            } else {
+                this.showError(data.error || 'Failed to delete account');
+            }
+        } catch (error) {
+            console.error('Delete account error:', error);
+            this.showError('Network error. Please try again.');
+        }
+    }
+
+    // Password Authentication Methods
+    async showPasswordLogin() {
+        // Add password login option to phone step
+        const phoneStep = document.getElementById('phoneStep');
+        if (!phoneStep) return;
+
+        // Check if password login form already exists
+        if (document.getElementById('passwordLoginForm')) {
+            document.getElementById('passwordLoginToggle').style.display = 'block';
+            return;
+        }
+
+        // Add password login toggle
+        const phoneForm = document.getElementById('phoneForm');
+        if (phoneForm) {
+            const passwordToggle = document.createElement('div');
+            passwordToggle.id = 'passwordLoginToggle';
+            passwordToggle.innerHTML = `
+                <div style="text-align: center; margin: 15px 0;">
+                    <button type="button" id="usePasswordBtn" style="
+                        background: none;
+                        border: 1px solid var(--accent-gold);
+                        color: var(--accent-gold);
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        cursor: pointer;
+                    ">Use Password Instead</button>
+                </div>
+            `;
+            phoneForm.parentNode.appendChild(passwordToggle);
+
+            // Add password login form
+            const passwordForm = document.createElement('div');
+            passwordForm.id = 'passwordLoginForm';
+            passwordForm.style.display = 'none';
+            passwordForm.innerHTML = `
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="loginPhone">Phone Number</label>
+                        <input type="tel" id="loginPhone" placeholder="03xxxxxxxxx or +92xxxxxxxxxx" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" id="passwordLoginBtn" class="auth-btn primary">
+                        <span class="btn-text">Sign In</span>
+                        <div class="btn-loading" style="display: none;">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </button>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button type="button" id="backToOtpBtn" style="
+                            background: none;
+                            border: none;
+                            color: var(--text-secondary);
+                            font-size: 14px;
+                            cursor: pointer;
+                        ">Back to OTP Login</button>
+                    </div>
+                </form>
+            `;
+            phoneStep.appendChild(passwordForm);
+
+            // Add event listeners
+            document.getElementById('usePasswordBtn').addEventListener('click', () => {
+                document.getElementById('phoneForm').style.display = 'none';
+                document.getElementById('passwordLoginToggle').style.display = 'none';
+                document.getElementById('passwordLoginForm').style.display = 'block';
+            });
+
+            document.getElementById('backToOtpBtn').addEventListener('click', () => {
+                document.getElementById('phoneForm').style.display = 'block';
+                document.getElementById('passwordLoginToggle').style.display = 'block';
+                document.getElementById('passwordLoginForm').style.display = 'none';
+            });
+
+            document.getElementById('passwordForm').addEventListener('submit', (e) => this.handlePasswordLogin(e));
+        }
+    }
+
+    async handlePasswordLogin(e) {
+        e.preventDefault();
+        
+        const phone = document.getElementById('loginPhone').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        if (!this.validatePhoneNumber(phone)) {
+            this.showError('Please enter a valid Pakistani phone number');
+            return;
+        }
+
+        if (!password) {
+            this.showError('Please enter your password');
+            return;
+        }
+
+        this.setLoading('passwordLoginBtn', true);
+
+        try {
+            const response = await fetch('/api/customer-auth/password-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    phoneNumber: phone,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.currentUser = data.user;
+                this.saveUserToStorage();
+                this.completeAuthentication();
+            } else {
+                this.showError(data.error || 'Login failed');
+            }
+        } catch (error) {
+            console.error('Password login error:', error);
+            this.showError('Network error. Please try again.');
+        } finally {
+            this.setLoading('passwordLoginBtn', false);
+        }
+    }
+
+    async setPassword() {
+        if (!this.currentUser) {
+            this.showError('Please sign in first');
+            return;
+        }
+
+        const password = prompt('Enter a new password (minimum 6 characters):');
+        if (!password) return;
+
+        if (password.length < 6) {
+            this.showError('Password must be at least 6 characters long');
+            return;
+        }
+
+        const confirmPassword = prompt('Confirm your password:');
+        if (password !== confirmPassword) {
+            this.showError('Passwords do not match');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/customer-auth/set-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    phoneNumber: this.currentUser.phoneNumber,
+                    password: password,
+                    confirmPassword: confirmPassword
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                this.showSuccess('Password set successfully! You can now login with your password.');
+            } else {
+                this.showError(data.error || 'Failed to set password');
+            }
+        } catch (error) {
+            console.error('Set password error:', error);
+            this.showError('Network error. Please try again.');
+        }
     }
 
     // Additional Methods

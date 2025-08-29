@@ -258,6 +258,7 @@ export const customerUsers = pgTable("customer_users", {
   phoneNumber: text("phone_number").notNull().unique(),
   name: text("name"),
   email: text("email"),
+  password: text("password"), // For password-based authentication
   isPhoneVerified: boolean("is_phone_verified").notNull().default(false),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -291,12 +292,16 @@ export const otpVerifications = pgTable("otp_verifications", {
 });
 
 // Customer Insert Schemas
-export const insertCustomerUserSchema = createInsertSchema(customerUsers).omit({ 
+export const insertCustomerUserSchema = createInsertSchema(customerUsers, {
+  password: z.string().min(6, "Password must be at least 6 characters").optional()
+}).omit({ 
   id: true, 
   createdAt: true, 
   updatedAt: true 
 });
-export const updateCustomerUserSchema = createInsertSchema(customerUsers).omit({ 
+export const updateCustomerUserSchema = createInsertSchema(customerUsers, {
+  password: z.string().min(6, "Password must be at least 6 characters").optional()
+}).omit({ 
   id: true, 
   createdAt: true, 
   updatedAt: true 
