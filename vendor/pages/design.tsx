@@ -186,6 +186,7 @@ export default function DesignPage() {
   const [previewDevice, setPreviewDevice] = useState('desktop');
   const [activeTheme, setActiveTheme] = useState('custom');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   
   // Design state
   const [designState, setDesignState] = useState({
@@ -616,139 +617,18 @@ export default function DesignPage() {
 
         {/* Right Panel - Live Preview */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Preview</h3>
-              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                <button
-                  onClick={() => setPreviewDevice('desktop')}
-                  className={`p-1 rounded ${
-                    previewDevice === 'desktop' 
-                      ? 'bg-white dark:bg-gray-700 shadow-sm' 
-                      : 'hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <Monitor className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setPreviewDevice('tablet')}
-                  className={`p-1 rounded ${
-                    previewDevice === 'tablet' 
-                      ? 'bg-white dark:bg-gray-700 shadow-sm' 
-                      : 'hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <Tablet className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setPreviewDevice('mobile')}
-                  className={`p-1 rounded ${
-                    previewDevice === 'mobile' 
-                      ? 'bg-white dark:bg-gray-700 shadow-sm' 
-                      : 'hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <Smartphone className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            
-            {/* Preview Window */}
-            <div className={`bg-gray-100 dark:bg-gray-800 rounded-lg p-4 ${
-              previewDevice === 'mobile' ? 'max-w-sm mx-auto' :
-              previewDevice === 'tablet' ? 'max-w-md mx-auto' : ''
-            }`}>
-              <div 
-                className="rounded-lg shadow-lg overflow-hidden"
-                style={{
-                  backgroundColor: designState.primaryBg,
-                  color: designState.primaryText,
-                  fontFamily: designState.primaryFont,
-                  fontSize: `${designState.bodySize}px`,
-                  lineHeight: designState.lineHeight
-                }}
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Live Preview</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                See your design changes in real-time with the actual customer website
+              </p>
+              <button 
+                onClick={() => setShowPreviewModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 mx-auto transition-colors"
               >
-                {/* Preview Header */}
-                <div 
-                  className="p-4 border-b"
-                  style={{ 
-                    backgroundColor: designState.secondaryBg,
-                    borderColor: designState.borderGray
-                  }}
-                >
-                  <h2 
-                    className="font-bold"
-                    style={{ 
-                      color: designState.primaryText,
-                      fontSize: `${designState.bodySize * designState.headingScale}px`
-                    }}
-                  >
-                    Restaurant Menu
-                  </h2>
-                  <p style={{ color: designState.secondaryText, fontSize: `${designState.bodySize * 0.875}px` }}>
-                    Sample preview
-                  </p>
-                </div>
-                
-                {/* Preview Content */}
-                <div className="p-4">
-                  <div 
-                    className="p-3 rounded-lg mb-3"
-                    style={{ backgroundColor: designState.cardBg }}
-                  >
-                    <h3 
-                      className="font-semibold mb-1"
-                      style={{ color: designState.primaryText }}
-                    >
-                      Sample Menu Item
-                    </h3>
-                    <p 
-                      className="text-sm mb-2"
-                      style={{ color: designState.secondaryText }}
-                    >
-                      Description of the menu item with details
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span 
-                        className="font-bold"
-                        style={{ color: designState.primaryAccent }}
-                      >
-                        PKR 850
-                      </span>
-                      <button 
-                        className="px-3 py-1 text-sm rounded"
-                        style={{
-                          backgroundColor: designState.primaryAccent,
-                          color: designState.buttonText
-                        }}
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div 
-                    className="p-2 rounded text-sm text-center"
-                    style={{
-                      backgroundColor: designState.successGreen + '20',
-                      color: designState.successGreen
-                    }}
-                  >
-                    ✓ Sample success message
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Preview Controls */}
-            <div className="mt-4 flex items-center justify-between">
-              <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                <Download className="w-4 h-4" />
-                Export
-              </button>
-              <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                <Eye className="w-4 h-4" />
-                Full Screen
+                <Eye className="w-5 h-5" />
+                Open Live Preview
               </button>
             </div>
           </div>
@@ -782,6 +662,103 @@ export default function DesignPage() {
           </div>
         </div>
       </div>
+
+      {/* Live Preview Modal */}
+      {showPreviewModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-7xl h-5/6 flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+              <div className="flex items-center gap-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Live Preview</h3>
+                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                  <button
+                    onClick={() => setPreviewDevice('desktop')}
+                    className={`p-2 rounded flex items-center gap-1 text-sm ${
+                      previewDevice === 'desktop' 
+                        ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600' 
+                        : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <Monitor className="w-4 h-4" />
+                    Desktop
+                  </button>
+                  <button
+                    onClick={() => setPreviewDevice('tablet')}
+                    className={`p-2 rounded flex items-center gap-1 text-sm ${
+                      previewDevice === 'tablet' 
+                        ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600' 
+                        : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <Tablet className="w-4 h-4" />
+                    Tablet
+                  </button>
+                  <button
+                    onClick={() => setPreviewDevice('mobile')}
+                    className={`p-2 rounded flex items-center gap-1 text-sm ${
+                      previewDevice === 'mobile' 
+                        ? 'bg-white dark:bg-gray-700 shadow-sm text-blue-600' 
+                        : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <Smartphone className="w-4 h-4" />
+                    Mobile
+                  </button>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowPreviewModal(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content - Preview Frame */}
+            <div className="flex-1 p-4 bg-gray-100 dark:bg-gray-800">
+              <div className={`mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-full ${
+                previewDevice === 'mobile' ? 'max-w-sm' :
+                previewDevice === 'tablet' ? 'max-w-2xl' : 'max-w-full'
+              }`}>
+                <iframe
+                  src="/customer"
+                  className="w-full h-full border-0"
+                  style={{
+                    transform: previewDevice === 'mobile' ? 'scale(0.8)' : 
+                              previewDevice === 'tablet' ? 'scale(0.9)' : 'scale(1)',
+                    transformOrigin: 'top left',
+                    width: previewDevice === 'mobile' ? '125%' : 
+                           previewDevice === 'tablet' ? '111%' : '100%',
+                    height: previewDevice === 'mobile' ? '125%' : 
+                            previewDevice === 'tablet' ? '111%' : '100%'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t dark:border-gray-700 flex items-center justify-between">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Real-time preview of your customer website with current design settings
+              </div>
+              <div className="flex items-center gap-2">
+                <button className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg">
+                  Open in New Tab
+                </button>
+                <button 
+                  onClick={() => setShowPreviewModal(false)}
+                  className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
