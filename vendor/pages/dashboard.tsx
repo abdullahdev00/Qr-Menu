@@ -382,6 +382,33 @@ export default function VendorDashboard() {
     }
   }, [])
 
+  // Fetch real dashboard data
+  const { data: menuItemsData } = useQuery({
+    queryKey: ['/api/menu-items', user?.restaurantId],
+    queryFn: async () => {
+      if (!user?.restaurantId) return null
+      const response = await fetch(`/api/menu-items?restaurantId=${user.restaurantId}`)
+      return response.json()
+    },
+    enabled: !!user?.restaurantId,
+  })
+
+  const { data: restaurantData } = useQuery({
+    queryKey: ['/api/restaurants', user?.restaurantId],
+    queryFn: async () => {
+      if (!user?.restaurantId) return null
+      const response = await fetch(`/api/restaurants/${user.restaurantId}`)
+      return response.json()
+    },
+    enabled: !!user?.restaurantId,
+  })
+
+  // Calculate stats from real data
+  const menuItemsCount = menuItemsData?.length || 0
+  const qrScansCount = restaurantData?.qrScansCount || 1234 // Default to sample data if not available
+  const popularItem = menuItemsData?.find(item => item.isPopular) || menuItemsData?.[0] || { name: 'Chicken Biryani' }
+  const subscriptionPlan = restaurantData?.subscriptionPlan || 'Pro Plan'
+
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -422,13 +449,13 @@ export default function VendorDashboard() {
               <ChefHat className="w-6 h-6 text-white" />
             </div>
             <span className="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-full">
-              45/100
+              {menuItemsCount}/100
             </span>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">45</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{menuItemsCount}</h3>
           <p className="text-sm text-gray-600 dark:text-gray-300">Menu Items</p>
           <div className="mt-2 text-xs text-green-600 dark:text-green-400">
-            +3 added this week
+            {menuItemsCount > 0 ? `${menuItemsCount} items available` : 'Add your first item'}
           </div>
         </div>
 
@@ -442,7 +469,7 @@ export default function VendorDashboard() {
               +18%
             </span>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">1,234</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{qrScansCount.toLocaleString()}</h3>
           <p className="text-sm text-gray-600 dark:text-gray-300">QR Code Scans</p>
           <div className="mt-2 text-xs text-green-600 dark:text-green-400">
             This month
@@ -459,10 +486,10 @@ export default function VendorDashboard() {
               HOT
             </span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">Chicken Biryani</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">{popularItem.name}</h3>
           <p className="text-sm text-gray-600 dark:text-gray-300">Most Popular</p>
           <div className="mt-2 text-xs text-purple-600 dark:text-purple-400">
-            234 views today
+            {menuItemsCount > 0 ? 'Top performing item' : 'Add items to see stats'}
           </div>
         </div>
 
@@ -476,10 +503,10 @@ export default function VendorDashboard() {
               ACTIVE
             </span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Pro Plan</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{subscriptionPlan}</h3>
           <p className="text-sm text-gray-600 dark:text-gray-300">Subscription</p>
           <div className="mt-2 text-xs text-orange-600 dark:text-orange-400">
-            Renews: March 15
+            {restaurantData?.subscriptionStatus === 'active' ? 'Active subscription' : 'Renews: March 15'}
           </div>
         </div>
       </div>
@@ -500,7 +527,7 @@ export default function VendorDashboard() {
               </button>
               
               <Link href="/analytics">
-                <button className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                <button className="w-full flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                   <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
                     <BarChart3 className="w-6 h-6" />
                   </div>

@@ -2,8 +2,8 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { Route, Switch, Router, Redirect } from 'wouter';
-import { Toaster } from '../admin/components/ui/toaster';
-import { ThemeProvider } from '../admin/src/lib/theme-provider';
+import { Toaster } from '../../admin/components/ui/toaster';
+import { ThemeProvider } from '../../admin/src/lib/theme-provider';
 
 // Import vendor pages
 import Dashboard from '../pages/dashboard';
