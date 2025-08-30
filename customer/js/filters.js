@@ -585,7 +585,7 @@ filterStyle.textContent = `
     .price-values {
         display: flex;
         justify-content: space-between;
-        margin-top: 30px;
+        margin-top: 12px;
         color: var(--text-secondary);
         font-size: 14px;
         font-weight: 600;
