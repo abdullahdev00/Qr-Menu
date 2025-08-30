@@ -390,9 +390,49 @@ class MenuApp {
             ? item.description.substring(0, 50) + '...' 
             : item.description;
 
+        // Create image carousel HTML
+        const allImages = [];
+        if (item.images && item.images.length > 0) {
+            allImages.push(...item.images);
+        }
+        if (item.image && !allImages.includes(item.image)) {
+            allImages.push(item.image);
+        }
+        
+        let imageHTML = '';
+        if (allImages.length === 0) {
+            imageHTML = '<div class="placeholder-image"><i class="fas fa-image"></i></div>';
+        } else if (allImages.length === 1) {
+            imageHTML = `<img src="${allImages[0]}" alt="${item.name}" loading="lazy">`;
+        } else {
+            imageHTML = `
+                <div class="carousel-container" data-carousel-id="${item.id}">
+                    <div class="carousel-images">
+                        ${allImages.map((img, index) => `
+                            <img src="${img}" alt="${item.name} - Image ${index + 1}" 
+                                 loading="lazy" class="${index === 0 ? 'active' : ''}" 
+                                 data-index="${index}">
+                        `).join('')}
+                    </div>
+                    <button class="carousel-btn prev" data-testid="button-carousel-prev-${item.id}">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn next" data-testid="button-carousel-next-${item.id}">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="carousel-dots">
+                        ${allImages.map((_, index) => `
+                            <span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>
+                        `).join('')}
+                    </div>
+                    <div class="image-counter">${1} / ${allImages.length}</div>
+                </div>
+            `;
+        }
+
         itemDiv.innerHTML = `
             <div class="item-image">
-                <img src="${item.image}" alt="${item.name}" loading="lazy">
+                ${imageHTML}
                 ${item.isSpecial ? '<div class="item-badge special">Chef\'s Special</div>' : ''}
                 ${!item.availability ? '<div class="item-badge">Out of Stock</div>' : ''}
                 <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-id="${item.id}" data-testid="button-favorite-${item.id}">
@@ -415,7 +455,8 @@ class MenuApp {
 
         // Add event listeners
         itemDiv.addEventListener('click', (e) => {
-            if (!e.target.closest('.favorite-btn') && !e.target.closest('.add-to-cart')) {
+            if (!e.target.closest('.favorite-btn') && !e.target.closest('.add-to-cart') && 
+                !e.target.closest('.carousel-btn') && !e.target.closest('.carousel-dots')) {
                 this.openItemModal(item);
             }
         });
@@ -433,6 +474,9 @@ class MenuApp {
                 this.addToCart(item);
             });
         }
+
+        // Add carousel event listeners
+        this.addCarouselEventListeners(itemDiv, item.id);
 
         return itemDiv;
     }
@@ -813,6 +857,9 @@ class MenuApp {
             });
         }
         
+        // Add carousel event listeners for modal
+        this.addCarouselEventListeners(modalBody, `modal-${item.id}`);
+        
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -823,7 +870,7 @@ class MenuApp {
         return `
             <div class="modal-item">
                 <div class="modal-image">
-                    <img src="${item.image}" alt="${item.name}">
+                    ${this.createModalImageCarousel(item)}
                 </div>
                 <div class="modal-details">
                     <h2 data-testid="text-modal-item-name">${item.name}</h2>
@@ -864,6 +911,139 @@ class MenuApp {
                 </div>
             </div>
         `;
+    }
+
+    createModalImageCarousel(item) {
+        // Create modal image carousel HTML
+        const allImages = [];
+        if (item.images && item.images.length > 0) {
+            allImages.push(...item.images);
+        }
+        if (item.image && !allImages.includes(item.image)) {
+            allImages.push(item.image);
+        }
+        
+        if (allImages.length === 0) {
+            return '<div class="placeholder-image"><i class="fas fa-image"></i></div>';
+        } else if (allImages.length === 1) {
+            return `<img src="${allImages[0]}" alt="${item.name}">`;
+        } else {
+            return `
+                <div class="modal-carousel-container" data-carousel-id="modal-${item.id}">
+                    <div class="modal-carousel-images">
+                        ${allImages.map((img, index) => `
+                            <img src="${img}" alt="${item.name} - Image ${index + 1}" 
+                                 class="${index === 0 ? 'active' : ''}" 
+                                 data-index="${index}">
+                        `).join('')}
+                    </div>
+                    <button class="modal-carousel-btn prev" data-testid="button-modal-carousel-prev-${item.id}">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="modal-carousel-btn next" data-testid="button-modal-carousel-next-${item.id}">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <div class="modal-carousel-dots">
+                        ${allImages.map((_, index) => `
+                            <span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>
+                        `).join('')}
+                    </div>
+                    <div class="modal-image-counter">${1} / ${allImages.length}</div>
+                </div>
+            `;
+        }
+    }
+
+    addCarouselEventListeners(container, carouselId) {
+        const carousel = container.querySelector(`[data-carousel-id="${carouselId}"]`);
+        if (!carousel) return;
+
+        const images = carousel.querySelectorAll('img');
+        const prevBtn = carousel.querySelector('.carousel-btn.prev, .modal-carousel-btn.prev');
+        const nextBtn = carousel.querySelector('.carousel-btn.next, .modal-carousel-btn.next');
+        const dots = carousel.querySelectorAll('.dot');
+        const counter = carousel.querySelector('.image-counter, .modal-image-counter');
+
+        if (images.length <= 1) return;
+
+        let currentIndex = 0;
+
+        const updateCarousel = (newIndex) => {
+            // Remove active class from all images and dots
+            images.forEach(img => img.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            // Add active class to current image and dot
+            images[newIndex].classList.add('active');
+            dots[newIndex].classList.add('active');
+
+            // Update counter
+            if (counter) {
+                counter.textContent = `${newIndex + 1} / ${images.length}`;
+            }
+
+            currentIndex = newIndex;
+        };
+
+        // Previous button
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newIndex = (currentIndex - 1 + images.length) % images.length;
+                updateCarousel(newIndex);
+            });
+        }
+
+        // Next button
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newIndex = (currentIndex + 1) % images.length;
+                updateCarousel(newIndex);
+            });
+        }
+
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                updateCarousel(index);
+            });
+        });
+
+        // Touch/Swipe support for mobile
+        let startX = 0;
+        let startY = 0;
+
+        carousel.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        carousel.addEventListener('touchend', (e) => {
+            if (!startX || !startY) return;
+
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+
+            // Check if horizontal swipe is stronger than vertical
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    // Swiped left - next image
+                    const newIndex = (currentIndex + 1) % images.length;
+                    updateCarousel(newIndex);
+                } else {
+                    // Swiped right - previous image
+                    const newIndex = (currentIndex - 1 + images.length) % images.length;
+                    updateCarousel(newIndex);
+                }
+            }
+
+            startX = 0;
+            startY = 0;
+        });
     }
 
     closeModal() {

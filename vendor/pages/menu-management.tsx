@@ -18,7 +18,9 @@ import {
   TrendingUp,
   Package,
   Tags,
-  Grid3x3
+  Grid3x3,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 import { Button } from '../../admin/components/ui/button'
 import { Input } from '../../admin/components/ui/input'
@@ -42,6 +44,93 @@ interface RestaurantUser {
   role: string
   restaurantId?: string
   restaurantName?: string
+}
+
+// Image Carousel Component
+function ImageCarousel({ images, fallbackImage, itemName }: { images?: string[], fallbackImage?: string, itemName: string }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Combine images array with fallback image
+  const allImages = [];
+  if (images && images.length > 0) {
+    allImages.push(...images);
+  }
+  if (fallbackImage && !allImages.includes(fallbackImage)) {
+    allImages.push(fallbackImage);
+  }
+
+  if (allImages.length === 0) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <ImageIcon className="w-12 h-12 text-gray-400" />
+      </div>
+    );
+  }
+
+  const nextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
+
+  return (
+    <div className="absolute inset-0 group">
+      <img
+        src={allImages[currentIndex]}
+        alt={`${itemName} - Image ${currentIndex + 1}`}
+        className="w-full h-full object-cover transition-opacity duration-300"
+        onError={(e) => {
+          // If image fails to load, try next image or show fallback
+          const img = e.target as HTMLImageElement;
+          img.style.display = 'none';
+        }}
+      />
+      
+      {allImages.length > 1 && (
+        <>
+          {/* Navigation Arrows */}
+          <button
+            onClick={prevImage}
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
+            data-testid="button-prev-image"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          
+          <button
+            onClick={nextImage}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-black/70"
+            data-testid="button-next-image"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+            {allImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  currentIndex === index 
+                    ? 'bg-white scale-125' 
+                    : 'bg-white/50 hover:bg-white/75'
+                }`}
+                data-testid={`dot-indicator-${index}`}
+              />
+            ))}
+          </div>
+
+          {/* Image Counter */}
+          <div className="absolute top-3 left-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs font-medium">
+            {currentIndex + 1} / {allImages.length}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 interface MenuItem {
@@ -398,6 +487,7 @@ function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: an
       price: item?.price || "",
       currency: item?.currency || "PKR",
       image: item?.image || "",
+      images: item?.images || [],
       ingredients: item?.ingredients || [],
       allergens: item?.allergens || [],
       isVegan: item?.isVegan || false,
@@ -484,6 +574,7 @@ function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: an
         price: item.price || "",
         currency: item.currency || "PKR",
         image: item.image || "",
+        images: item.images || [],
         ingredients: item.ingredients || [],
         allergens: item.allergens || [],
         isVegan: item.isVegan || false,
@@ -573,13 +664,104 @@ function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: an
               )}
             />
 
-            {/* Image Upload */}
+            {/* Multiple Images Upload */}
+            <FormField
+              control={form.control}
+              name="images"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Item Images (Multiple)</FormLabel>
+                  <FormControl>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => {
+                            const files = e.target.files;
+                            if (files) {
+                              const currentImages = field.value || [];
+                              const newImages: string[] = [];
+                              
+                              Array.from(files).forEach((file) => {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  newImages.push(e.target?.result as string);
+                                  if (newImages.length === files.length) {
+                                    field.onChange([...currentImages, ...newImages]);
+                                  }
+                                };
+                                reader.readAsDataURL(file);
+                              });
+                            }
+                          }}
+                          className="hidden"
+                          id="edit-images-upload"
+                          data-testid="input-edit-images-upload"
+                        />
+                        <label
+                          htmlFor="edit-images-upload"
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                          Add Images ({(field.value || []).length})
+                        </label>
+                        {(field.value || []).length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => field.onChange([])}
+                            className="px-3 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded-md transition-colors"
+                            data-testid="button-edit-clear-images"
+                          >
+                            Clear All
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Images Grid Preview */}
+                      {(field.value || []).length > 0 && (
+                        <div className="grid grid-cols-3 gap-3">
+                          {(field.value || []).map((image: string, index: number) => (
+                            <div key={index} className="relative group">
+                              <div className="relative w-24 h-24 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                                <img
+                                  src={image}
+                                  alt={`Preview ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                  data-testid={`img-edit-preview-${index}`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newImages = [...(field.value || [])];
+                                    newImages.splice(index, 1);
+                                    field.onChange(newImages);
+                                  }}
+                                  className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                                  data-testid={`button-edit-remove-image-${index}`}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Backward compatibility: Single Image Upload */}
             <FormField
               control={form.control}
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Item Image</FormLabel>
+                  <FormLabel>Main Image (Single - Legacy)</FormLabel>
                   <FormControl>
                     <div className="space-y-3">
                       <div className="flex items-center gap-4">
@@ -606,7 +788,7 @@ function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: an
                           className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         >
                           <ImageIcon className="w-4 h-4" />
-                          Choose Image
+                          Choose Main Image
                         </label>
                         {field.value && (
                           <button
@@ -824,6 +1006,7 @@ function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
       price: "",
       currency: "PKR",
       image: "",
+      images: [],
       ingredients: [],
       allergens: [],
       isVegan: false,
@@ -995,13 +1178,104 @@ function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
               )}
             />
 
-            {/* Image Upload */}
+            {/* Multiple Images Upload */}
+            <FormField
+              control={form.control}
+              name="images"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Item Images (Multiple)</FormLabel>
+                  <FormControl>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={(e) => {
+                            const files = e.target.files;
+                            if (files) {
+                              const currentImages = field.value || [];
+                              const newImages: string[] = [];
+                              
+                              Array.from(files).forEach((file) => {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                  newImages.push(e.target?.result as string);
+                                  if (newImages.length === files.length) {
+                                    field.onChange([...currentImages, ...newImages]);
+                                  }
+                                };
+                                reader.readAsDataURL(file);
+                              });
+                            }
+                          }}
+                          className="hidden"
+                          id="images-upload"
+                          data-testid="input-images-upload"
+                        />
+                        <label
+                          htmlFor="images-upload"
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                          Add Images ({(field.value || []).length})
+                        </label>
+                        {(field.value || []).length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => field.onChange([])}
+                            className="px-3 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded-md transition-colors"
+                            data-testid="button-clear-images"
+                          >
+                            Clear All
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Images Grid Preview */}
+                      {(field.value || []).length > 0 && (
+                        <div className="grid grid-cols-3 gap-3">
+                          {(field.value || []).map((image: string, index: number) => (
+                            <div key={index} className="relative group">
+                              <div className="relative w-24 h-24 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                                <img
+                                  src={image}
+                                  alt={`Preview ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                  data-testid={`img-preview-${index}`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newImages = [...(field.value || [])];
+                                    newImages.splice(index, 1);
+                                    field.onChange(newImages);
+                                  }}
+                                  className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                                  data-testid={`button-remove-image-${index}`}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Backward compatibility: Single Image Upload */}
             <FormField
               control={form.control}
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Item Image</FormLabel>
+                  <FormLabel>Main Image (Single - Legacy)</FormLabel>
                   <FormControl>
                     <div className="space-y-3">
                       <div className="flex items-center gap-4">
@@ -1028,7 +1302,7 @@ function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
                           className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         >
                           <ImageIcon className="w-4 h-4" />
-                          Choose Image
+                          Choose Main Image
                         </label>
                         {field.value && (
                           <button
@@ -1693,18 +1967,20 @@ export default function MenuManagement() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map((item: any) => (
               <div key={item.id} className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105" data-testid={`card-item-${item.id}`}>
-            {/* Image */}
+            {/* Image Carousel */}
             <div className="relative h-48 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <ImageIcon className="w-12 h-12 text-gray-400" />
-              </div>
+              <ImageCarousel 
+                images={item.images} 
+                fallbackImage={item.image} 
+                itemName={item.name} 
+              />
               {item.isPopular && (
-                <div className="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center">
+                <div className="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center z-10">
                   <Star className="w-3 h-3 mr-1" />
                   Popular
                 </div>
               )}
-              <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-bold ${
+              <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-bold z-10 ${
                 item.isAvailable 
                   ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400' 
                   : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400'

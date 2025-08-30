@@ -177,6 +177,7 @@ export const insertRestaurantTableSchema = createInsertSchema(restaurantTables).
 export const insertMenuCategorySchema = createInsertSchema(menuCategories).omit({ id: true, createdAt: true });
 export const insertMenuItemSchema = createInsertSchema(menuItems, {
   price: z.union([z.string(), z.number()]).transform(val => String(val)),
+  images: z.array(z.string()).optional(),
 }).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertOrderSchema = createInsertSchema(orders, {
   totalAmount: z.union([z.string(), z.number()]).transform(val => String(val)),
