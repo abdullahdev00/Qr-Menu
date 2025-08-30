@@ -976,7 +976,6 @@ class MenuApp {
             dots[newIndex].classList.add('active');
 
             // Counter functionality removed
-            }
 
             currentIndex = newIndex;
         };
