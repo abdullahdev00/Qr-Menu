@@ -11,7 +11,8 @@ import {
   Settings,
   LogOut,
   X,
-  ShoppingBag
+  ShoppingBag,
+  Palette
 } from "lucide-react";
 
 interface SidebarProps {
@@ -34,6 +35,7 @@ const adminNavigation = [
 const restaurantNavigation = [
   { name: "Dashboard", href: "/vendor/dashboard", icon: BarChart3 },
   { name: "Menu Management", href: "/vendor/menu-management", icon: Utensils },
+  { name: "Design", href: "/vendor/design", icon: Palette },
   { name: "Analytics", href: "/vendor/analytics", icon: PieChart },
   { name: "Orders", href: "/vendor/orders", icon: Store, badge: "5" },
   { name: "Settings", href: "/vendor/settings", icon: Settings },
