@@ -33,9 +33,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../admin/components/ui/form'
 import { queryClient } from '../../admin/lib/queryClient'
 import { insertMenuItemSchema, insertMenuCategorySchema, type InsertMenuItem, type InsertMenuCategory, type MenuCategory } from '../../shared/schema'
-import { ClearStorageButton } from '../../admin/components/clear-storage'
 import { MenuItemSkeleton, StatsSkeleton } from '../../admin/components/ui/loading-skeleton'
-import { ForceRefreshButton } from '../../admin/components/force-refresh'
 
 interface RestaurantUser {
   id: string
@@ -1407,8 +1405,6 @@ export default function MenuManagement() {
           <div className="flex gap-3">
             <AddCategoryDialog refetchCategories={refetchCategories} />
             <AddItemDialog refetchItems={refetchMenuItems} />
-            <ForceRefreshButton onRefresh={refetchMenuItems} isLoading={isLoading} />
-            <ClearStorageButton />
           </div>
         </div>
       </div>
