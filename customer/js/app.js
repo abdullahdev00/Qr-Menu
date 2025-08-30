@@ -425,7 +425,6 @@ class MenuApp {
                             <span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>
                         `).join('')}
                     </div>
-                    <div class="image-counter">${1} / ${allImages.length}</div>
                 </div>
             `;
         }
@@ -948,7 +947,6 @@ class MenuApp {
                             <span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>
                         `).join('')}
                     </div>
-                    <div class="modal-image-counter">${1} / ${allImages.length}</div>
                 </div>
             `;
         }
@@ -962,7 +960,7 @@ class MenuApp {
         const prevBtn = carousel.querySelector('.carousel-btn.prev, .modal-carousel-btn.prev');
         const nextBtn = carousel.querySelector('.carousel-btn.next, .modal-carousel-btn.next');
         const dots = carousel.querySelectorAll('.dot');
-        const counter = carousel.querySelector('.image-counter, .modal-image-counter');
+        const counter = null; // Image counter removed
 
         if (images.length <= 1) return;
 
@@ -977,9 +975,7 @@ class MenuApp {
             images[newIndex].classList.add('active');
             dots[newIndex].classList.add('active');
 
-            // Update counter
-            if (counter) {
-                counter.textContent = `${newIndex + 1} / ${images.length}`;
+            // Counter functionality removed
             }
 
             currentIndex = newIndex;
