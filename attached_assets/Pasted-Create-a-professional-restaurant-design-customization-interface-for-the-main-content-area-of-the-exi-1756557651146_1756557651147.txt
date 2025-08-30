@@ -1,0 +1,268 @@
+Create a professional restaurant design customization interface for the main content area of the existing admin panel. This should replace the "Design Coming Soon" placeholder with a fully functional design studio.
+
+1. MAIN LAYOUT STRUCTURE
+1.1 Header Section
+┌─ Design Header ─────────────────────────────────────┐
+│ Design                                    [Save Changes] │
+│ Customize your restaurant's menu appearance and branding │
+│                                                     │
+│ [Brand Colors] [Typography] [Layout] [Preview] [Reset] │
+└─────────────────────────────────────────────────────────┘
+1.2 Content Grid Layout
+┌─ Main Content Area (3-Column Grid) ─────────────────┐
+│ ┌─ Left Panel ─┐ ┌─ Center Panel ─┐ ┌─ Right Panel ─┐│
+│ │ Quick Actions│ │ Color Studio  │ │ Live Preview ││
+│ │ & Presets    │ │ & Controls    │ │ Window       ││
+│ │              │ │               │ │              ││
+│ │ [Preset      │ │ [Color Picker │ │ [Website     ││
+│ │  Themes]     │ │  Interface]   │ │  Preview]    ││
+│ │              │ │               │ │              ││
+│ │ [Brand       │ │ [Typography   │ │ [Device      ││
+│ │  Guidelines] │ │  Controls]    │ │  Toggle]     ││
+│ └──────────────┘ └───────────────┘ └──────────────┘│
+└─────────────────────────────────────────────────────┘
+
+2. LEFT PANEL - QUICK ACTIONS
+2.1 Theme Presets Section
+
+Header: "Quick Start Themes"
+Preset Cards (4x2 grid):
+
+Fast Food Theme: Red/Yellow color scheme preview
+Fine Dining Theme: Black/Gold color scheme preview
+Cafe Theme: Brown/Cream color scheme preview
+Traditional Theme: Cultural color scheme preview
+Modern Theme: Minimalist color scheme preview
+Seasonal Theme: Current season colors preview
+Popular Theme: Trending colors preview
+Custom Theme: User's saved theme preview
+
+
+
+2.2 Brand Guidelines Helper
+
+Upload Brand Assets button with file input
+Extract Colors from Logo feature
+Brand Consistency Checker status indicator
+Color Accessibility Score display
+
+2.3 Recent Changes
+
+Version History list (last 5 changes)
+Quick Revert buttons for each version
+Change timestamp and description
+
+
+3. CENTER PANEL - COLOR STUDIO
+3.1 Primary Color Controls
+┌─ Brand Colors ──────────────────────────┐
+│ Primary Background    [Color Picker] [Hex Input] │
+│ Secondary Background  [Color Picker] [Hex Input] │
+│ Card Background       [Color Picker] [Hex Input] │
+│ Primary Accent        [Color Picker] [Hex Input] │
+│ Secondary Accent      [Color Picker] [Hex Input] │
+└─────────────────────────────────────────────────┘
+3.2 Text Colors Section
+┌─ Text Colors ───────────────────────────┐
+│ Primary Text          [Color Picker] [Hex Input] │
+│ Secondary Text        [Color Picker] [Hex Input] │
+│ Link Text             [Color Picker] [Hex Input] │
+│ Button Text           [Color Picker] [Hex Input] │
+└─────────────────────────────────────────────────┘
+3.3 System Colors Section
+┌─ System Colors ─────────────────────────┐
+│ Success Green         [Color Picker] [Hex Input] │
+│ Warning Red           [Color Picker] [Hex Input] │
+│ Info Blue             [Color Picker] [Hex Input] │
+│ Border Gray           [Color Picker] [Hex Input] │
+└─────────────────────────────────────────────────┘
+3.4 Advanced Color Tools
+
+Color Harmony Generator: Complementary, Triadic, Analogous
+Contrast Checker: WCAG compliance indicator
+Color Blind Simulator: Preview for different vision types
+Gradient Builder: For background gradients
+
+3.5 Typography Controls
+┌─ Typography Settings ───────────────────┐
+│ Primary Font          [Font Selector Dropdown]    │
+│ Secondary Font        [Font Selector Dropdown]    │
+│ Heading Size Scale    [Range Slider] [Input]      │
+│ Body Text Size        [Range Slider] [Input]      │
+│ Line Height           [Range Slider] [Input]      │
+│ Letter Spacing        [Range Slider] [Input]      │
+└─────────────────────────────────────────────────┘
+
+4. RIGHT PANEL - LIVE PREVIEW
+4.1 Preview Header
+┌─ Live Preview ──────────────────────────┐
+│ [Desktop Icon] [Tablet Icon] [Mobile Icon] │
+│ [Home] [Menu] [Cart] [Profile] [Contact]   │
+└─────────────────────────────────────────────┘
+4.2 Preview Window
+
+Iframe container showing live website
+Responsive preview based on device selection
+Interactive elements (clickable navigation, hover effects)
+Loading indicator during color updates
+Zoom controls for detailed inspection
+
+4.3 Preview Controls
+
+Page Navigation Tabs: Switch between different pages
+Device Toggle: Desktop/Tablet/Mobile views
+Comparison Mode: Before/After slider
+Full Screen Preview button
+Export Preview as image
+
+
+5. UI COMPONENTS SPECIFICATIONS
+5.1 Color Picker Component
+
+Visual color wheel with saturation/brightness grid
+RGB, HSL, HEX input tabs
+Recently used colors strip (last 10 colors)
+Eyedropper tool for sampling colors
+Color history for each brand color
+Opacity slider for transparency effects
+
+5.2 Preset Theme Cards
+┌─ Theme Card ────────────┐
+│ [Theme Preview Image]   │
+│ Theme Name              │
+│ [Color Palette Dots]    │
+│ [Apply Theme Button]    │
+└─────────────────────────┘
+5.3 Control Panels
+
+Collapsible sections with expand/collapse icons
+Tooltips for technical terms
+Real-time validation with error states
+Undo/Redo functionality
+Keyboard shortcuts support
+
+
+6. INTERACTIVE FEATURES
+6.1 Real-Time Updates
+
+Instant preview as colors change
+Debounced updates to prevent performance issues
+Visual feedback during color application
+Progress indicators for complex operations
+
+6.2 Smart Suggestions
+
+Complementary color recommendations
+Industry-standard color combinations
+Accessibility improvement suggestions
+Brand consistency warnings
+
+6.3 Collaboration Features
+
+Save as Draft functionality
+Share preview link with team members
+Comment system for team feedback
+Approval workflow for changes
+
+
+7. RESPONSIVE BEHAVIOR
+7.1 Desktop (1200px+)
+
+3-column layout as specified
+Full feature visibility
+Side-by-side preview
+
+7.2 Tablet (768px - 1199px)
+
+2-column layout: Controls + Preview
+Collapsible left panel
+Tabbed navigation for different sections
+
+7.3 Mobile (< 768px)
+
+Single column layout
+Tabbed interface for different panels
+Simplified color picker
+Full-width preview
+
+
+8. TECHNICAL SPECIFICATIONS
+8.1 Performance Requirements
+
+Sub-200ms color update response time
+Smooth animations at 60fps
+Efficient CSS variable updates
+Lazy loading for preview images
+
+8.2 Browser Support
+
+Modern browsers (Chrome 80+, Firefox 75+, Safari 13+)
+CSS Grid and Flexbox support
+CSS Custom Properties support
+WebSocket for real-time updates
+
+8.3 Accessibility Features
+
+WCAG 2.1 AA compliant
+Keyboard navigation support
+Screen reader compatibility
+High contrast mode support
+Focus indicators for all interactive elements
+
+
+9. STATE MANAGEMENT
+9.1 Application States
+
+Loading state: Show skeleton screens
+Editing state: Show unsaved changes indicator
+Saving state: Show progress spinner
+Error state: Show error messages with recovery options
+Success state: Show confirmation messages
+
+9.2 Data Persistence
+
+Auto-save every 30 seconds
+Local storage backup for offline editing
+Version control for change history
+Export/Import functionality for themes
+
+
+10. USER EXPERIENCE FLOW
+10.1 First-Time User
+
+Welcome tooltip explaining the interface
+Guided tour of main features
+Suggested starting point (preset themes)
+Progressive disclosure of advanced features
+
+10.2 Power User
+
+Quick access to recently used colors
+Keyboard shortcuts for common actions
+Bulk editing capabilities
+Advanced color theory tools
+
+
+11. VISUAL DESIGN SYSTEM
+11.1 Color Scheme
+
+Primary: Match existing admin panel colors
+Secondary: Neutral grays for backgrounds
+Accent: Blue for interactive elements
+Success: Green for positive actions
+Warning: Orange for caution
+Error: Red for problems
+
+11.2 Typography
+
+Headings: Bold, clear hierarchy
+Body text: Readable, consistent spacing
+Labels: Descriptive, concise
+Help text: Smaller, muted color
+
+11.3 Spacing & Layout
+
+Grid system: Consistent 8px base unit
+Margins: Generous white space
+Padding: Comfortable touch targets
+Border radius: Subtle roundness (4px-8px)
