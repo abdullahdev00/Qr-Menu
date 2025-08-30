@@ -16,7 +16,9 @@ import {
   Image as ImageIcon,
   MoreVertical,
   TrendingUp,
-  Package
+  Package,
+  Tags,
+  Grid3x3
 } from 'lucide-react'
 import { Button } from '../../admin/components/ui/button'
 import { Input } from '../../admin/components/ui/input'
@@ -30,7 +32,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../admin/components/ui/form'
 import { queryClient } from '../../admin/lib/queryClient'
-import { insertMenuItemSchema, type InsertMenuItem, type MenuCategory } from '../../shared/schema'
+import { insertMenuItemSchema, insertMenuCategorySchema, type InsertMenuItem, type InsertMenuCategory, type MenuCategory } from '../../shared/schema'
 import { ClearStorageButton } from '../../admin/components/clear-storage'
 import { MenuItemSkeleton, StatsSkeleton } from '../../admin/components/ui/loading-skeleton'
 import { ForceRefreshButton } from '../../admin/components/force-refresh'
@@ -59,6 +61,332 @@ interface MenuItem {
   tags: string[]
 }
 
+
+// Add Category Dialog Component
+function AddCategoryDialog({ refetchCategories }: { refetchCategories: () => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+  
+  // Get user from localStorage to access restaurantId
+  const [currentUser, setCurrentUser] = useState<RestaurantUser | null>(null);
+  
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    }
+  }, []);
+  
+  const form = useForm<InsertMenuCategory>({
+    resolver: zodResolver(insertMenuCategorySchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      displayOrder: 0,
+      isActive: true,
+      restaurantId: ""
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: InsertMenuCategory) => {
+      const response = await fetch('/api/menu-categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onSuccess: async () => {
+      refetchCategories();
+      setIsOpen(false);
+      form.reset();
+      toast({
+        title: "Category Added!",
+        description: "Menu category has been successfully added.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to add category. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = async (data: InsertMenuCategory) => {
+    let restaurantId = data.restaurantId;
+    
+    if (!restaurantId) {
+      if (currentUser && currentUser.restaurantId) {
+        restaurantId = currentUser.restaurantId;
+      } else {
+        restaurantId = "74afb71f-89fb-4cd6-94b8-c43b09e93118";
+      }
+    }
+    
+    const processedData = {
+      ...data,
+      restaurantId: restaurantId,
+    };
+    
+    createMutation.mutate(processedData);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300" data-testid="button-add-category">
+          <Tags className="w-4 h-4 mr-2" />
+          Add Category
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add New Category</DialogTitle>
+          <DialogDescription>
+            Create a new menu category to organize your items.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category Name *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Main Course, Appetizers" {...field} data-testid="input-category-name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Brief description of this category..."
+                      rows={3}
+                      {...field}
+                      value={field.value || ""}
+                      data-testid="textarea-category-description"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="displayOrder"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Display Order</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="0"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value || 0}
+                      data-testid="input-category-order"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsOpen(false)}
+                data-testid="button-category-cancel"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={createMutation.isPending}
+                data-testid="button-category-submit"
+              >
+                {createMutation.isPending ? "Adding..." : "Add Category"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Edit Category Dialog Component
+function EditCategoryDialog({ category, isOpen, onOpenChange, refetchCategories }: { category: any, isOpen: boolean, onOpenChange: (open: boolean) => void, refetchCategories: () => void }) {
+  const { toast } = useToast();
+  
+  const form = useForm<InsertMenuCategory>({
+    resolver: zodResolver(insertMenuCategorySchema),
+    defaultValues: {
+      name: category?.name || "",
+      description: category?.description || "",
+      displayOrder: category?.displayOrder || 0,
+      isActive: category?.isActive || true,
+      restaurantId: category?.restaurantId || ""
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: InsertMenuCategory) => {
+      const response = await fetch(`/api/menu-categories/${category.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
+    onSuccess: async () => {
+      refetchCategories();
+      onOpenChange(false);
+      toast({
+        title: "Category Updated!",
+        description: "Menu category has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update category. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = async (data: InsertMenuCategory) => {
+    const processedData = {
+      ...data,
+      restaurantId: data.restaurantId || category.restaurantId,
+    };
+    
+    updateMutation.mutate(processedData);
+  };
+
+  React.useEffect(() => {
+    if (category) {
+      form.reset({
+        name: category.name || "",
+        description: category.description || "",
+        displayOrder: category.displayOrder || 0,
+        isActive: category.isActive || true,
+        restaurantId: category.restaurantId || ""
+      });
+    }
+  }, [category, form]);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Edit Category</DialogTitle>
+          <DialogDescription>
+            Update the category details.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category Name *</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Main Course, Appetizers" {...field} data-testid="input-edit-category-name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Brief description of this category..."
+                      rows={3}
+                      {...field}
+                      value={field.value || ""}
+                      data-testid="textarea-edit-category-description"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="displayOrder"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Display Order</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="0"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value || 0}
+                      data-testid="input-edit-category-order"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+                data-testid="button-edit-category-cancel"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={updateMutation.isPending}
+                data-testid="button-edit-category-submit"
+              >
+                {updateMutation.isPending ? "Updating..." : "Update Category"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 // Edit Item Dialog Component
 function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: any, isOpen: boolean, onOpenChange: (open: boolean) => void, refetchItems: () => void }) {
@@ -885,6 +1213,102 @@ function DeleteConfirmationDialog({ item, isOpen, onOpenChange, refetchItems }: 
   );
 }
 
+// Delete Category Dialog Component
+function DeleteCategoryDialog({ category, isOpen, onOpenChange, refetchCategories }: { category: any, isOpen: boolean, onOpenChange: (open: boolean) => void, refetchCategories: () => void }) {
+  const { toast } = useToast();
+  const [confirmText, setConfirmText] = useState("");
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/menu-categories/${category.id}`, {
+        method: 'DELETE',
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      refetchCategories();
+      onOpenChange(false);
+      setConfirmText("");
+      toast({
+        title: "Category Deleted!",
+        description: "Menu category has been successfully deleted.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete category. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDelete = () => {
+    if (confirmText === "DELETE") {
+      deleteMutation.mutate();
+    }
+  };
+
+  const isDeleteEnabled = confirmText === "DELETE";
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-red-600">Delete Category</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Are you sure you want to delete <strong>"{category?.name}"</strong>? This action cannot be undone.
+          </p>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Type <span className="font-bold text-red-600">DELETE</span> to confirm:
+            </label>
+            <input
+              type="text"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && confirmText === 'DELETE') {
+                  handleDelete();
+                }
+              }}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:text-white"
+              placeholder="Type DELETE here"
+              data-testid="input-delete-category-confirm"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-2 pt-4">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => {
+              onOpenChange(false);
+              setConfirmText("");
+            }}
+            data-testid="button-cancel-delete-category"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDelete}
+            disabled={!isDeleteEnabled || deleteMutation.isPending}
+            variant="destructive"
+            data-testid="button-confirm-delete-category"
+          >
+            {deleteMutation.isPending ? "Deleting..." : "Delete Category"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function MenuManagement() {
   const [, setLocation] = useLocation()
   const [user, setUser] = useState<RestaurantUser | null>(null)
@@ -894,6 +1318,10 @@ export default function MenuManagement() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [deletingItem, setDeletingItem] = useState<any>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [editingCategory, setEditingCategory] = useState<any>(null)
+  const [isEditCategoryDialogOpen, setIsEditCategoryDialogOpen] = useState(false)
+  const [deletingCategory, setDeletingCategory] = useState<any>(null)
+  const [isDeleteCategoryDialogOpen, setIsDeleteCategoryDialogOpen] = useState(false)
   
   // MOVE ALL HOOKS TO TOP LEVEL - Fix for React Error #310
   // Load menu items from database with aggressive refetching
@@ -910,7 +1338,7 @@ export default function MenuManagement() {
   });
 
   // Get categories for filtering - combining with database categories
-  const { data: dbCategories = [] } = useQuery({
+  const { data: dbCategories = [], refetch: refetchCategories } = useQuery({
     queryKey: ['/api/menu-categories'],
     queryFn: async (): Promise<MenuCategory[]> => {
       const response = await fetch('/api/menu-categories');
@@ -977,6 +1405,7 @@ export default function MenuManagement() {
             </p>
           </div>
           <div className="flex gap-3">
+            <AddCategoryDialog refetchCategories={refetchCategories} />
             <AddItemDialog refetchItems={refetchMenuItems} />
             <ForceRefreshButton onRefresh={refetchMenuItems} isLoading={isLoading} />
             <ClearStorageButton />
@@ -1030,6 +1459,71 @@ export default function MenuManagement() {
           </div>
         </div>
       )}
+
+      {/* Categories Management Section */}
+      <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+              <Grid3x3 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Menu Categories</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Organize your menu items</p>
+            </div>
+          </div>
+          <AddCategoryDialog refetchCategories={refetchCategories} />
+        </div>
+
+        {dbCategories.length === 0 ? (
+          <div className="text-center py-8">
+            <Tags className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No categories yet</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">Start by creating your first menu category</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {dbCategories.map((category) => (
+              <div key={category.id} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600 shadow-sm hover:shadow-md transition-all duration-200" data-testid={`card-category-${category.id}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">{category.name}</h3>
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={() => {
+                        setEditingCategory(category);
+                        setIsEditCategoryDialogOpen(true);
+                      }}
+                      className="p-1.5 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-md transition-colors" 
+                      data-testid={`button-edit-category-${category.id}`}
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setDeletingCategory(category);
+                        setIsDeleteCategoryDialogOpen(true);
+                      }}
+                      className="p-1.5 text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded-md transition-colors" 
+                      data-testid={`button-delete-category-${category.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                {category.description && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{category.description}</p>
+                )}
+                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <span>Order: {category.displayOrder}</span>
+                  <span className={category.isActive ? "text-green-600" : "text-red-600"}>
+                    {category.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Search and Filter */}
       <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 rounded-xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
@@ -1201,6 +1695,22 @@ export default function MenuManagement() {
         isOpen={isDeleteDialogOpen} 
         onOpenChange={setIsDeleteDialogOpen}
         refetchItems={refetchMenuItems}
+      />
+
+      {/* Edit Category Dialog */}
+      <EditCategoryDialog 
+        category={editingCategory} 
+        isOpen={isEditCategoryDialogOpen} 
+        onOpenChange={setIsEditCategoryDialogOpen}
+        refetchCategories={refetchCategories}
+      />
+
+      {/* Delete Category Dialog */}
+      <DeleteCategoryDialog 
+        category={deletingCategory} 
+        isOpen={isDeleteCategoryDialogOpen} 
+        onOpenChange={setIsDeleteCategoryDialogOpen}
+        refetchCategories={refetchCategories}
       />
 
     </div>
