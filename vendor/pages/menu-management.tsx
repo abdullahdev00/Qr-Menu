@@ -573,6 +573,71 @@ function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: an
               )}
             />
 
+            {/* Image Upload */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Item Image</FormLabel>
+                  <FormControl>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              // Create preview URL
+                              const reader = new FileReader();
+                              reader.onload = (e) => {
+                                field.onChange(e.target?.result as string);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="hidden"
+                          id="edit-image-upload"
+                          data-testid="input-edit-image-upload"
+                        />
+                        <label
+                          htmlFor="edit-image-upload"
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                          Choose Image
+                        </label>
+                        {field.value && (
+                          <button
+                            type="button"
+                            onClick={() => field.onChange("")}
+                            className="px-3 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded-md transition-colors"
+                            data-testid="button-edit-remove-image"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Image Preview */}
+                      {field.value && (
+                        <div className="relative w-32 h-32 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                          <img
+                            src={field.value}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            data-testid="img-edit-preview"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Price and Details */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
@@ -924,6 +989,71 @@ function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
                       value={field.value || ""}
                       data-testid="textarea-description"
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Image Upload */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Item Image</FormLabel>
+                  <FormControl>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              // Create preview URL
+                              const reader = new FileReader();
+                              reader.onload = (e) => {
+                                field.onChange(e.target?.result as string);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="hidden"
+                          id="image-upload"
+                          data-testid="input-image-upload"
+                        />
+                        <label
+                          htmlFor="image-upload"
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                          Choose Image
+                        </label>
+                        {field.value && (
+                          <button
+                            type="button"
+                            onClick={() => field.onChange("")}
+                            className="px-3 py-1 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded-md transition-colors"
+                            data-testid="button-remove-image"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Image Preview */}
+                      {field.value && (
+                        <div className="relative w-32 h-32 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                          <img
+                            src={field.value}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            data-testid="img-preview"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
