@@ -10,6 +10,7 @@ import Dashboard from '../pages/dashboard';
 import MenuManagement from '../pages/menu-management';
 import Orders from '../pages/orders';
 import Analytics from '../pages/analytics';
+import Design from '../pages/design';
 
 // Query client setup
 const queryClient = new QueryClient({
@@ -67,6 +68,7 @@ function VendorApp() {
                 <Route path="/menu-management" component={MenuManagement} />
                 <Route path="/orders" component={Orders} />
                 <Route path="/analytics" component={Analytics} />
+                <Route path="/design" component={Design} />
               </Switch>
             )}
             <Toaster />
