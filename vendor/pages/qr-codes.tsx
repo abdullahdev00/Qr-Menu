@@ -9,8 +9,11 @@ import {
   Settings,
   Palette,
   RefreshCw,
-  Plus
+  Plus,
+  Edit3
 } from 'lucide-react'
+// Import custom QR image
+const customQrImageUrl = '/attached_assets/custom-qr-template.jpeg'
 import { Button } from '../../admin/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../admin/components/ui/card'
 import { Badge } from '../../admin/components/ui/badge'
@@ -26,17 +29,20 @@ export default function QRCodesPage() {
   const [selectedSize, setSelectedSize] = useState('medium')
   const [selectedStyle, setSelectedStyle] = useState('square')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [editingTable, setEditingTable] = useState<string | null>(null)
+  const [editTableNumber, setEditTableNumber] = useState('')
   const { toast } = useToast()
   
   const user = getCurrentUser()
   const restaurantId = user?.restaurantId || ''
 
-  // Mock QR codes data - replace with actual API call
-  const qrCodes = [
+  // QR codes data with table numbers
+  const [qrCodes, setQrCodes] = useState([
     {
       id: '1',
       name: 'Main Menu QR',
       type: 'menu',
+      tableNumber: null,
       url: `${window.location.origin}/customer?restaurant=${restaurantId}`,
       scans: 245,
       createdAt: '2024-08-29',
@@ -46,6 +52,7 @@ export default function QRCodesPage() {
       id: '2', 
       name: 'Table 1 QR',
       type: 'table',
+      tableNumber: 1,
       url: `${window.location.origin}/customer?restaurant=${restaurantId}&table=1`,
       scans: 67,
       createdAt: '2024-08-29',
@@ -55,12 +62,13 @@ export default function QRCodesPage() {
       id: '3',
       name: 'Table 2 QR', 
       type: 'table',
+      tableNumber: 2,
       url: `${window.location.origin}/customer?restaurant=${restaurantId}&table=2`,
       scans: 43,
       createdAt: '2024-08-29',
       isActive: true
     }
-  ]
+  ])
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url)
@@ -72,19 +80,77 @@ export default function QRCodesPage() {
 
   const handleDownloadQR = (qrCode: any) => {
     setIsGenerating(true)
-    // Simulate QR generation
-    setTimeout(() => {
-      setIsGenerating(false)
-      toast({
-        title: "QR Code Downloaded!",
-        description: `${qrCode.name} QR code has been downloaded`,
-      })
-    }, 1500)
+    
+    // Create canvas to combine custom image with table number
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = 800
+    canvas.height = 800
+    
+    const img = new Image()
+    img.onload = () => {
+      // Draw the custom QR image
+      ctx?.drawImage(img, 0, 0, 800, 800)
+      
+      // Add table number text if it's a table QR
+      if (qrCode.type === 'table' && qrCode.tableNumber) {
+        ctx!.font = 'bold 48px Arial'
+        ctx!.fillStyle = '#000000'
+        ctx!.textAlign = 'center'
+        ctx!.fillText(`Table ${qrCode.tableNumber}`, 400, 750)
+      }
+      
+      // Download the canvas as image
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `${qrCode.name.replace(/\s+/g, '_')}.png`
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(url)
+        }
+        setIsGenerating(false)
+        toast({
+          title: "QR Code Downloaded!",
+          description: `${qrCode.name} with table number has been downloaded`,
+        })
+      }, 'image/png')
+    }
+    
+    img.src = customQrImageUrl
   }
 
-  const generateQRCodeSVG = (url: string, size: number = 200) => {
-    // Simple QR code placeholder - in real app, use QR code library
-    return `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100"><rect width="100" height="100" fill="white"/><rect x="10" y="10" width="80" height="80" fill="black"/><rect x="20" y="20" width="60" height="60" fill="white"/><rect x="30" y="30" width="40" height="40" fill="black"/><text x="50" y="55" text-anchor="middle" fill="white" font-size="8">QR</text></svg>`
+  const getQRCodeImage = (qrCode: any) => {
+    // Use the custom QR template image
+    return customQrImageUrl
+  }
+
+  const handleUpdateTableNumber = (qrId: string, newTableNumber: number) => {
+    setQrCodes(prevCodes => 
+      prevCodes.map(qr => 
+        qr.id === qrId 
+          ? { 
+              ...qr, 
+              tableNumber: newTableNumber,
+              name: `Table ${newTableNumber} QR`,
+              url: `${window.location.origin}/customer?restaurant=${restaurantId}&table=${newTableNumber}`
+            }
+          : qr
+      )
+    )
+    setEditingTable(null)
+    toast({
+      title: "Table Number Updated!",
+      description: `QR code updated for Table ${newTableNumber}`,
+    })
+  }
+
+  const startEditingTable = (qrCode: any) => {
+    setEditingTable(qrCode.id)
+    setEditTableNumber(qrCode.tableNumber?.toString() || '')
   }
 
   return (
@@ -127,6 +193,29 @@ export default function QRCodesPage() {
               <div>
                 <Label htmlFor="qr-name">QR Code Name</Label>
                 <Input placeholder="e.g., Table 5 QR" />
+              </div>
+              
+              <div>
+                <Label htmlFor="table-number">Table Number (for Table QR)</Label>
+                <Input 
+                  type="number" 
+                  placeholder="e.g., 5" 
+                  min="1"
+                />
+              </div>
+              
+              {/* Custom QR Preview */}
+              <div className="flex justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="relative">
+                  <img 
+                    src={customQrImageUrl} 
+                    alt="QR Code Preview"
+                    className="w-32 h-32 border-2 border-gray-200 dark:border-gray-700 rounded object-cover"
+                  />
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 bg-white/90 px-2 py-1 rounded text-xs font-bold">
+                    Preview
+                  </div>
+                </div>
               </div>
               
               <div>
@@ -223,17 +312,67 @@ export default function QRCodesPage() {
               </div>
               <CardDescription>
                 Type: {qrCode.type} • Scans: {qrCode.scans} • Created: {qrCode.createdAt}
+                {qrCode.type === 'table' && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-sm">Table Number:</span>
+                    {editingTable === qrCode.id ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          value={editTableNumber}
+                          onChange={(e) => setEditTableNumber(e.target.value)}
+                          className="w-20 h-6 text-xs"
+                          min="1"
+                        />
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleUpdateTableNumber(qrCode.id, parseInt(editTableNumber))}
+                          className="h-6 px-2 text-xs"
+                        >
+                          Save
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => setEditingTable(null)}
+                          className="h-6 px-2 text-xs"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">Table {qrCode.tableNumber}</Badge>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => startEditingTable(qrCode)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardDescription>
             </CardHeader>
             
             <CardContent className="space-y-4">
               {/* QR Code Preview */}
-              <div className="flex justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <img 
-                  src={generateQRCodeSVG(qrCode.url)} 
-                  alt={`QR Code for ${qrCode.name}`}
-                  className="w-32 h-32 border-2 border-gray-200 dark:border-gray-700 rounded"
-                />
+              <div className="flex justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg relative">
+                <div className="relative">
+                  <img 
+                    src={getQRCodeImage(qrCode)} 
+                    alt={`QR Code for ${qrCode.name}`}
+                    className="w-32 h-32 border-2 border-gray-200 dark:border-gray-700 rounded object-cover"
+                  />
+                  {qrCode.type === 'table' && qrCode.tableNumber && (
+                    <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 bg-white/90 px-2 py-1 rounded text-xs font-bold">
+                      Table {qrCode.tableNumber}
+                    </div>
+                  )}
+                </div>
               </div>
               
               {/* URL */}
@@ -252,9 +391,10 @@ export default function QRCodesPage() {
                   variant="outline"
                   onClick={() => handleDownloadQR(qrCode)}
                   disabled={isGenerating}
+                  data-testid={`download-qr-${qrCode.id}`}
                 >
                   <Download className="w-4 h-4 mr-1" />
-                  Download
+                  {isGenerating ? 'Downloading...' : 'Download'}
                 </Button>
                 
                 <Button 
