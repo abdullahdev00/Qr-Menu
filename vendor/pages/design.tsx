@@ -666,7 +666,7 @@ export default function DesignPage() {
       {/* Live Preview Modal */}
       {showPreviewModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-7xl h-5/6 flex flex-col">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-7xl h-[95vh] flex flex-col">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
               <div className="flex items-center gap-4">
