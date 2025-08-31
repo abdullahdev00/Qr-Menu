@@ -25,6 +25,7 @@ import OrdersPage from '../../vendor/pages/orders';
 import VendorAnalyticsPage from '../../vendor/pages/analytics';
 import VendorDashboardPage from '../../vendor/pages/dashboard';
 import VendorDesignPage from '../../vendor/pages/design';
+import VendorQRCodesPage from '../../vendor/pages/qr-codes';
 
 import MainLayout from '../components/layout/main-layout';
 
@@ -97,6 +98,7 @@ function App() {
                     <Route path="/test-button" component={TestButtonPage} />
                     <Route path="/vendor/dashboard" component={VendorDashboardPage} />
                     <Route path="/vendor/menu-management" component={MenuManagementPage} />
+                    <Route path="/vendor/qr-codes" component={VendorQRCodesPage} />
                     <Route path="/vendor/design" component={VendorDesignPage} />
                     <Route path="/vendor/analytics" component={VendorAnalyticsPage} />
                     <Route path="/vendor/orders" component={OrdersPage} />
