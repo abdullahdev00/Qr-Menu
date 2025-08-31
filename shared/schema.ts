@@ -136,6 +136,7 @@ export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
   tableId: varchar("table_id").references(() => restaurantTables.id),
+  tableNumber: text("table_number"), // For QR scan table numbers
   customerName: text("customer_name"),
   customerPhone: text("customer_phone"),
   orderNumber: integer("order_number").notNull(),
