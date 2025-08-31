@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       if (!restaurantId) {
         // If no restaurant ID provided, get from URL path
-        const referer = req.headers.referer || '';
+        const referer = (req.headers && req.headers.referer) || '';
         const slugMatch = referer.match(/\/([^\/\?]+)/);
         if (slugMatch) {
           const restaurants = await sql`SELECT id FROM restaurants WHERE slug = ${slugMatch[1]} LIMIT 1`;
