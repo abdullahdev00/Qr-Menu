@@ -18,12 +18,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           customizations: z.any().optional()
         })),
         subtotal: z.number(),
-        tax: z.number(),
         total: z.number(),
         tableNumber: z.string().nullable(),
         restaurantId: z.string().nullable(),
         estimatedTime: z.number(),
-        orderNumber: z.string()
+        orderNumber: z.string(),
+        status: z.string().optional(),
+        createdAt: z.string().optional()
       }).parse(req.body);
       
       // Get restaurant ID from URL slug or order data

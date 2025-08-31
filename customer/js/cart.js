@@ -290,12 +290,11 @@ class ShoppingCart {
         const tableNumber = menuApp?.tableNumber || null;
         const restaurantId = menuApp?.restaurantId || null;
         
-        // In a real app, this would redirect to checkout page or open payment modal
+        // Direct checkout without payment method selection
         const orderSummary = {
             items: this.items,
             subtotal: this.getSubtotal(),
-            tax: this.getTax(),
-            total: this.getTotal(),
+            total: this.getSubtotal(), // Remove tax from total
             estimatedTime: this.getTotalPreparationTime(),
             orderNumber: this.generateOrderNumber(),
             tableNumber: tableNumber,
@@ -329,48 +328,22 @@ class ShoppingCart {
                             ${orderSummary.items.map(item => `
                                 <div class="order-item">
                                     <span>${item.name} (${this.formatSize(item.size)}) x${item.quantity}</span>
-                                    <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                                    <span>₨${(item.price * item.quantity).toFixed(0)}</span>
                                 </div>
                             `).join('')}
                         </div>
                         
                         <div class="order-totals">
-                            <div class="total-line">
-                                <span>Subtotal:</span>
-                                <span>$${orderSummary.subtotal.toFixed(2)}</span>
-                            </div>
-                            <div class="total-line">
-                                <span>Tax:</span>
-                                <span>$${orderSummary.tax.toFixed(2)}</span>
-                            </div>
                             <div class="total-line final">
                                 <span>Total:</span>
-                                <span>$${orderSummary.total.toFixed(2)}</span>
+                                <span>₨${orderSummary.total.toFixed(0)}</span>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="payment-options">
-                        <h4>Payment Method</h4>
-                        <div class="payment-methods">
-                            <button class="payment-method" data-method="cash">
-                                <i class="fas fa-money-bill"></i>
-                                Cash on Delivery
-                            </button>
-                            <button class="payment-method" data-method="card">
-                                <i class="fas fa-credit-card"></i>
-                                Credit/Debit Card
-                            </button>
-                            <button class="payment-method" data-method="online">
-                                <i class="fas fa-mobile-alt"></i>
-                                Online Payment
-                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="checkout-footer">
                     <button class="btn-secondary cancel-order">Cancel</button>
-                    <button class="btn-primary confirm-order">Confirm Order</button>
+                    <button class="btn-primary confirm-order">Place Order</button>
                 </div>
             </div>
         `;
@@ -396,13 +369,7 @@ class ShoppingCart {
             this.closeCheckoutModal(modal);
         });
 
-        // Payment method selection
-        modal.querySelectorAll('.payment-method').forEach(btn => {
-            btn.addEventListener('click', () => {
-                modal.querySelectorAll('.payment-method').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-            });
-        });
+        // Auto-focus confirm button since no payment method selection needed
     }
 
     closeCheckoutModal(modal) {
@@ -425,12 +392,13 @@ class ShoppingCart {
                     customizations: item.customizations
                 })),
                 subtotal: orderSummary.subtotal,
-                tax: orderSummary.tax,
                 total: orderSummary.total,
                 tableNumber: orderSummary.tableNumber,
                 restaurantId: orderSummary.restaurantId,
                 estimatedTime: orderSummary.estimatedTime,
-                orderNumber: orderSummary.orderNumber
+                orderNumber: orderSummary.orderNumber,
+                status: 'pending',
+                createdAt: new Date().toISOString()
             };
             
             const response = await fetch('/api/customer/orders', {
@@ -444,6 +412,10 @@ class ShoppingCart {
             if (response.ok) {
                 console.log('Order confirmed:', orderSummary);
                 this.showToast('Order placed successfully!');
+                
+                // Save order to history
+                this.saveOrderToHistory(orderSummary);
+                
                 this.clearCart();
                 this.close();
                 
@@ -470,7 +442,7 @@ class ShoppingCart {
                     <h4>Order Confirmed!</h4>
                     <p>Order #${orderNumber} is being prepared</p>
                 </div>
-                <button class="track-order-btn">Track Order</button>
+                <button class="track-order-btn" onclick="window.cart.showOrderHistory()">View Order History</button>
             </div>
         `;
         
@@ -488,6 +460,15 @@ class ShoppingCart {
         `;
         
         document.body.appendChild(notification);
+        
+        // Add event listener to track order button
+        const trackBtn = notification.querySelector('.track-order-btn');
+        if (trackBtn) {
+            trackBtn.addEventListener('click', () => {
+                this.showOrderHistory();
+                notification.remove();
+            });
+        }
         
         setTimeout(() => {
             notification.style.animation = 'slideOutRight 0.5s ease forwards';
@@ -538,6 +519,102 @@ class ShoppingCart {
             toast.style.animation = 'slideDown 0.3s ease forwards';
             setTimeout(() => toast.remove(), 300);
         }, 2000);
+    }
+
+    async showOrderHistory() {
+        try {
+            // Get orders from localStorage for now (can be enhanced with API later)
+            const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+            
+            const modal = document.createElement('div');
+            modal.className = 'order-history-modal';
+            modal.innerHTML = `
+                <div class="checkout-overlay"></div>
+                <div class="checkout-content">
+                    <div class="checkout-header">
+                        <h2>Order History</h2>
+                        <button class="checkout-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="checkout-body">
+                        ${orders.length === 0 ? `
+                            <div class="empty-orders">
+                                <i class="fas fa-receipt"></i>
+                                <p>No orders found</p>
+                                <small>Your order history will appear here</small>
+                            </div>
+                        ` : `
+                            <div class="order-history-list">
+                                ${orders.slice(-10).reverse().map(order => `
+                                    <div class="order-history-item">
+                                        <div class="order-header">
+                                            <h4>Order #${order.orderNumber}</h4>
+                                            <span class="order-date">${new Date(order.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                        <div class="order-details">
+                                            ${order.tableNumber ? `<p><i class="fas fa-table"></i> Table ${order.tableNumber}</p>` : ''}
+                                            <p><i class="fas fa-clock"></i> ${order.estimatedTime} minutes</p>
+                                            <p><i class="fas fa-rupee-sign"></i> ₨${order.total.toFixed(0)}</p>
+                                        </div>
+                                        <div class="order-items-summary">
+                                            ${order.items.slice(0, 2).map(item => `
+                                                <span class="item-name">${item.name} x${item.quantity}</span>
+                                            `).join('')}
+                                            ${order.items.length > 2 ? `<span class="more-items">+${order.items.length - 2} more</span>` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                    <div class="checkout-footer">
+                        <button class="btn-primary close-history">Close</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.classList.add('active');
+
+            // Event listeners
+            modal.querySelector('.checkout-close').addEventListener('click', () => {
+                this.closeOrderHistoryModal(modal);
+            });
+            
+            modal.querySelector('.checkout-overlay').addEventListener('click', () => {
+                this.closeOrderHistoryModal(modal);
+            });
+            
+            modal.querySelector('.close-history').addEventListener('click', () => {
+                this.closeOrderHistoryModal(modal);
+            });
+
+        } catch (error) {
+            console.error('Error showing order history:', error);
+            this.showToast('Failed to load order history');
+        }
+    }
+
+    closeOrderHistoryModal(modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+
+    saveOrderToHistory(orderSummary) {
+        try {
+            const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+            orders.push({
+                ...orderSummary,
+                createdAt: new Date().toISOString(),
+                id: 'order_' + Date.now()
+            });
+            localStorage.setItem('orderHistory', JSON.stringify(orders));
+        } catch (error) {
+            console.error('Error saving order to history:', error);
+        }
     }
 }
 
