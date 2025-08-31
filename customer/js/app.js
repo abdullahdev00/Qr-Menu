@@ -454,44 +454,8 @@ class MenuApp {
             ? item.description.substring(0, 50) + '...' 
             : item.description;
 
-        // Create image carousel HTML
-        const allImages = [];
-        if (item.images && item.images.length > 0) {
-            allImages.push(...item.images);
-        }
-        if (item.image && !allImages.includes(item.image)) {
-            allImages.push(item.image);
-        }
-        
-        let imageHTML = '';
-        if (allImages.length === 0) {
-            imageHTML = '<div class="placeholder-image"><i class="fas fa-image"></i></div>';
-        } else if (allImages.length === 1) {
-            imageHTML = `<img src="${allImages[0]}" alt="${item.name}" loading="lazy">`;
-        } else {
-            imageHTML = `
-                <div class="carousel-container" data-carousel-id="${item.id}">
-                    <div class="carousel-images">
-                        ${allImages.map((img, index) => `
-                            <img src="${img}" alt="${item.name} - Image ${index + 1}" 
-                                 loading="lazy" class="${index === 0 ? 'active' : ''}" 
-                                 data-index="${index}">
-                        `).join('')}
-                    </div>
-                    <button class="carousel-btn prev" data-testid="button-carousel-prev-${item.id}">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="carousel-btn next" data-testid="button-carousel-next-${item.id}">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    <div class="carousel-dots">
-                        ${allImages.map((_, index) => `
-                            <span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
+        // Create CSS-based food design instead of external images
+        const imageHTML = this.createFoodDesign(item);
 
         itemDiv.innerHTML = `
             <div class="item-image">
@@ -538,10 +502,143 @@ class MenuApp {
             });
         }
 
-        // Add carousel event listeners
-        this.addCarouselEventListeners(itemDiv, item.id);
+        // No carousel needed for CSS designs
 
         return itemDiv;
+    }
+
+    createFoodDesign(item) {
+        // Create CSS-based food designs based on category and item type
+        const category = item.category.toLowerCase();
+        let design = '';
+        
+        switch(category) {
+            case 'main-course':
+            case 'main courses':
+                if (item.name.toLowerCase().includes('biryani')) {
+                    design = `
+                        <div class="css-food-design biryani-design">
+                            <div class="rice-layer"></div>
+                            <div class="meat-pieces"></div>
+                            <div class="saffron-strands"></div>
+                            <div class="garnish-herbs"></div>
+                        </div>
+                    `;
+                } else if (item.name.toLowerCase().includes('karahi') || item.name.toLowerCase().includes('curry')) {
+                    design = `
+                        <div class="css-food-design curry-design">
+                            <div class="curry-base"></div>
+                            <div class="meat-chunks"></div>
+                            <div class="curry-sauce"></div>
+                            <div class="spice-particles"></div>
+                        </div>
+                    `;
+                } else {
+                    design = `
+                        <div class="css-food-design main-course-design">
+                            <div class="plate-base"></div>
+                            <div class="main-portion"></div>
+                            <div class="side-garnish"></div>
+                        </div>
+                    `;
+                }
+                break;
+                
+            case 'appetizers':
+                if (item.name.toLowerCase().includes('samosa')) {
+                    design = `
+                        <div class="css-food-design samosa-design">
+                            <div class="samosa-shape"></div>
+                            <div class="samosa-texture"></div>
+                            <div class="chutney-dot"></div>
+                        </div>
+                    `;
+                } else {
+                    design = `
+                        <div class="css-food-design appetizer-design">
+                            <div class="small-plate"></div>
+                            <div class="appetizer-items"></div>
+                            <div class="garnish-dots"></div>
+                        </div>
+                    `;
+                }
+                break;
+                
+            case 'beverages':
+                if (item.name.toLowerCase().includes('lassi') || item.name.toLowerCase().includes('smoothie')) {
+                    design = `
+                        <div class="css-food-design drink-design">
+                            <div class="glass-base"></div>
+                            <div class="drink-liquid"></div>
+                            <div class="foam-top"></div>
+                            <div class="straw"></div>
+                        </div>
+                    `;
+                } else {
+                    design = `
+                        <div class="css-food-design beverage-design">
+                            <div class="cup-base"></div>
+                            <div class="liquid-fill"></div>
+                            <div class="steam-lines"></div>
+                        </div>
+                    `;
+                }
+                break;
+                
+            case 'desserts':
+                if (item.name.toLowerCase().includes('gulab jamun')) {
+                    design = `
+                        <div class="css-food-design dessert-design">
+                            <div class="dessert-bowl"></div>
+                            <div class="gulab-balls"></div>
+                            <div class="syrup-shine"></div>
+                        </div>
+                    `;
+                } else {
+                    design = `
+                        <div class="css-food-design sweet-design">
+                            <div class="dessert-plate"></div>
+                            <div class="sweet-portion"></div>
+                            <div class="decoration-dots"></div>
+                        </div>
+                    `;
+                }
+                break;
+                
+            case 'chinese':
+                design = `
+                    <div class="css-food-design chinese-design">
+                        <div class="wok-base"></div>
+                        <div class="stir-fry-mix"></div>
+                        <div class="sauce-glaze"></div>
+                        <div class="garnish-spring-onion"></div>
+                    </div>
+                `;
+                break;
+                
+            case 'fast-food':
+                design = `
+                    <div class="css-food-design fastfood-design">
+                        <div class="burger-bun-top"></div>
+                        <div class="burger-filling"></div>
+                        <div class="burger-bun-bottom"></div>
+                        <div class="side-fries"></div>
+                    </div>
+                `;
+                break;
+                
+            default:
+                design = `
+                    <div class="css-food-design default-design">
+                        <div class="food-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="food-glow"></div>
+                    </div>
+                `;
+        }
+        
+        return design;
     }
 
     generateStars(rating) {
@@ -920,8 +1017,7 @@ class MenuApp {
             });
         }
         
-        // Add carousel event listeners for modal
-        this.addCarouselEventListeners(modalBody, `modal-${item.id}`);
+        // No carousel needed for CSS designs
         
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -977,43 +1073,8 @@ class MenuApp {
     }
 
     createModalImageCarousel(item) {
-        // Create modal image carousel HTML
-        const allImages = [];
-        if (item.images && item.images.length > 0) {
-            allImages.push(...item.images);
-        }
-        if (item.image && !allImages.includes(item.image)) {
-            allImages.push(item.image);
-        }
-        
-        if (allImages.length === 0) {
-            return '<div class="placeholder-image"><i class="fas fa-image"></i></div>';
-        } else if (allImages.length === 1) {
-            return `<img src="${allImages[0]}" alt="${item.name}">`;
-        } else {
-            return `
-                <div class="modal-carousel-container" data-carousel-id="modal-${item.id}">
-                    <div class="modal-carousel-images">
-                        ${allImages.map((img, index) => `
-                            <img src="${img}" alt="${item.name} - Image ${index + 1}" 
-                                 class="${index === 0 ? 'active' : ''}" 
-                                 data-index="${index}">
-                        `).join('')}
-                    </div>
-                    <button class="modal-carousel-btn prev" data-testid="button-modal-carousel-prev-${item.id}">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="modal-carousel-btn next" data-testid="button-modal-carousel-next-${item.id}">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    <div class="modal-carousel-dots">
-                        ${allImages.map((_, index) => `
-                            <span class="dot ${index === 0 ? 'active' : ''}" data-index="${index}"></span>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
+        // Use CSS-based food design for modal
+        return this.createFoodDesign(item);
     }
 
     addCarouselEventListeners(container, carouselId) {
