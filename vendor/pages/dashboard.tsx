@@ -181,6 +181,48 @@ function AddItemDialog({ restaurantId }: { restaurantId: string }) {
               />
             </div>
 
+            {/* Image Upload */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Menu Item Image</FormLabel>
+                  <FormControl>
+                    <div className="space-y-2">
+                      <Input 
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            // Convert to base64 or handle file upload
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              field.onChange(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        data-testid="input-image"
+                      />
+                      {field.value && (
+                        <div className="mt-2">
+                          <img 
+                            src={field.value} 
+                            alt="Preview" 
+                            className="w-24 h-24 object-cover rounded-lg border-2 border-gray-200"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="description"
@@ -202,7 +244,7 @@ function AddItemDialog({ restaurantId }: { restaurantId: string }) {
             />
 
             {/* Price and Details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <FormField
                 control={form.control}
                 name="price"
@@ -227,7 +269,7 @@ function AddItemDialog({ restaurantId }: { restaurantId: string }) {
                 name="preparationTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prep Time (minutes)</FormLabel>
+                    <FormLabel>Prep Time (min)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -259,6 +301,74 @@ function AddItemDialog({ restaurantId }: { restaurantId: string }) {
                         data-testid="input-calories"
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="displayOrder"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Order</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="1"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : 0)}
+                        value={field.value || ""}
+                        data-testid="input-display-order"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Ingredients and Allergens */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="ingredients"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ingredients</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Chicken, Onions, Tomatoes, Ginger, Garlic, Spices"
+                        rows={2}
+                        {...field}
+                        value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        data-testid="textarea-ingredients"
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500">Separate ingredients with commas</div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="allergens"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Allergens</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Dairy, Nuts, Gluten"
+                        rows={2}
+                        {...field}
+                        value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        data-testid="textarea-allergens"
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500">Separate allergens with commas</div>
                     <FormMessage />
                   </FormItem>
                 )}
