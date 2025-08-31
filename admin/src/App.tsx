@@ -96,6 +96,12 @@ function App() {
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
                     <Route path="/test-button" component={TestButtonPage} />
+                    <Route path="/:slug/dashboard" component={VendorDashboardPage} />
+                    <Route path="/:slug/menu-management" component={MenuManagementPage} />
+                    <Route path="/:slug/qr-codes" component={VendorQRCodesPage} />
+                    <Route path="/:slug/design" component={VendorDesignPage} />
+                    <Route path="/:slug/analytics" component={VendorAnalyticsPage} />
+                    <Route path="/:slug/orders" component={OrdersPage} />
                     <Route path="/vendor/dashboard" component={VendorDashboardPage} />
                     <Route path="/vendor/menu-management" component={MenuManagementPage} />
                     <Route path="/vendor/qr-codes" component={VendorQRCodesPage} />

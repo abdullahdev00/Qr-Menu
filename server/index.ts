@@ -83,6 +83,31 @@ async function startServer() {
     res.sendFile(join(__dirname, '../customer/index.html'));
   });
 
+  // Restaurant slug routes - serve admin panel for restaurant routes
+  app.get('/:slug/:page?', async (req, res, next) => {
+    const { slug, page } = req.params;
+    
+    // Check if this is a restaurant slug by querying database
+    try {
+      const { db } = await import('../admin/lib/storage');
+      const { restaurants } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const restaurant = await db.select().from(restaurants).where(eq(restaurants.slug, slug)).limit(1);
+      
+      if (restaurant.length > 0) {
+        // Valid restaurant slug - serve admin panel
+        res.sendFile(join(__dirname, '../dist/index.html'));
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking restaurant slug:', error);
+    }
+    
+    // Not a restaurant route, continue to next handler
+    next();
+  });
+
   // Serve built static files and fallback (for both dev and production since we have the built files)
   app.use(express.static(join(__dirname, '../dist')));
   app.get('*', (req, res, next) => {
