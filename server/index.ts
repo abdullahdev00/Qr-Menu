@@ -83,7 +83,48 @@ async function startServer() {
     res.sendFile(join(__dirname, '../customer/index.html'));
   });
 
-  // Restaurant slug routes - serve admin panel for restaurant routes
+  // Serve customer static assets for restaurant slug routes
+  app.use('/:slug/styles', async (req, res, next) => {
+    const { slug } = req.params;
+    
+    try {
+      const { db } = await import('../admin/lib/storage');
+      const { restaurants } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const restaurant = await db.select().from(restaurants).where(eq(restaurants.slug, slug)).limit(1);
+      
+      if (restaurant.length > 0) {
+        express.static(join(__dirname, '../customer/styles'))(req, res, next);
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking restaurant slug for styles:', error);
+    }
+    next();
+  });
+
+  app.use('/:slug/js', async (req, res, next) => {
+    const { slug } = req.params;
+    
+    try {
+      const { db } = await import('../admin/lib/storage');
+      const { restaurants } = await import('../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      const restaurant = await db.select().from(restaurants).where(eq(restaurants.slug, slug)).limit(1);
+      
+      if (restaurant.length > 0) {
+        express.static(join(__dirname, '../customer/js'))(req, res, next);
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking restaurant slug for js:', error);
+    }
+    next();
+  });
+
+  // Restaurant slug routes
   app.get('/:slug/:page?', async (req, res, next) => {
     const { slug, page } = req.params;
     
@@ -96,9 +137,16 @@ async function startServer() {
       const restaurant = await db.select().from(restaurants).where(eq(restaurants.slug, slug)).limit(1);
       
       if (restaurant.length > 0) {
-        // Valid restaurant slug - serve admin panel
-        res.sendFile(join(__dirname, '../dist/index.html'));
-        return;
+        // If no page specified, serve customer website (restaurant menu)
+        if (!page) {
+          res.sendFile(join(__dirname, '../customer/index.html'));
+          return;
+        }
+        // If page specified, serve admin panel for restaurant management
+        else {
+          res.sendFile(join(__dirname, '../dist/index.html'));
+          return;
+        }
       }
     } catch (error) {
       console.error('Error checking restaurant slug:', error);

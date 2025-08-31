@@ -3,10 +3,19 @@ import { storage } from '../../../lib/storage';
 export default async function handler(req: any, res: any) {
   if (req.method === 'GET') {
     try {
-      const { restaurantId } = req.query;
+      const { restaurantId, restaurantSlug } = req.query;
       
-      // Get menu items for the restaurant (or first available restaurant if none specified)
+      // Get restaurant either by ID or slug
       let targetRestaurantId = restaurantId;
+      if (!targetRestaurantId && restaurantSlug) {
+        const restaurants = await storage.getRestaurants();
+        const restaurant = restaurants.find(r => r.slug === restaurantSlug);
+        if (restaurant) {
+          targetRestaurantId = restaurant.id;
+        }
+      }
+      
+      // Fallback to first restaurant if none specified
       if (!targetRestaurantId) {
         const restaurants = await storage.getRestaurants();
         if (restaurants.length > 0) {

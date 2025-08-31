@@ -114,8 +114,18 @@ class MenuApp {
 
     async loadMenuItems() {
         try {
+            // Extract restaurant slug from URL
+            const path = window.location.pathname;
+            const slug = path.split('/')[1]; // Get first part after /
+            
+            // Build API URL with restaurant slug
+            let apiUrl = '/api/customer/menu';
+            if (slug && slug !== 'customer' && slug !== '') {
+                apiUrl += `?restaurantSlug=${slug}`;
+            }
+            
             // Fetch menu data from API
-            const response = await fetch('/api/customer/menu');
+            const response = await fetch(apiUrl);
             const data = await response.json();
             
             if (data.success && data.items) {
