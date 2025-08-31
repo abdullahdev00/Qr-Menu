@@ -6,11 +6,8 @@ import { z } from 'zod';
 export default async function handler(req: any, res: any) {
   try {
     if (req.method === 'GET') {
-      // Get menu categories filtered by restaurant ID
+      // Get menu categories - filter by restaurant ID if provided (for vendors), otherwise return all (for admin)
       const { restaurantId } = req.query;
-      if (!restaurantId) {
-        return res.status(400).json({ error: 'Restaurant ID is required' });
-      }
       const categories = await storage.getMenuCategories(restaurantId as string);
       return res.status(200).json(categories);
     }
