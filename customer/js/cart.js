@@ -285,6 +285,11 @@ class ShoppingCart {
             return;
         }
 
+        // Get table information from MenuApp if QR scan
+        const menuApp = window.menuApp;
+        const tableNumber = menuApp?.tableNumber || null;
+        const restaurantId = menuApp?.restaurantId || null;
+        
         // In a real app, this would redirect to checkout page or open payment modal
         const orderSummary = {
             items: this.items,
@@ -292,7 +297,9 @@ class ShoppingCart {
             tax: this.getTax(),
             total: this.getTotal(),
             estimatedTime: this.getTotalPreparationTime(),
-            orderNumber: this.generateOrderNumber()
+            orderNumber: this.generateOrderNumber(),
+            tableNumber: tableNumber,
+            restaurantId: restaurantId
         };
 
         console.log('Checkout initiated:', orderSummary);
@@ -315,7 +322,7 @@ class ShoppingCart {
                 </div>
                 <div class="checkout-body">
                     <div class="order-summary">
-                        <h3>Order #${orderSummary.orderNumber}</h3>
+                        <h3>Order #${orderSummary.orderNumber}</h3>\n                        ${orderSummary.tableNumber ? `<p style=\"background: linear-gradient(135deg, #d4af37, #f7e98e); color: #000; padding: 6px 12px; border-radius: 15px; margin: 8px 0; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;\"><i class=\"fas fa-table\"></i> Table ${orderSummary.tableNumber}</p>` : ''}
                         <p>Estimated preparation time: ${orderSummary.estimatedTime} minutes</p>
                         
                         <div class="order-items">
@@ -405,18 +412,52 @@ class ShoppingCart {
         }, 300);
     }
 
-    confirmOrder(orderSummary) {
-        // In a real app, this would send the order to the server
-        console.log('Order confirmed:', orderSummary);
-        
-        this.showToast('Order placed successfully!');
-        this.clearCart();
-        this.close();
-        
-        // Show order tracking notification
-        setTimeout(() => {
-            this.showOrderTrackingNotification(orderSummary.orderNumber);
-        }, 1000);
+    async confirmOrder(orderSummary) {
+        try {
+            // Send order to server with table information
+            const orderData = {
+                items: orderSummary.items.map(item => ({
+                    menuItemId: item.menuItemId,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    size: item.size,
+                    customizations: item.customizations
+                })),
+                subtotal: orderSummary.subtotal,
+                tax: orderSummary.tax,
+                total: orderSummary.total,
+                tableNumber: orderSummary.tableNumber,
+                restaurantId: orderSummary.restaurantId,
+                estimatedTime: orderSummary.estimatedTime,
+                orderNumber: orderSummary.orderNumber
+            };
+            
+            const response = await fetch('/api/customer/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            });
+            
+            if (response.ok) {
+                console.log('Order confirmed:', orderSummary);
+                this.showToast('Order placed successfully!');
+                this.clearCart();
+                this.close();
+                
+                // Show order tracking notification
+                setTimeout(() => {
+                    this.showOrderTrackingNotification(orderSummary.orderNumber);
+                }, 1000);
+            } else {
+                throw new Error('Failed to place order');
+            }
+        } catch (error) {
+            console.error('Error confirming order:', error);
+            this.showToast('Failed to place order. Please try again.');
+        }
     }
 
     showOrderTrackingNotification(orderNumber) {

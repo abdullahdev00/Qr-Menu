@@ -212,6 +212,11 @@ export default function OrdersPage() {
               <div>
                 <CardTitle className="text-lg font-bold text-gray-900 dark:text-white">
                   Order #{order.orderNumber}
+                  {order.tableNumber && (
+                    <span className="ml-2 inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+                      <span className="mr-1">🪑</span> Table {order.tableNumber}
+                    </span>
+                  )}
                 </CardTitle>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {order.createdAt ? format(new Date(order.createdAt), 'MMM dd, yyyy • hh:mm a') : 'N/A'}
@@ -490,6 +495,7 @@ export default function OrdersPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Order</TableHead>
+                  <TableHead>Table</TableHead>
                   <TableHead>Customer</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Items</TableHead>

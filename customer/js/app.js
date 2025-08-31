@@ -21,12 +21,18 @@ class MenuApp {
         // Default to single-column which means multi-column grid on desktop (confusing naming)
         this.currentLayout = localStorage.getItem('menuLayout') || 'single-column';
         
+        // QR scan detection
+        this.tableNumber = this.getTableFromURL();
+        this.isQRScan = !!this.tableNumber;
+        this.restaurantId = this.getRestaurantFromURL();
+        
         this.init();
     }
 
     async init() {
         this.bindEvents();
         this.initializeLayout();
+        this.handleQRScan(); // Handle QR scan first
         this.generateSkeletonCards();
         await this.loadMenuItems();
         this.renderMenuItems();
@@ -109,7 +115,7 @@ class MenuApp {
         });
 
         // Scroll events
-        window.addEventListener('scroll', this.handleScroll.bind(this));
+        window.addEventListener('scroll', this.handleScroll.bind(this));\n    }\n\n    // QR scan detection functions\n    getTableFromURL() {\n        const urlParams = new URLSearchParams(window.location.search);\n        return urlParams.get('table');\n    }\n\n    getRestaurantFromURL() {\n        const urlParams = new URLSearchParams(window.location.search);\n        return urlParams.get('restaurant');\n    }\n\n    handleQRScan() {\n        if (this.isQRScan) {\n            // Hide profile button for QR scan users\n            const profileToggle = document.getElementById('profileToggle');\n            if (profileToggle) {\n                profileToggle.style.display = 'none';\n            }\n            \n            // Show table number indicator\n            this.showTableIndicator();\n            \n            console.log(`QR Scan detected - Table: ${this.tableNumber}, Restaurant: ${this.restaurantId}`);\n        }\n    }\n\n    showTableIndicator() {\n        const header = document.querySelector('.header-container');\n        if (header && this.tableNumber) {\n            const tableIndicator = document.createElement('div');\n            tableIndicator.className = 'table-indicator';\n            tableIndicator.innerHTML = `<i class=\"fas fa-table\"></i> Table ${this.tableNumber}`;\n            tableIndicator.style.cssText = `\n                background: linear-gradient(135deg, #d4af37, #f7e98e);\n                color: #000;\n                padding: 8px 16px;\n                border-radius: 20px;\n                font-weight: 600;\n                font-size: 14px;\n                margin-right: 10px;\n                display: flex;\n                align-items: center;\n                gap: 8px;\n            `;\n            header.insertBefore(tableIndicator, header.querySelector('.header-actions'));\n        }
     }
 
     async loadMenuItems() {
