@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { getCurrentUser } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
+import { getCurrentUser } from "../../admin/lib/auth";
+import { Button } from "../../admin/components/ui/button";
+import { Input } from "../../admin/components/ui/input";
+import { Label } from "../../admin/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../admin/components/ui/card";
+import { Badge } from "../../admin/components/ui/badge";
+import { Textarea } from "../../admin/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../admin/components/ui/select";
+import { useToast } from "../../admin/hooks/use-toast";
 import { 
   Wallet, 
   CreditCard, 
@@ -30,6 +29,11 @@ interface PaymentRequestFormData {
   receiptImage: File | null;
 }
 
+interface ImagePreviewState {
+  preview: string | null;
+  isDragOver: boolean;
+}
+
 export default function PaymentRequestPage() {
   const user = getCurrentUser();
   const { toast } = useToast();
@@ -40,6 +44,11 @@ export default function PaymentRequestPage() {
     paymentMethod: "",
     description: "",
     receiptImage: null
+  });
+
+  const [imagePreview, setImagePreview] = useState<ImagePreviewState>({
+    preview: null,
+    isDragOver: false
   });
 
   // Fetch restaurant data including plan and balance info
@@ -81,6 +90,7 @@ export default function PaymentRequestPage() {
         description: "",
         receiptImage: null
       });
+      setImagePreview({ preview: null, isDragOver: false });
     },
     onError: (error: any) => {
       toast({
@@ -117,8 +127,57 @@ export default function PaymentRequestPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, receiptImage: e.target.files[0] });
+      const file = e.target.files[0];
+      setFormData({ ...formData, receiptImage: file });
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview({ ...imagePreview, preview: reader.result as string });
+      };
+      reader.readAsDataURL(file);
     }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setImagePreview({ ...imagePreview, isDragOver: true });
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setImagePreview({ ...imagePreview, isDragOver: false });
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setImagePreview({ ...imagePreview, isDragOver: false });
+    
+    const files = e.dataTransfer.files;
+    if (files && files[0]) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        setFormData({ ...formData, receiptImage: file });
+        
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = () => {
+          setImagePreview({ ...imagePreview, preview: reader.result as string });
+        };
+        reader.readAsDataURL(file);
+      } else {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload an image file",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const removeImage = () => {
+    setFormData({ ...formData, receiptImage: null });
+    setImagePreview({ preview: null, isDragOver: false });
   };
 
   if (!user) {
@@ -173,22 +232,39 @@ export default function PaymentRequestPage() {
           </Card>
 
           {/* Account Balance */}
-          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
+          <Card className={`bg-gradient-to-br ${accountBalance > 0 ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600'} text-white border-0 transform hover:scale-105 transition-transform duration-300`}>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <Wallet className="w-8 h-8" />
                 <Badge variant="secondary" className="bg-white/20 text-white">
-                  BALANCE
+                  💰 BALANCE
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
-              <h3 className="text-2xl font-bold">PKR {accountBalance.toFixed(2)}</h3>
-              <p className="text-green-100">Available Balance</p>
-              <div className="mt-2">
-                <span className="text-sm text-green-100">
-                  {accountBalance > 0 ? '✅ Positive Balance' : '⚠️ Low Balance'}
-                </span>
+              <h3 className="text-3xl font-bold mb-1">PKR {accountBalance.toLocaleString('en-PK', { minimumFractionDigits: 2 })}</h3>
+              <p className={`${accountBalance > 0 ? 'text-green-100' : 'text-red-100'} font-medium`}>
+                Available Balance
+              </p>
+              <div className="mt-3 space-y-1">
+                <div className={`text-sm ${accountBalance > 0 ? 'text-green-100' : 'text-red-100'} flex items-center gap-2`}>
+                  {accountBalance > 0 ? (
+                    <>
+                      <span className="text-lg">✅</span>
+                      <span>Positive Balance</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-lg">⚠️</span>
+                      <span>Low Balance - Add Funds</span>
+                    </>
+                  )}
+                </div>
+                {accountBalance < 1000 && (
+                  <div className="text-xs text-white/80 mt-1">
+                    💡 Consider adding funds for uninterrupted service
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -314,41 +390,95 @@ export default function PaymentRequestPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="receipt">Upload Receipt *</Label>
-                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6">
-                    <div className="text-center">
-                      <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                      <Label htmlFor="receipt" className="cursor-pointer">
-                        <span className="text-sm font-medium text-blue-600 hover:text-blue-500">
-                          Click to upload receipt image
-                        </span>
-                        <Input
-                          id="receipt"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileChange}
-                          className="hidden"
-                          data-testid="input-receipt"
-                        />
-                      </Label>
-                      <p className="text-xs text-gray-500 mt-1">
-                        PNG, JPG up to 10MB
-                      </p>
-                      {formData.receiptImage && (
-                        <p className="text-sm text-green-600 mt-2">
-                          ✅ {formData.receiptImage.name}
+                  <div 
+                    className={`border-2 border-dashed rounded-lg p-6 transition-all duration-300 ${
+                      imagePreview.isDragOver 
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' 
+                        : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    {imagePreview.preview ? (
+                      <div className="text-center space-y-4">
+                        <div className="relative inline-block">
+                          <img 
+                            src={imagePreview.preview} 
+                            alt="Receipt preview" 
+                            className="max-h-48 max-w-full object-contain rounded-lg shadow-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                          >
+                            ×
+                          </button>
+                        </div>
+                        <p className="text-sm text-green-600 font-medium">
+                          ✅ {formData.receiptImage?.name}
                         </p>
-                      )}
-                    </div>
+                        <Label htmlFor="receipt" className="cursor-pointer">
+                          <span className="text-sm font-medium text-blue-600 hover:text-blue-500">
+                            Change image
+                          </span>
+                          <Input
+                            id="receipt"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            data-testid="input-receipt"
+                          />
+                        </Label>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <Upload className={`w-12 h-12 mx-auto mb-4 transition-colors ${
+                          imagePreview.isDragOver ? 'text-blue-500' : 'text-gray-400'
+                        }`} />
+                        <Label htmlFor="receipt" className="cursor-pointer">
+                          <span className="text-lg font-medium text-blue-600 hover:text-blue-500 block mb-2">
+                            {imagePreview.isDragOver ? 'Drop image here' : 'Click to upload or drag & drop'}
+                          </span>
+                          <Input
+                            id="receipt"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            data-testid="input-receipt"
+                          />
+                        </Label>
+                        <p className="text-sm text-gray-500">
+                          📸 PNG, JPG, JPEG up to 10MB
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Drag and drop your receipt image here
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <Button 
                   type="submit" 
-                  className="w-full"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300"
                   disabled={createRequestMutation.isPending}
                   data-testid="button-submit-request"
                 >
-                  {createRequestMutation.isPending ? "Submitting..." : "Submit Payment Request"}
+                  {createRequestMutation.isPending ? (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      <span>Submitting Request...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-5 h-5" />
+                      <span>💰 Submit Payment Request</span>
+                    </div>
+                  )}
                 </Button>
               </form>
             </CardContent>
