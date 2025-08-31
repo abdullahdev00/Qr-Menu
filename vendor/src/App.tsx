@@ -11,6 +11,9 @@ import MenuManagement from '../pages/menu-management';
 import Orders from '../pages/orders';
 import Analytics from '../pages/analytics';
 import Design from '../pages/design';
+import PaymentRequest from '../pages/payment-request';
+import QRCodes from '../pages/qr-codes';
+import Settings from '../pages/settings';
 
 // Query client setup
 const queryClient = new QueryClient({
@@ -66,9 +69,12 @@ function VendorApp() {
                 </Route>
                 <Route path="/dashboard" component={Dashboard} />
                 <Route path="/menu-management" component={MenuManagement} />
-                <Route path="/orders" component={Orders} />
-                <Route path="/analytics" component={Analytics} />
+                <Route path="/qr-codes" component={QRCodes} />
                 <Route path="/design" component={Design} />
+                <Route path="/payment-request" component={PaymentRequest} />
+                <Route path="/analytics" component={Analytics} />
+                <Route path="/orders" component={Orders} />
+                <Route path="/settings" component={Settings} />
               </Switch>
             )}
             <Toaster />

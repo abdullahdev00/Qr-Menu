@@ -108,6 +108,8 @@ class Storage {
             qrScansCount: 2847,
             avgRating: "4.7",
             totalReviews: 156,
+            accountBalance: "15750.00", // PKR 15,750 in account
+            planExpiryDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // Expires in 15 days
           },
           {
             name: "Karachi Biryani House",

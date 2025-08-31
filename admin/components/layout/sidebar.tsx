@@ -13,7 +13,8 @@ import {
   X,
   ShoppingBag,
   Palette,
-  QrCode
+  QrCode,
+  Wallet
 } from "lucide-react";
 
 interface SidebarProps {
@@ -37,6 +38,7 @@ const restaurantNavigation = [
   { name: "Menu Management", href: "/vendor/menu-management", icon: Utensils },
   { name: "QR Codes", href: "/vendor/qr-codes", icon: QrCode },
   { name: "Design", href: "/vendor/design", icon: Palette },
+  { name: "Payment Request", href: "/vendor/payment-request", icon: Wallet, badge: "PKR", badgeColor: "bg-green-500" },
   { name: "Analytics", href: "/vendor/analytics", icon: PieChart },
   { name: "Orders", href: "/vendor/orders", icon: Store, badge: "5" },
   { name: "Settings", href: "/vendor/settings", icon: Settings },

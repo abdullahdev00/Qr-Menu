@@ -23,6 +23,8 @@ export const restaurants = pgTable("restaurants", {
   address: text("address"),
   city: text("city"),
   planId: varchar("plan_id").references(() => subscriptionPlans.id),
+  planExpiryDate: timestamp("plan_expiry_date"), // When current plan expires
+  accountBalance: decimal("account_balance", { precision: 10, scale: 2 }).notNull().default("0.00"), // Current balance in PKR
   status: text("status").notNull().default("active"), // active, inactive, suspended
   notes: text("notes"),
   qrScansCount: integer("qr_scans_count").notNull().default(0), // Track QR code scans
