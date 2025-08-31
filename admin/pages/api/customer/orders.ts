@@ -29,6 +29,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // Get restaurant ID from URL slug or order data
       let restaurantId = orderData.restaurantId;
+      
+      // If restaurantId looks like a slug, convert it to actual ID
+      if (restaurantId && !restaurantId.match(/^[0-9a-f-]{36}$/)) {
+        const restaurants = await sql`SELECT id FROM restaurants WHERE slug = ${restaurantId} LIMIT 1`;
+        if (restaurants.length > 0) {
+          restaurantId = restaurants[0].id;
+        } else {
+          restaurantId = null;
+        }
+      }
+      
       if (!restaurantId) {
         // If no restaurant ID provided, get from URL path
         const referer = req.headers.referer || '';

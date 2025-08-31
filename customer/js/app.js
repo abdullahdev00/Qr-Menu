@@ -126,7 +126,19 @@ class MenuApp {
 
     getRestaurantFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('restaurant');
+        const restaurantParam = urlParams.get('restaurant');
+        if (restaurantParam) {
+            return restaurantParam;
+        }
+        
+        // Extract restaurant slug from URL path
+        const path = window.location.pathname;
+        const slug = path.split('/')[1];
+        if (slug && slug !== 'customer' && slug !== '') {
+            return slug; // Return slug which will be converted to ID by API
+        }
+        
+        return null;
     }
 
     handleQRScan() {
