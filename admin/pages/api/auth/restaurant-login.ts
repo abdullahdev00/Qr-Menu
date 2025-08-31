@@ -31,7 +31,8 @@ export default async function handler(
         email: restaurant.ownerEmail, 
         role: 'restaurant',
         restaurantId: restaurant.id,
-        restaurantName: restaurant.name
+        restaurantName: restaurant.name,
+        restaurantSlug: restaurant.slug
       } 
     })
   } catch (error) {

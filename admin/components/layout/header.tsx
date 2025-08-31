@@ -28,6 +28,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   // Get page title based on current route
   const getPageTitle = () => {
+    // Handle dynamic slug routes
+    if (location.match(/^\/[^\/]+\/dashboard$/)) return 'Restaurant Dashboard';
+    if (location.match(/^\/[^\/]+\/menu-management$/)) return 'Menu Management';
+    if (location.match(/^\/[^\/]+\/analytics$/)) return 'Analytics';
+    if (location.match(/^\/[^\/]+\/orders$/)) return 'Orders';
+    if (location.match(/^\/[^\/]+\/settings$/)) return 'Settings';
+    if (location.match(/^\/[^\/]+\/qr-codes$/)) return 'QR Codes';
+    if (location.match(/^\/[^\/]+\/design$/)) return 'Design';
+    if (location.match(/^\/[^\/]+\/payment-request$/)) return 'Payment Request';
+    
     switch (location) {
       case '/dashboard':
       case '/':

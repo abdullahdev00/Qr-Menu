@@ -75,7 +75,8 @@ export default function Login() {
         })
         // Redirect based on user role
         if (data.user.role === 'restaurant') {
-          window.location.href = '/vendor/dashboard'
+          const slug = data.user.restaurantSlug || 'vendor';
+          window.location.href = `/${slug}/dashboard`
         } else {
           window.location.href = '/dashboard'
         }

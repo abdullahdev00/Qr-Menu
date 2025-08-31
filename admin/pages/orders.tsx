@@ -129,7 +129,8 @@ export default function AdminOrdersPage() {
     if (storedUser) {
       const userData = JSON.parse(storedUser)
       if (userData.role === 'restaurant') {
-        setLocation('/vendor/dashboard')
+        const slug = userData.restaurantSlug || 'vendor';
+        setLocation(`/${slug}/dashboard`)
       } else {
         setUser(userData)
       }

@@ -33,23 +33,31 @@ const adminNavigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-const restaurantNavigation = [
-  { name: "Dashboard", href: "/vendor/dashboard", icon: BarChart3 },
-  { name: "Menu Management", href: "/vendor/menu-management", icon: Utensils },
-  { name: "QR Codes", href: "/vendor/qr-codes", icon: QrCode },
-  { name: "Design", href: "/vendor/design", icon: Palette },
-  { name: "Payment Request", href: "/vendor/payment-request", icon: Wallet, badge: "PKR", badgeColor: "bg-green-500" },
-  { name: "Analytics", href: "/vendor/analytics", icon: PieChart },
-  { name: "Orders", href: "/vendor/orders", icon: Store, badge: "5" },
-  { name: "Settings", href: "/vendor/settings", icon: Settings },
-];
+// Function to get restaurant navigation with dynamic slug
+const getRestaurantNavigation = (slug?: string) => {
+  const baseSlug = slug || "vendor"; // Fallback to /vendor if no slug
+  return [
+    { name: "Dashboard", href: `/${baseSlug}/dashboard`, icon: BarChart3 },
+    { name: "Menu Management", href: `/${baseSlug}/menu-management`, icon: Utensils },
+    { name: "QR Codes", href: `/${baseSlug}/qr-codes`, icon: QrCode },
+    { name: "Design", href: `/${baseSlug}/design`, icon: Palette },
+    { name: "Payment Request", href: `/${baseSlug}/payment-request`, icon: Wallet, badge: "PKR", badgeColor: "bg-green-500" },
+    { name: "Analytics", href: `/${baseSlug}/analytics`, icon: PieChart },
+    { name: "Orders", href: `/${baseSlug}/orders`, icon: Store, badge: "5" },
+    { name: "Settings", href: `/${baseSlug}/settings`, icon: Settings },
+  ];
+};
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [location, setLocation] = useLocation();
   const user = getCurrentUser();
   
+  // Extract restaurant slug from current location if it's a restaurant route
+  const restaurantSlug = location.match(/^\/([^\/]+)\//)?.[1];
+  const isRestaurantRoute = user?.role === 'restaurant' && restaurantSlug && restaurantSlug !== 'dashboard' && restaurantSlug !== 'restaurants';
+  
   // Get navigation based on user role
-  const navigation = user?.role === 'restaurant' ? restaurantNavigation : adminNavigation;
+  const navigation = user?.role === 'restaurant' ? getRestaurantNavigation(isRestaurantRoute ? restaurantSlug : undefined) : adminNavigation;
 
   const handleLogout = () => {
     logout();
@@ -111,7 +119,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             {navigation.map((item, index) => {
               const isActive = location === item.href || 
                 (location === "/" && item.href === "/dashboard") ||
-                (location === "/" && user?.role === 'restaurant' && item.href === "/vendor/dashboard");
+                (location === "/" && user?.role === 'restaurant' && item.href.endsWith('/dashboard'));
               const gradients = [
                 'from-blue-500 to-blue-600',
                 'from-emerald-500 to-emerald-600', 
