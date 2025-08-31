@@ -34,7 +34,7 @@ export default function QRCodesPage() {
   const { toast } = useToast()
   
   const user = getCurrentUser()
-  const restaurantId = user?.restaurantId || ''
+  const restaurantId = 'demo-restaurant-id' // TODO: Get from actual user context
 
   // QR codes data with table numbers
   const [qrCodes, setQrCodes] = useState([
@@ -78,54 +78,99 @@ export default function QRCodesPage() {
     })
   }
 
-  const handleDownloadQR = (qrCode: any) => {
+  const handleDownloadQR = async (qrCode: any) => {
     setIsGenerating(true)
     
-    // Create canvas to combine custom image with table number
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    canvas.width = 800
-    canvas.height = 800
-    
-    const img = new Image()
-    img.onload = () => {
-      // Draw the custom QR image
-      ctx?.drawImage(img, 0, 0, 800, 800)
+    try {
+      // Generate QR code using API
+      const response = await fetch('/api/qr-codes/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          restaurantSlug: 'demo-restaurant', // Get from user context
+          tableNumber: qrCode.tableNumber,
+          customization: {
+            colors: {
+              primary: '#2563EB',
+              secondary: '#EFF6FF',
+              qrForeground: '#000000',
+              qrBackground: '#ffffff'
+            },
+            text: {
+              restaurantName: 'Restaurant Name', // Get from user restaurant
+              tableNumber: qrCode.tableNumber ? `Table ${qrCode.tableNumber}` : '',
+              instructions: 'Scan for Menu',
+              language: 'english'
+            },
+            template: {
+              id: 'classic_modern',
+              category: 'modern',
+              layout: {}
+            }
+          },
+          size: selectedSize,
+          format: 'png'
+        }),
+      })
       
-      // Add table number text if it's a table QR
-      if (qrCode.type === 'table' && qrCode.tableNumber) {
-        ctx!.font = 'bold 48px Arial'
-        ctx!.fillStyle = '#000000'
-        ctx!.textAlign = 'center'
-        ctx!.fillText(`Table ${qrCode.tableNumber}`, 400, 750)
-      }
-      
-      // Download the canvas as image
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = `${qrCode.name.replace(/\s+/g, '_')}.png`
-          document.body.appendChild(a)
-          a.click()
-          document.body.removeChild(a)
-          URL.revokeObjectURL(url)
-        }
-        setIsGenerating(false)
+      if (response.ok) {
+        // Create download link
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${qrCode.name.replace(/\s+/g, '_')}.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+        
         toast({
           title: "QR Code Downloaded!",
           description: `${qrCode.name} with table number has been downloaded`,
         })
-      }, 'image/png')
+      } else {
+        throw new Error('Failed to generate QR code')
+      }
+    } catch (error) {
+      console.error('QR generation error:', error)
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate QR code. Please try again.",
+        variant: "destructive"
+      })
     }
     
-    img.src = customQrImageUrl
+    setIsGenerating(false)
   }
 
+  const [qrPreviewData, setQrPreviewData] = useState<{[key: string]: string}>({})
+
+  // Generate QR code preview image
   const getQRCodeImage = (qrCode: any) => {
-    // Use the custom QR template image
-    return customQrImageUrl
+    const cacheKey = `${qrCode.type}-${qrCode.tableNumber || 'menu'}`;
+    
+    if (qrPreviewData[cacheKey]) {
+      return qrPreviewData[cacheKey];
+    }
+    
+    // Fetch preview data
+    fetch(`/api/qr-codes/generate?preview=true&restaurantSlug=demo-restaurant&tableNumber=${qrCode.tableNumber || ''}&size=small`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.dataUrl) {
+          setQrPreviewData(prev => ({
+            ...prev,
+            [cacheKey]: data.dataUrl
+          }));
+        }
+      })
+      .catch(console.error);
+    
+    // Return placeholder while loading
+    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwIDEwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUiIHk9IjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxLjIiIGZpbGw9IiM2YjcyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjQiPkxvYWRpbmc8L3RleHQ+PC9zdmc+';
   }
 
   const handleUpdateTableNumber = (qrId: string, newTableNumber: number) => {

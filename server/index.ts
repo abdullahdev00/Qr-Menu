@@ -33,8 +33,12 @@ async function startServer() {
       let handlerPath = `../admin/pages/api/${apiPath}/index.ts`;
       let dynamicId: string | null = null;
       
+      // Handle QR code generation routes
+      if (apiPath === 'qr-codes/generate') {
+        handlerPath = `../admin/pages/api/qr-codes/generate.ts`;
+      }
       // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, /payment-requests/uuid, /menu-items/uuid, /menu-categories/uuid, /orders/uuid
-      if (apiPath.match(/^(restaurants|subscription-plans|payment-requests|menu-items|menu-categories|orders)\/[a-f0-9-]+$/)) {
+      else if (apiPath.match(/^(restaurants|subscription-plans|payment-requests|menu-items|menu-categories|orders|qr-codes)\/[a-f0-9-]+$/)) {
         const parts = apiPath.split('/');
         const resource = parts[0];
         dynamicId = parts[1] || null;
@@ -67,6 +71,7 @@ async function startServer() {
         },
         json: (data: any) => res.json(data),
         end: (data?: any) => res.end(data),
+        send: (data: any) => res.send(data),
         setHeader: (name: string, value: string) => res.setHeader(name, value)
       };
       

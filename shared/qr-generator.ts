@@ -64,7 +64,7 @@ export class QRGenerator {
 
   // Generate URL for QR code
   generateMenuUrl(restaurantSlug: string, tableNumber: string): string {
-    return `${this.baseUrl}/menu/${restaurantSlug}/table/${tableNumber}`;
+    return `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : this.baseUrl}/${restaurantSlug}?table=${tableNumber}`;
   }
 
   // Main QR generation function
