@@ -515,9 +515,11 @@ export default function VendorDashboard() {
 
   // Calculate stats from real data
   const menuItemsCount = menuItemsData?.length || 0
-  const qrScansCount = restaurantData?.qrScansCount || 1234 // Default to sample data if not available
-  const popularItem = menuItemsData?.find(item => item.isPopular) || menuItemsData?.[0] || { name: 'Chicken Biryani' }
-  const subscriptionPlan = restaurantData?.subscriptionPlan || 'Pro Plan'
+  const qrScansCount = restaurantData?.qrScansCount || 0
+  const avgRating = restaurantData?.avgRating || "0.0"
+  const totalReviews = restaurantData?.totalReviews || 0
+  const popularItem = menuItemsData?.find(item => item.isPopular) || menuItemsData?.[0] || { name: 'No items yet' }
+  const subscriptionPlan = restaurantData?.planId ? 'Pro Plan' : 'Basic Plan' // Real subscription check
 
   if (!user) {
     return (
@@ -600,6 +602,23 @@ export default function VendorDashboard() {
           <p className="text-sm text-gray-600 dark:text-gray-300">Most Popular</p>
           <div className="mt-2 text-xs text-purple-600 dark:text-purple-400">
             {menuItemsCount > 0 ? 'Top performing item' : 'Add items to see stats'}
+          </div>
+        </div>
+
+        {/* Average Rating */}
+        <div className="bg-gradient-to-br from-white to-yellow-50/50 dark:from-gray-900 dark:to-yellow-950/30 rounded-xl p-6 border border-yellow-200/50 dark:border-yellow-800/30 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
+              <Star className="w-6 h-6 text-white fill-current" />
+            </div>
+            <span className="text-xs font-medium px-2 py-1 bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400 rounded-full">
+              RATING
+            </span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{parseFloat(avgRating).toFixed(1)}/5</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Average Rating</p>
+          <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+            <span>⭐ {totalReviews} reviews</span>
           </div>
         </div>
 

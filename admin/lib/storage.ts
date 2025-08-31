@@ -105,6 +105,9 @@ class Storage {
             address: "Main Gulberg, Lahore",
             city: "Lahore",
             status: "active",
+            qrScansCount: 2847,
+            avgRating: "4.7",
+            totalReviews: 156,
           },
           {
             name: "Karachi Biryani House",
@@ -116,6 +119,9 @@ class Storage {
             address: "Defence Phase 2, Karachi",
             city: "Karachi",
             status: "active",
+            qrScansCount: 1534,
+            avgRating: "4.3",
+            totalReviews: 89,
           }
         ]);
       }
@@ -244,6 +250,7 @@ class Storage {
               preparationTime: 25,
               calories: 420,
               isAvailable: true,
+              isPopular: true, // Mark Chicken Karahi as popular
               displayOrder: 1,
             },
             {
@@ -267,6 +274,7 @@ class Storage {
               preparationTime: 45,
               calories: 620,
               isAvailable: true,
+              isPopular: false, // Not as popular as Chicken Karahi
               displayOrder: 2,
             },
             {

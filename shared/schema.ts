@@ -25,6 +25,9 @@ export const restaurants = pgTable("restaurants", {
   planId: varchar("plan_id").references(() => subscriptionPlans.id),
   status: text("status").notNull().default("active"), // active, inactive, suspended
   notes: text("notes"),
+  qrScansCount: integer("qr_scans_count").notNull().default(0), // Track QR code scans
+  avgRating: decimal("avg_rating", { precision: 3, scale: 2 }).default("0.00"), // Average rating out of 5
+  totalReviews: integer("total_reviews").notNull().default(0), // Total number of reviews
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -109,6 +112,7 @@ export const menuItems = pgTable("menu_items", {
   preparationTime: integer("preparation_time"), // in minutes
   calories: integer("calories"),
   isAvailable: boolean("is_available").notNull().default(true),
+  isPopular: boolean("is_popular").notNull().default(false), // Track popular items
   displayOrder: integer("display_order").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
