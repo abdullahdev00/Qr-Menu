@@ -23,7 +23,6 @@ import TestButtonPage from '../pages/test-button';
 import MenuManagementPage from '../../vendor/pages/menu-management';
 import OrdersPage from '../../vendor/pages/orders';
 import VendorAnalyticsPage from '../../vendor/pages/analytics';
-import AdminOrdersPage from '../pages/orders';
 import VendorDashboardPage from '../../vendor/pages/dashboard';
 import VendorDesignPage from '../../vendor/pages/design';
 
@@ -93,7 +92,6 @@ function App() {
                     <Route path="/payments" component={PaymentsPage} />
                     <Route path="/menu-templates" component={MenuTemplatesPage} />
                     <Route path="/subscriptions" component={SubscriptionsPage} />
-                    <Route path="/orders" component={AdminOrdersPage} />
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
                     <Route path="/test-button" component={TestButtonPage} />
