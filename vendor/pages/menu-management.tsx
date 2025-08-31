@@ -1728,11 +1728,13 @@ export default function MenuManagement() {
   // MOVE ALL HOOKS TO TOP LEVEL - Fix for React Error #310
   // Load menu items from database with aggressive refetching
   const { data: menuItems = [], isLoading, refetch: refetchMenuItems } = useQuery({
-    queryKey: ['/api/menu-items'],
+    queryKey: ['/api/menu-items', user?.restaurantId],
     queryFn: async () => {
-      const response = await fetch('/api/menu-items');
+      if (!user?.restaurantId) return [];
+      const response = await fetch(`/api/menu-items?restaurantId=${user.restaurantId}`);
       return response.json();
     },
+    enabled: !!user?.restaurantId,
     staleTime: 0, // Always consider data stale
     refetchOnWindowFocus: true, // Refetch when user returns to tab
     refetchOnMount: true, // Always refetch on mount
@@ -1741,11 +1743,13 @@ export default function MenuManagement() {
 
   // Get categories for filtering - combining with database categories
   const { data: dbCategories = [], refetch: refetchCategories } = useQuery({
-    queryKey: ['/api/menu-categories'],
+    queryKey: ['/api/menu-categories', user?.restaurantId],
     queryFn: async (): Promise<MenuCategory[]> => {
-      const response = await fetch('/api/menu-categories');
+      if (!user?.restaurantId) return [];
+      const response = await fetch(`/api/menu-categories?restaurantId=${user.restaurantId}`);
       return response.json();
     },
+    enabled: !!user?.restaurantId,
     staleTime: 0, // Always fresh data
     refetchOnWindowFocus: true,
   });
