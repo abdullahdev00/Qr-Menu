@@ -1468,6 +1468,7 @@ class MenuApp {
         const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
         
         console.log('🔄 Loading order history...');
+        console.log('📋 Elements found - orderHistoryList:', !!orderHistoryList, 'orderHistoryEmpty:', !!orderHistoryEmpty);
         console.log('📋 Current orderHistory array:', this.orderHistory);
         console.log('📋 LocalStorage orderHistory:', localStorage.getItem('orderHistory'));
         
@@ -1503,6 +1504,7 @@ class MenuApp {
         }
         
         console.log('📊 Final orderHistory length:', this.orderHistory.length);
+        console.log('📊 Final orderHistory data:', this.orderHistory);
         
         if (this.orderHistory.length === 0) {
             console.log('📋 No orders found, showing empty state');
@@ -1512,12 +1514,21 @@ class MenuApp {
         }
         
         console.log('📋 Displaying orders:', this.orderHistory.length);
-        if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'none';
+        console.log('📋 First order structure:', this.orderHistory[0]);
+        if (orderHistoryEmpty) {
+            orderHistoryEmpty.style.display = 'none';
+            console.log('📋 Hidden empty state');
+        }
         if (orderHistoryList) {
             orderHistoryList.style.display = 'flex';
             orderHistoryList.style.flexDirection = 'column';
-            orderHistoryList.innerHTML = this.orderHistory.map(order => this.renderOrderHistoryCard(order)).join('');
-            console.log('✅ Order history UI updated');
+            const renderedHTML = this.orderHistory.map(order => this.renderOrderHistoryCard(order)).join('');
+            console.log('📋 Rendered HTML length:', renderedHTML.length);
+            console.log('📋 First 200 chars of HTML:', renderedHTML.substring(0, 200));
+            orderHistoryList.innerHTML = renderedHTML;
+            console.log('✅ Order history UI updated - HTML set to orderHistoryList');
+        } else {
+            console.error('❌ orderHistoryList element not found!');
         }
     }
 
