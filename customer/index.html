@@ -614,17 +614,46 @@
     <script>
         // Initialize application after all scripts are loaded
         document.addEventListener('DOMContentLoaded', function() {
-            try {
-                // Initialize components
-                window.menuApp = new MenuApp();
-                window.cart = new ShoppingCart();
-                window.auth = new AuthenticationManager();
-                window.filters = new FilterManager();
-                
-                console.log('✅ Customer website initialized successfully');
-            } catch (error) {
-                console.error('❌ Error initializing customer website:', error);
-            }
+            // Wait a bit for all scripts to fully load
+            setTimeout(() => {
+                try {
+                    console.log('🔄 Initializing customer website components...');
+                    
+                    // Initialize cart first as it's needed by menu app
+                    window.cart = new ShoppingCart();
+                    console.log('✅ Cart initialized');
+                    
+                    // Initialize menu app
+                    window.menuApp = new MenuApp();
+                    console.log('✅ Menu app initialized');
+                    
+                    // Initialize auth and filters
+                    window.auth = new AuthenticationManager();
+                    window.filters = new FilterManager();
+                    console.log('✅ Auth and filters initialized');
+                    
+                    // Debug cart button
+                    const cartButton = document.getElementById('cartToggle');
+                    if (cartButton) {
+                        console.log('✅ Cart button found:', cartButton);
+                        // Add direct event listener as backup
+                        cartButton.addEventListener('click', function() {
+                            console.log('🛒 Cart button clicked directly');
+                            if (window.cart && window.cart.toggle) {
+                                window.cart.toggle();
+                            } else {
+                                console.error('❌ Cart not available');
+                            }
+                        });
+                    } else {
+                        console.error('❌ Cart button not found');
+                    }
+                    
+                    console.log('✅ Customer website initialized successfully');
+                } catch (error) {
+                    console.error('❌ Error initializing customer website:', error);
+                }
+            }, 100);
         });
     </script>
 </body>

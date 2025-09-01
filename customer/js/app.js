@@ -1370,10 +1370,24 @@ class MenuApp {
         
         if (header) {
             header.setAttribute('data-theme', this.currentTheme);
+            // Apply theme-specific styles immediately
+            if (this.currentTheme === 'light') {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.borderBottom = '1px solid rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.background = 'rgba(10, 10, 10, 0.95)';
+                header.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+            }
         }
         if (categoryNav) {
             categoryNav.setAttribute('data-theme', this.currentTheme);
         }
+        
+        // Update all theme-dependent elements
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(el => {
+            el.setAttribute('data-theme', this.currentTheme);
+        });
         
         // Force reflow to apply theme changes immediately
         document.body.offsetHeight;

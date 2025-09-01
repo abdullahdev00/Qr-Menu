@@ -73,8 +73,29 @@
 
 /* Light mode header adjustments */
 [data-theme="light"] .header {
-    background: rgba(255, 255, 255, 0.95);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* Light mode category nav */
+[data-theme="light"] .category-nav {
+    background: var(--secondary-dark) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light mode header buttons */
+[data-theme="light"] .theme-toggle,
+[data-theme="light"] .search-toggle,
+[data-theme="light"] .cart-toggle,
+[data-theme="light"] .profile-toggle,
+[data-theme="light"] .order-history-toggle {
+    color: var(--text-primary) !important;
+}
+
+/* Light mode logo */
+[data-theme="light"] .logo h1 {
+    color: var(--accent-gold) !important;
 }
 
 /* Light mode mobile search bar */
@@ -148,6 +169,7 @@ html::-webkit-scrollbar {
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 1000;
+    transition: all 0.3s ease;
 }
 
 .header-container {
