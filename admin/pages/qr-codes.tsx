@@ -11,7 +11,7 @@ import { useToast } from '../hooks/use-toast';
 import { 
   QrCode, Download, Eye, Edit, Trash2, Plus, 
   Search, Filter, MoreHorizontal, Settings,
-  Scan, Link, Table as TableIcon, Menu
+  Scan, Link, Table as TableIcon, Menu, Store
 } from 'lucide-react';
 
 interface QrCodeData {
@@ -56,23 +56,26 @@ export default function QrCodesPage() {
     enabled: !!selectedRestaurant
   });
 
-  // Generate QR code mutation
-  const generateQrMutation = useMutation({
-    mutationFn: async (data: { restaurantSlug: string; tableNumber?: string; preview?: boolean }) => {
-      const response = await fetch('/api/qr-codes/generate', {
+  // Create QR code mutation
+  const createQrMutation = useMutation({
+    mutationFn: async (data: { restaurantId: string; tableNumber?: string; customization?: any; name?: string }) => {
+      const response = await fetch('/api/qr-codes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
+      if (!response.ok) {
+        throw new Error('Failed to create QR code');
+      }
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/qr-codes'] });
-      toast({ title: 'QR Code generated successfully!' });
+      queryClient.invalidateQueries({ queryKey: ['/api/qr-codes', selectedRestaurant] });
+      toast({ title: 'QR Code created successfully!' });
       setIsGenerateDialogOpen(false);
     },
-    onError: () => {
-      toast({ title: 'Failed to generate QR code', variant: 'destructive' });
+    onError: (error) => {
+      toast({ title: 'Failed to create QR code', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -84,11 +87,37 @@ export default function QrCodesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive })
       });
+      if (!response.ok) {
+        throw new Error('Failed to update QR code status');
+      }
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/qr-codes'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/qr-codes', selectedRestaurant] });
       toast({ title: 'QR Code status updated!' });
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to update status', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  // Delete QR code mutation
+  const deleteQrCodeMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/qr-codes/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete QR code');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/qr-codes', selectedRestaurant] });
+      toast({ title: 'QR Code deleted successfully!' });
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to delete QR code', description: error.message, variant: 'destructive' });
     }
   });
 
@@ -102,12 +131,26 @@ export default function QrCodesPage() {
   const selectedRestaurantData = restaurants?.restaurants?.find((r: Restaurant) => r.id === selectedRestaurant);
 
   const handleGenerateQrCode = async (formData: FormData) => {
-    if (!selectedRestaurantData) return;
+    if (!selectedRestaurant) {
+      toast({ title: 'Please select a restaurant first', variant: 'destructive' });
+      return;
+    }
     
     const tableNumber = formData.get('tableNumber') as string;
-    await generateQrMutation.mutateAsync({
-      restaurantSlug: selectedRestaurantData.slug,
-      tableNumber: tableNumber || undefined
+    const qrForeground = formData.get('qrForeground') as string;
+    const qrBackground = formData.get('qrBackground') as string;
+    const size = formData.get('size') as string;
+    
+    await createQrMutation.mutateAsync({
+      restaurantId: selectedRestaurant,
+      tableNumber: tableNumber || undefined,
+      customization: {
+        colors: {
+          qrForeground: qrForeground || '#000000',
+          qrBackground: qrBackground || '#ffffff'
+        },
+        size: size || 'medium'
+      }
     });
   };
 
@@ -362,8 +405,23 @@ export default function QrCodesPage() {
                                 isActive: !qrCode.isActive 
                               })}
                               data-testid={`button-toggle-${qrCode.id}`}
+                              title={qrCode.isActive ? 'Deactivate' : 'Activate'}
                             >
                               <Settings className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                if (confirm('Are you sure you want to delete this QR code?')) {
+                                  deleteQrCodeMutation.mutate(qrCode.id);
+                                }
+                              }}
+                              data-testid={`button-delete-${qrCode.id}`}
+                              title="Delete QR Code"
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-3 w-3" />
                             </Button>
                           </div>
                         </TableCell>

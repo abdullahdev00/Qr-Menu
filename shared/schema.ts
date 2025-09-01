@@ -364,8 +364,16 @@ export const insertQrCodeSchema = createInsertSchema(qrCodes).omit({
   lastScanned: true 
 });
 
+export const updateQrCodeSchema = createInsertSchema(qrCodes).omit({ 
+  id: true, 
+  restaurantId: true,
+  createdAt: true, 
+  lastScanned: true 
+}).partial();
+
 export type QrCode = typeof qrCodes.$inferSelect;
 export type InsertQrCode = z.infer<typeof insertQrCodeSchema>;
+export type UpdateQrCode = z.infer<typeof updateQrCodeSchema>;
 
 // Legacy user schema for compatibility
 export const users = pgTable("users", {

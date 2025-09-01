@@ -1,5 +1,5 @@
-import { db } from '../../lib/storage';
-import { qrCodes } from '../../../shared/schema';
+import { db } from '../../../server/db';
+import { qrCodes, updateQrCodeSchema } from '../../../shared/schema';
 import { eq } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
@@ -27,14 +27,10 @@ export default async function handler(req: any, res: any) {
     }
   } else if (req.method === 'PATCH') {
     try {
-      const { isActive, customDesign } = req.body;
-      
-      const updateData: any = {};
-      if (isActive !== undefined) updateData.isActive = isActive;
-      if (customDesign !== undefined) updateData.customDesign = customDesign;
+      const validatedData = updateQrCodeSchema.parse(req.body);
       
       const [updatedQrCode] = await db.update(qrCodes)
-        .set(updateData)
+        .set(validatedData)
         .where(eq(qrCodes.id, id))
         .returning();
       
@@ -44,7 +40,8 @@ export default async function handler(req: any, res: any) {
       
       res.status(200).json({
         success: true,
-        qrCode: updatedQrCode
+        qrCode: updatedQrCode,
+        message: 'QR code updated successfully'
       });
     } catch (error) {
       console.error('QR Code update error:', error);

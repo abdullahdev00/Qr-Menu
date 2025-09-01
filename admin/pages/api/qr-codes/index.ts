@@ -1,7 +1,6 @@
-import { db } from '../../lib/storage';
-import { restaurants, restaurantTables, qrCodes } from '../../../shared/schema';
+import { db } from '../../../server/db';
+import { restaurants, restaurantTables, qrCodes, insertQrCodeSchema } from '../../../shared/schema';
 import { eq, desc } from 'drizzle-orm';
-import { qrGenerator } from '../../shared/qr-generator';
 
 export default async function handler(req: any, res: any) {
   if (req.method === 'GET') {
@@ -35,7 +34,7 @@ export default async function handler(req: any, res: any) {
           name: 'Main Menu QR',
           type: 'menu',
           tableNumber: null,
-          url: qrGenerator.generateMenuUrl(restaurant.slug, ''),
+          url: `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurant.slug}`,
           scans: existingQrCodes.find((qr: any) => !qr.tableId)?.scansCount || 0,
           createdAt: existingQrCodes.find((qr: any) => !qr.tableId)?.createdAt?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
           isActive: existingQrCodes.find((qr: any) => !qr.tableId)?.isActive || true
@@ -48,7 +47,7 @@ export default async function handler(req: any, res: any) {
             name: `Table ${table.tableNumber} QR`,
             type: 'table',
             tableNumber: table.tableNumber,
-            url: qrGenerator.generateMenuUrl(restaurant.slug, table.tableNumber),
+            url: `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurant.slug}?table=${table.tableNumber}`,
             scans: existingQr?.scansCount || 0,
             createdAt: existingQr?.createdAt?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
             isActive: existingQr?.isActive !== undefined ? existingQr.isActive : table.isActive
@@ -67,7 +66,7 @@ export default async function handler(req: any, res: any) {
   } else if (req.method === 'POST') {
     // Create new QR code
     try {
-      const { restaurantId, tableId, customDesign } = req.body;
+      const { restaurantId, tableNumber, customization, name } = req.body;
       
       if (!restaurantId) {
         return res.status(400).json({ error: 'Restaurant ID is required' });
@@ -79,31 +78,46 @@ export default async function handler(req: any, res: any) {
         return res.status(404).json({ error: 'Restaurant not found' });
       }
       
-      // Get table data if tableId provided
-      let tableNumber = '';
-      if (tableId) {
-        const [table] = await db.select().from(restaurantTables).where(eq(restaurantTables.id, tableId));
-        if (table) {
-          tableNumber = table.tableNumber;
+      let tableId = null;
+      
+      // If table number is provided, find or create the table
+      if (tableNumber) {
+        const [existingTable] = await db.select().from(restaurantTables)
+          .where(eq(restaurantTables.restaurantId, restaurantId))
+          .where(eq(restaurantTables.tableNumber, tableNumber.toString()));
+        
+        if (existingTable) {
+          tableId = existingTable.id;
+        } else {
+          // Create new table if it doesn't exist
+          const [newTable] = await db.insert(restaurantTables).values({
+            restaurantId: restaurantId,
+            tableNumber: tableNumber.toString(),
+            capacity: 4, // Default capacity
+            isActive: true
+          }).returning();
+          tableId = newTable.id;
         }
       }
       
       // Generate menu URL
-      const menuUrl = qrGenerator.generateMenuUrl(restaurant.slug, tableNumber);
+      const menuUrl = `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurant.slug}${tableNumber ? `?table=${tableNumber}` : ''}`;
       
       // Create QR code record
       const [newQrCode] = await db.insert(qrCodes).values({
         restaurantId,
-        tableId: tableId || null,
+        tableId: tableId,
         qrCodeUrl: '', // Will be updated after generation
         menuUrl,
-        customDesign: customDesign || null,
-        isActive: true
+        customDesign: customization || null,
+        isActive: true,
+        scansCount: 0
       }).returning();
       
       res.status(201).json({
         success: true,
-        qrCode: newQrCode
+        qrCode: newQrCode,
+        message: 'QR code created successfully'
       });
     } catch (error) {
       console.error('QR Code creation error:', error);
