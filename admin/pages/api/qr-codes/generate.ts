@@ -92,24 +92,6 @@ export default async function handler(req: any, res: any) {
                   object-fit: contain;
                   image-rendering: crisp-edges;
                 }
-                .logo-overlay {
-                  position: absolute;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  background: white;
-                  width: 36px;
-                  height: 36px;
-                  border: 2px solid white;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                }
-                .logo-overlay span {
-                  color: #b08968;
-                  font-size: 24px;
-                  font-weight: bold;
-                }
                 .scan-text {
                   text-align: center;
                   margin-top: 24px;
@@ -173,9 +155,6 @@ export default async function handler(req: any, res: any) {
                 <div class="qr-code-container">
                   <div class="qr-code-box">
                     <img src="${qrDataUrl}" alt="QR Code" />
-                    <div class="logo-overlay">
-                      <span>IX</span>
-                    </div>
                   </div>
                 </div>
 

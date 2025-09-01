@@ -57,22 +57,6 @@ const CustomQRDesign = ({ qrCodeDataUrl, tableNumber, restaurantName = "MENU" }:
               style={{ imageRendering: 'crisp-edges' }}
             />
             
-            {/* Logo in center */}
-            <div 
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white flex items-center justify-center"
-              style={{
-                width: '36px',
-                height: '36px',
-                border: '2px solid white'
-              }}
-            >
-              <span 
-                className="text-2xl font-bold"
-                style={{ color: '#b08968' }}
-              >
-                IX
-              </span>
-            </div>
           </div>
         </div>
       </div>
