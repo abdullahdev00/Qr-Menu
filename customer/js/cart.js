@@ -5,6 +5,9 @@ class ShoppingCart {
         this.isOpen = false;
         this.taxRate = 0.08; // 8% tax rate
         
+        console.log('Cart initialized with items:', this.items);
+        console.log('Initial cart count:', this.items.length);
+        
         this.init();
     }
 
@@ -34,7 +37,20 @@ class ShoppingCart {
     }
 
     addItem(menuItem, size = 'medium', quantity = 1, customizations = {}) {
-        const price = menuItem.price[size] || menuItem.price.medium || menuItem.price.small || Object.values(menuItem.price)[0];
+        console.log('Adding item to cart:', menuItem);
+        console.log('Current cart items before add:', this.items);
+        
+        // Handle different price structures
+        let price;
+        if (typeof menuItem.price === 'object' && menuItem.price !== null) {
+            price = menuItem.price[size] || menuItem.price.medium || menuItem.price.small || Object.values(menuItem.price)[0];
+        } else {
+            price = menuItem.price;
+        }
+        
+        console.log('Item price structure:', menuItem.price);
+        console.log('Selected size:', size);
+        console.log('Calculated price:', price);
         
         const cartItem = {
             id: this.generateCartItemId(),
@@ -67,6 +83,9 @@ class ShoppingCart {
         this.saveCart();
         this.updateCartUI();
         this.updateCartCount();
+        
+        console.log('Item added successfully. Cart items after add:', this.items);
+        console.log('Cart count after add:', this.getItemCount());
         
         // Show success animation
         this.animateCartIcon();
@@ -280,7 +299,11 @@ class ShoppingCart {
     }
 
     checkout() {
+        console.log('Checkout called - Items in cart:', this.items);
+        console.log('Items length:', this.items.length);
+        
         if (this.items.length === 0) {
+            console.error('Cart appears empty but checkout was called');
             this.showToast('Your cart is empty');
             return;
         }
@@ -489,7 +512,12 @@ class ShoppingCart {
     }
 
     saveCart() {
+        console.log('Saving cart to localStorage:', this.items);
         localStorage.setItem('cart', JSON.stringify(this.items));
+        
+        // Verify save
+        const saved = JSON.parse(localStorage.getItem('cart') || '[]');
+        console.log('Verified saved cart:', saved);
     }
 
     generateCartItemId() {
