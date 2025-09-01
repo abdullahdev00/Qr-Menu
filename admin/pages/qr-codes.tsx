@@ -174,14 +174,46 @@ export default function QrCodesPage() {
     }
   };
 
-  const handleDownloadQrCode = (qrCode: QrCodeData) => {
+  const handleDownloadQrCode = async (qrCode: QrCodeData) => {
     if (!selectedRestaurantData) return;
     
-    const downloadUrl = `/api/qr-codes/generate?restaurantSlug=${selectedRestaurantData.slug}&tableNumber=${qrCode.tableNumber || ''}&size=large`;
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `qr_${selectedRestaurantData.slug}_${qrCode.tableNumber || 'menu'}.png`;
-    link.click();
+    try {
+      // Use your beautiful custom design for download
+      const response = await fetch('/api/qr-codes/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          restaurantSlug: selectedRestaurantData.slug,
+          tableNumber: qrCode.tableNumber,
+          useCustomDesign: true, // Use your beautiful design
+          size: 'large',
+          format: 'png'
+        })
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `qr_${selectedRestaurantData.slug}_table_${qrCode.tableNumber || 'menu'}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        toast({ title: 'QR Code downloaded successfully!' });
+      } else {
+        throw new Error('Failed to generate QR code');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({ 
+        title: 'Download failed', 
+        description: 'Failed to download QR code. Please try again.',
+        variant: 'destructive' 
+      });
+    }
   };
 
   return (

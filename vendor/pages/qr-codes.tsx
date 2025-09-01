@@ -96,24 +96,25 @@ export default function QRCodesPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          restaurantSlug: 'demo-restaurant', // Get from user context
+          restaurantSlug: restaurantSlug,
           tableNumber: qrCode.tableNumber,
+          useCustomDesign: true, // Use your beautiful design
           customization: {
             colors: {
-              primary: '#2563EB',
-              secondary: '#EFF6FF',
+              primary: '#b08968',
+              secondary: '#2a2a2a',
               qrForeground: '#000000',
               qrBackground: '#ffffff'
             },
             text: {
-              restaurantName: 'Restaurant Name', // Get from user restaurant
+              restaurantName: 'Restaurant Menu',
               tableNumber: qrCode.tableNumber ? `Table ${qrCode.tableNumber}` : '',
-              instructions: 'Scan for Menu',
+              instructions: 'Scan for Digital Menu',
               language: 'english'
             },
             template: {
-              id: 'classic_modern',
-              category: 'modern',
+              id: 'custom_beautiful_design',
+              category: 'premium',
               layout: {}
             }
           },
