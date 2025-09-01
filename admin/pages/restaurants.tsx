@@ -406,7 +406,7 @@ export default function RestaurantsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
