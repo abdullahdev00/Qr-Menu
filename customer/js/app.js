@@ -69,7 +69,7 @@ class MenuApp {
         if (orderHistoryToggle) orderHistoryToggle.addEventListener('click', this.toggleOrderHistory.bind(this));
         
         // Order history sidebar close events
-        const orderHistoryCloseBtn = document.getElementById('orderHistoryClose');
+        const orderHistoryCloseBtn = document.getElementById('orderHistorySidebarClose');
         const orderHistoryOverlayEl = document.getElementById('orderHistoryOverlay');
         if (orderHistoryCloseBtn) orderHistoryCloseBtn.addEventListener('click', this.closeOrderHistory.bind(this));
         if (orderHistoryOverlayEl) orderHistoryOverlayEl.addEventListener('click', this.closeOrderHistory.bind(this));
@@ -131,8 +131,8 @@ class MenuApp {
             layoutToggle.addEventListener('click', this.toggleLayout.bind(this));
         }
 
-        // Order history modal events
-        const orderHistoryCloseModal = document.getElementById('orderHistoryClose');
+        // Order history modal events (if modal exists)
+        const orderHistoryCloseModal = document.getElementById('orderHistoryModalClose');
         const orderHistoryOverlayModal = document.getElementById('orderHistoryOverlay');
         
         if (orderHistoryCloseModal) orderHistoryCloseModal.addEventListener('click', this.closeOrderHistory.bind(this));

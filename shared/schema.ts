@@ -82,6 +82,20 @@ export const menuTemplates = pgTable("menu_templates", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// QR Codes Management
+export const qrCodes = pgTable("qr_codes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  tableId: varchar("table_id").references(() => restaurantTables.id),
+  qrCodeUrl: text("qr_code_url").notNull(), // URL to the generated QR code image
+  menuUrl: text("menu_url").notNull(), // The URL that the QR code points to
+  scansCount: integer("scans_count").notNull().default(0),
+  customDesign: jsonb("custom_design"), // Custom styling for QR code
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastScanned: timestamp("last_scanned"),
+});
+
 
 // Restaurant Tables Management
 export const restaurantTables = pgTable("restaurant_tables", {
@@ -342,6 +356,16 @@ export type InsertCustomerAddress = z.infer<typeof insertCustomerAddressSchema>;
 export type UpdateCustomerAddress = z.infer<typeof updateCustomerAddressSchema>;
 export type OtpVerification = typeof otpVerifications.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
+
+// QR Code Schema and Types
+export const insertQrCodeSchema = createInsertSchema(qrCodes).omit({ 
+  id: true, 
+  createdAt: true, 
+  lastScanned: true 
+});
+
+export type QrCode = typeof qrCodes.$inferSelect;
+export type InsertQrCode = z.infer<typeof insertQrCodeSchema>;
 
 // Legacy user schema for compatibility
 export const users = pgTable("users", {
