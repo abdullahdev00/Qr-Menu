@@ -669,7 +669,7 @@ class ShoppingCart {
                 orderNumber: orderSummary.orderNumber,
                 items: orderSummary.items,
                 subtotal: orderSummary.subtotal,
-                tax: orderSummary.tax,
+                tax: orderSummary.tax || 0,
                 total: orderSummary.total,
                 tableNumber: orderSummary.tableNumber,
                 restaurantId: orderSummary.restaurantId,
@@ -678,15 +678,27 @@ class ShoppingCart {
                 createdAt: new Date().toISOString()
             };
             
-            // Add to MenuApp order history if available
+            console.log('💾 Saving order to history:', order);
+            
+            // Always save to both MenuApp and localStorage for consistency
             if (window.menuApp && window.menuApp.addToOrderHistory) {
+                console.log('✅ Adding order to MenuApp history');
                 window.menuApp.addToOrderHistory(order);
             } else {
+                console.warn('⚠️ MenuApp not available, using localStorage fallback');
                 // Fallback to localStorage
                 const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
                 orders.unshift(order);
                 localStorage.setItem('orderHistory', JSON.stringify(orders));
+                
+                // Also update the icon manually if MenuApp isn't available
+                const orderHistoryToggle = document.getElementById('orderHistoryToggle');
+                if (orderHistoryToggle) {
+                    orderHistoryToggle.style.display = 'flex';
+                }
             }
+            
+            console.log('✅ Order saved to history successfully');
         } catch (error) {
             console.error('Error saving order to history:', error);
         }
