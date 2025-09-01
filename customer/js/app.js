@@ -1395,22 +1395,36 @@ class MenuApp {
 
     // Order History Management Methods
     toggleOrderHistory() {
+        console.log('🔄 Toggle order history clicked');
         const sidebar = document.getElementById('orderHistorySidebar');
+        console.log('📋 Sidebar element found:', !!sidebar);
+        
         if (sidebar) {
+            console.log('📋 Sidebar current classes:', sidebar.className);
             if (sidebar.classList.contains('active')) {
+                console.log('📋 Closing order history');
                 this.closeOrderHistory();
             } else {
+                console.log('📋 Opening order history');
                 this.openOrderHistory();
             }
+        } else {
+            console.error('❌ Order history sidebar element not found!');
         }
     }
 
     openOrderHistory() {
+        console.log('🔽 Opening order history sidebar');
         const sidebar = document.getElementById('orderHistorySidebar');
         if (sidebar) {
+            console.log('📋 Adding active class to sidebar');
             sidebar.classList.add('active');
             document.body.style.overflow = 'hidden';
+            console.log('📋 Loading order history data');
             this.loadOrderHistory();
+            console.log('✅ Order history sidebar opened');
+        } else {
+            console.error('❌ Sidebar element not found in openOrderHistory');
         }
     }
 
