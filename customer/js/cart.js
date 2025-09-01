@@ -342,6 +342,10 @@ class ShoppingCart {
     }
 
     showCheckoutModal(orderSummary) {
+        // Remove any existing checkout modals first
+        const existingModals = document.querySelectorAll('.checkout-modal');
+        existingModals.forEach(modal => modal.remove());
+        
         const modal = document.createElement('div');
         modal.className = 'checkout-modal';
         modal.innerHTML = `
