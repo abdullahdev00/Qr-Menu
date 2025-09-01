@@ -193,6 +193,12 @@ class MenuApp {
     showTableIndicator() {
         const header = document.querySelector('.header-container');
         if (header && this.tableNumber) {
+            // Check if table indicator already exists
+            const existingIndicator = header.querySelector('.table-indicator');
+            if (existingIndicator) {
+                return; // Don't create duplicate
+            }
+            
             const tableIndicator = document.createElement('div');
             tableIndicator.className = 'table-indicator';
             tableIndicator.innerHTML = `<i class="fas fa-table"></i> Table ${this.tableNumber}`;
@@ -907,8 +913,10 @@ class MenuApp {
     }
 
     toggleCart() {
-        if (window.cart) {
+        if (window.cart && window.cart.toggle) {
             window.cart.toggle();
+        } else {
+            console.error('Cart not initialized properly');
         }
     }
 
@@ -1325,16 +1333,22 @@ class MenuApp {
         // Save to localStorage
         localStorage.setItem('theme', this.currentTheme);
         
-        // Apply theme to document
+        // Apply theme to document immediately and completely
         document.documentElement.setAttribute('data-theme', this.currentTheme);
+        document.body.setAttribute('data-theme', this.currentTheme);
         
         // Update theme icon
         this.updateThemeIcon();
+        
+        // Force update all theme-dependent elements
+        this.updateHeaderTheme();
         
         // Add smooth transition effect
         document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
         setTimeout(() => {
             document.body.style.transition = '';
+            // Ensure complete theme update
+            this.updateHeaderTheme();
         }, 300);
     }
 
@@ -1347,6 +1361,22 @@ class MenuApp {
                 themeIcon.className = 'fas fa-moon'; // Show moon icon in light mode (to switch to dark)
             }
         }
+    }
+
+    updateHeaderTheme() {
+        // Force update header and navigation elements
+        const header = document.getElementById('header');
+        const categoryNav = document.getElementById('categoryNav');
+        
+        if (header) {
+            header.setAttribute('data-theme', this.currentTheme);
+        }
+        if (categoryNav) {
+            categoryNav.setAttribute('data-theme', this.currentTheme);
+        }
+        
+        // Force reflow to apply theme changes immediately
+        document.body.offsetHeight;
     }
 
     // Order History Management Methods
