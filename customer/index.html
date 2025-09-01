@@ -572,6 +572,31 @@
         </div>
     </div>
 
+    <!-- Order History Sidebar -->
+    <div class="order-history-sidebar" id="orderHistorySidebar">
+        <div class="order-history-overlay" id="orderHistoryOverlay"></div>
+        <div class="order-history-content">
+            <div class="order-history-header">
+                <h3>Order History</h3>
+                <button class="order-history-close" id="orderHistoryClose" data-testid="button-order-history-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="order-history-body" id="orderHistoryBody">
+                <div class="order-history-empty" id="orderHistoryEmpty">
+                    <i class="fas fa-receipt"></i>
+                    <p>No orders yet</p>
+                    <small>Your order history will appear here</small>
+                </div>
+                
+                <div class="order-history-list" id="orderHistoryList">
+                    <!-- Order history items will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">

@@ -381,6 +381,9 @@ class ShoppingCart {
 
     async confirmOrder(orderSummary) {
         try {
+            // Get customer ID for order tracking
+            const customerId = this.menuApp.getCustomerIdFromStorage();
+            
             // Send order to server with table information
             const orderData = {
                 items: orderSummary.items.map(item => ({
@@ -395,6 +398,7 @@ class ShoppingCart {
                 total: orderSummary.total,
                 tableNumber: orderSummary.tableNumber,
                 restaurantId: orderSummary.restaurantId,
+                customerId: customerId,
                 estimatedTime: orderSummary.estimatedTime,
                 orderNumber: orderSummary.orderNumber,
                 status: 'pending',
@@ -405,6 +409,7 @@ class ShoppingCart {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'customer-id': customerId
                 },
                 body: JSON.stringify(orderData)
             });

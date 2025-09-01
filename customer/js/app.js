@@ -68,7 +68,7 @@ class MenuApp {
         const orderHistoryToggle = document.getElementById('orderHistoryToggle');
         if (orderHistoryToggle) orderHistoryToggle.addEventListener('click', this.toggleOrderHistory.bind(this));
         
-        // Order history close events
+        // Order history sidebar close events
         const orderHistoryCloseBtn = document.getElementById('orderHistoryClose');
         const orderHistoryOverlayEl = document.getElementById('orderHistoryOverlay');
         if (orderHistoryCloseBtn) orderHistoryCloseBtn.addEventListener('click', this.closeOrderHistory.bind(this));
@@ -1395,19 +1395,30 @@ class MenuApp {
 
     // Order History Management Methods
     toggleOrderHistory() {
-        const modal = document.getElementById('orderHistoryModal');
-        if (modal) {
-            modal.classList.toggle('active');
-            if (modal.classList.contains('active')) {
-                this.loadOrderHistory();
+        const sidebar = document.getElementById('orderHistorySidebar');
+        if (sidebar) {
+            if (sidebar.classList.contains('active')) {
+                this.closeOrderHistory();
+            } else {
+                this.openOrderHistory();
             }
         }
     }
 
+    openOrderHistory() {
+        const sidebar = document.getElementById('orderHistorySidebar');
+        if (sidebar) {
+            sidebar.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            this.loadOrderHistory();
+        }
+    }
+
     closeOrderHistory() {
-        const modal = document.getElementById('orderHistoryModal');
-        if (modal) {
-            modal.classList.remove('active');
+        const sidebar = document.getElementById('orderHistorySidebar');
+        if (sidebar) {
+            sidebar.classList.remove('active');
+            document.body.style.overflow = '';
         }
     }
 
@@ -1442,8 +1453,26 @@ class MenuApp {
         const orderHistoryList = document.getElementById('orderHistoryList');
         const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
         
+        try {
+            // Fetch orders from API
+            const customerId = this.getCustomerIdFromStorage();
+            if (customerId) {
+                const response = await fetch(`/api/customer/orders?customerId=${customerId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.orders) {
+                        this.orderHistory = data.orders;
+                        localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching order history:', error);
+            // Fallback to localStorage
+        }
+        
         if (this.orderHistory.length === 0) {
-            if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'block';
+            if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'flex';
             if (orderHistoryList) orderHistoryList.style.display = 'none';
             return;
         }
@@ -1451,37 +1480,46 @@ class MenuApp {
         if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'none';
         if (orderHistoryList) {
             orderHistoryList.style.display = 'flex';
-            orderHistoryList.innerHTML = this.orderHistory.map(order => this.renderOrderItem(order)).join('');
+            orderHistoryList.style.flexDirection = 'column';
+            orderHistoryList.innerHTML = this.orderHistory.map(order => this.renderOrderHistoryCard(order)).join('');
         }
     }
 
-    renderOrderItem(order) {
+    renderOrderHistoryCard(order) {
         const statusClass = order.status.toLowerCase();
         const statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
         const orderDate = new Date(order.createdAt).toLocaleDateString();
+        const orderTime = new Date(order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         const itemsCount = order.items.length;
-        const firstItems = order.items.slice(0, 2).map(item => item.name).join(', ');
+        const firstItems = order.items.slice(0, 2).map(item => `${item.name} x${item.quantity}`).join(', ');
         const moreItems = itemsCount > 2 ? ` +${itemsCount - 2} more` : '';
         
         return `
-            <div class="order-item" data-order-id="${order.id}">
+            <div class="order-history-item" data-order-id="${order.id}" data-testid="order-card-${order.id}">
                 <div class="order-header">
-                    <span class="order-id">Order #${order.id.slice(-6)}</span>
-                    <span class="order-status ${statusClass}">${statusText}</span>
+                    <h4>Order #${order.orderNumber || order.id.slice(-6)}</h4>
+                    <div class="order-date">${orderDate} ${orderTime}</div>
                 </div>
+                <div class="order-status ${statusClass}">${statusText}</div>
                 <div class="order-details">
-                    <span>${orderDate}</span>
-                    <span class="order-total">₨${order.total}</span>
+                    ${order.tableNumber ? `<p><i class="fas fa-table"></i> Table ${order.tableNumber}</p>` : ''}
+                    <p><i class="fas fa-clock"></i> ${order.estimatedTime} min</p>
+                    <p><i class="fas fa-utensils"></i> ${itemsCount} items</p>
                 </div>
                 <div class="order-items-summary">
-                    ${firstItems}${moreItems}
+                    ${order.items.slice(0, 2).map(item => `
+                        <span class="item-name">${item.name} x${item.quantity}</span>
+                    `).join('')}
+                    ${order.items.length > 2 ? `<span class="more-items">+${order.items.length - 2} more items</span>` : ''}
                 </div>
-                <div class="order-actions">
-                    ${['pending', 'confirmed', 'preparing', 'ready'].includes(order.status) ? 
-                        '<button class="order-track-btn">Track Order</button>' : 
-                        '<button class="order-reorder-btn">Reorder</button>'
-                    }
-                </div>
+                <div class="order-total">₨${order.total.toFixed(0)}</div>
+                ${['pending', 'preparing', 'ready'].includes(order.status) ? 
+                    `<div class="order-actions">
+                        <button class="order-refresh-btn" onclick="window.menuApp.refreshOrderStatus('${order.id}')" data-testid="button-refresh-order-${order.id}">
+                            <i class="fas fa-sync"></i> Refresh Status
+                        </button>
+                    </div>` : ''
+                }
             </div>
         `;
     }
@@ -1570,9 +1608,29 @@ class MenuApp {
         switch (data.type) {
             case 'order-status-update':
                 this.updateOrderStatus(data.data.orderId, data.data.status);
+                // Refresh order history display if sidebar is open
+                const sidebar = document.getElementById('orderHistorySidebar');
+                if (sidebar && sidebar.classList.contains('active')) {
+                    this.loadOrderHistory();
+                }
                 break;
             default:
                 console.log('Unknown WebSocket message type:', data.type);
+        }
+    }
+
+    async refreshOrderStatus(orderId) {
+        try {
+            const response = await fetch(`/api/customer/orders/${orderId}/status`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    this.updateOrderStatus(orderId, data.status);
+                    this.loadOrderHistory(); // Refresh the display
+                }
+            }
+        } catch (error) {
+            console.error('Error refreshing order status:', error);
         }
     }
 
