@@ -1,6 +1,6 @@
-import { db } from '../../../admin/lib/storage';
-import { restaurants, restaurantTables, qrCodes, insertQrCodeSchema } from '../../../shared/schema';
-import { eq, desc } from 'drizzle-orm';
+import { db } from '../../../../server/db';
+import { restaurants, restaurantTables, qrCodes, insertQrCodeSchema } from '../../../../shared/schema';
+import { eq, desc, and } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
   if (req.method === 'GET') {
@@ -83,8 +83,10 @@ export default async function handler(req: any, res: any) {
       // If table number is provided, find or create the table
       if (tableNumber) {
         const [existingTable] = await db.select().from(restaurantTables)
-          .where(eq(restaurantTables.restaurantId, restaurantId))
-          .where(eq(restaurantTables.tableNumber, tableNumber.toString()));
+          .where(and(
+            eq(restaurantTables.restaurantId, restaurantId),
+            eq(restaurantTables.tableNumber, tableNumber.toString())
+          ));
         
         if (existingTable) {
           tableId = existingTable.id;
