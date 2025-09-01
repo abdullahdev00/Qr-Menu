@@ -1,0 +1,59 @@
+QR Scan detected - Table: 1, Restaurant: al-baik-restaurant
+cart.js:8 Cart initialized with items: (2) [{…}, {…}]0: {id: 'cart_1756720167984_6bj552poh', menuItemId: 'b1cd302f-43fc-444e-bde0-476ed6cb9b5b', name: 'Gulab Jamun', image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop', price: 375, …}1: {id: 'cart_1756720169216_wn894spsz', menuItemId: '23d63676-1266-49d3-b3fb-fe97de35da46', name: 'Beef Biryani', image: 'https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop', price: 1187.5, …}length: 2[[Prototype]]: Array(0)
+cart.js:9 Initial cart count: 2
+al-baik-restaurant?table=1:645 🔄 Initializing customer website components...
+cart.js:8 Cart initialized with items: (2) [{…}, {…}]0: {id: 'cart_1756720167984_6bj552poh', menuItemId: 'b1cd302f-43fc-444e-bde0-476ed6cb9b5b', name: 'Gulab Jamun', image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop', price: 375, …}1: {id: 'cart_1756720169216_wn894spsz', menuItemId: '23d63676-1266-49d3-b3fb-fe97de35da46', name: 'Beef Biryani', image: 'https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop', price: 1187.5, …}length: 2[[Prototype]]: Array(0)
+cart.js:9 Initial cart count: 2
+al-baik-restaurant?table=1:649 ✅ Cart initialized
+app.js:189 QR Scan detected - Table: 1, Restaurant: al-baik-restaurant
+al-baik-restaurant?table=1:653 ✅ Menu app initialized
+al-baik-restaurant?table=1:658 ✅ Auth and filters initialized
+al-baik-restaurant?table=1:663 ✅ Cart button found: <button class=​"cart-toggle" id=​"cartToggle" data-testid=​"button-cart-toggle" aria-label=​"View cart">​…​</button>​flex
+al-baik-restaurant?table=1:680 ✅ Order history button found: <button class=​"order-history-toggle" id=​"orderHistoryToggle" data-testid=​"button-order-history-toggle" aria-label=​"Order history" style=​"display:​ none;​">​…​</button>​<i class=​"fas fa-receipt">​</i>​<span class=​"order-notification" id=​"orderNotification" data-testid=​"text-order-notification" style=​"display:​ none;​">​</span>​</button>​
+al-baik-restaurant?table=1:694 ✅ Customer website initialized successfully
+2app.js:1618 🔌 Connected to WebSocket server
+al-baik-restaurant?table=1:666 🛒 Cart button clicked directly
+cart.js:311 Checkout called - Items in cart: (2) [{…}, {…}]
+cart.js:312 Items length: 2
+cart.js:336 Checkout initiated: {items: Array(2), subtotal: 1562.5, total: 1562.5, estimatedTime: 45, orderNumber: 'ORD258535', …}
+cart.js:337 Restaurant ID from MenuApp: al-baik-restaurant
+cart.js:338 Table Number: 1
+cart.js:311 Checkout called - Items in cart: (2) [{…}, {…}]
+cart.js:312 Items length: 2
+cart.js:336 Checkout initiated: {items: Array(2), subtotal: 1562.5, total: 1562.5, estimatedTime: 45, orderNumber: 'ORD258536', …}
+cart.js:337 Restaurant ID from MenuApp: al-baik-restaurant
+cart.js:338 Table Number: 1
+cart.js:446  POST https://a672dc61-9c25-4f35-88d9-16aa6f76d1eb-00-2jndfzwv238wl.pike.replit.dev/api/customer/orders 404 (Not Found)
+confirmOrder @ cart.js:446
+(anonymous) @ cart.js:406Understand this error
+cart.js:474 Order placement failed: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /api/customer/orders</pre>
+</body>
+</html>
+
+overrideMethod @ hook.js:608
+confirmOrder @ cart.js:474
+await in confirmOrder
+(anonymous) @ cart.js:406Understand this error
+cart.js:478 Error confirming order: Error: Failed to place order: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /api/customer/orders</pre>
+</body>
+</html>
+
+    at ShoppingCart.confirmOrder (cart.js:475:23)
+overrideMethod @ hook.js:608
+confirmOrder @ cart.js:478
+await in confirmOrder
+(anonymous) @ cart.js:406Understand this error

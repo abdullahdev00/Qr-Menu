@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { db } from '../../lib/storage';
+import { db } from '../../../lib/storage';
 import { restaurants, orders, orderItems, menuItems } from '@shared/schema';
 import { eq, and, desc } from 'drizzle-orm';
 
