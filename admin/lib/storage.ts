@@ -28,7 +28,10 @@ import {
   type OrderItem, type InsertOrderItem
 } from "../../shared/schema";
 
-const sql = postgres(process.env.DATABASE_URL!);
+const sql = postgres(process.env.DATABASE_URL!, {
+  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
+  max: 1,
+});
 const db = drizzle(sql);
 
 // Export db for direct database queries
