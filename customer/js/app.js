@@ -1152,10 +1152,20 @@ class MenuApp {
 
     handleScroll() {
         const header = document.getElementById('header');
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        
         if (window.scrollY > 100) {
-            header.style.background = 'rgba(10, 10, 10, 0.98)';
+            if (currentTheme === 'light') {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                header.style.background = 'rgba(10, 10, 10, 0.98)';
+            }
         } else {
-            header.style.background = 'rgba(10, 10, 10, 0.95)';
+            if (currentTheme === 'light') {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+            } else {
+                header.style.background = 'rgba(10, 10, 10, 0.95)';
+            }
         }
     }
 
