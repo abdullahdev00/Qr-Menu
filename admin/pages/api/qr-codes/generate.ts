@@ -1,5 +1,8 @@
 import QRCode from 'qrcode';
 import puppeteer from 'puppeteer';
+import { db } from '../../lib/storage';
+import { restaurants } from '../../../shared/schema';
+import { eq } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
   if (req.method === 'POST' || req.method === 'GET') {
@@ -10,6 +13,12 @@ export default async function handler(req: any, res: any) {
       
       if (!restaurantSlug) {
         return res.status(400).json({ error: 'Restaurant slug is required' });
+      }
+
+      // Get restaurant data from database
+      const [restaurant] = await db.select().from(restaurants).where(eq(restaurants.slug, restaurantSlug));
+      if (!restaurant) {
+        return res.status(404).json({ error: 'Restaurant not found' });
       }
       
       // Generate the menu URL
@@ -158,7 +167,7 @@ export default async function handler(req: any, res: any) {
                 <div class="inner-border"></div>
                 
                 <div class="menu-title">
-                  <h1>MENU</h1>
+                  <h1>${restaurant.name.toUpperCase()}</h1>
                 </div>
 
                 <div class="qr-code-container">
