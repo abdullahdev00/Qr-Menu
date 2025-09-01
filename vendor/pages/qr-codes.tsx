@@ -43,39 +43,38 @@ export default function QRCodesPage() {
   
   const restaurantSlug = getRestaurantSlug();
 
-  // QR codes data with table numbers
-  const [qrCodes, setQrCodes] = useState([
-    {
-      id: '1',
-      name: 'Main Menu QR',
-      type: 'menu',
-      tableNumber: null,
-      url: `${window.location.origin}/${restaurantSlug}`,
-      scans: 245,
-      createdAt: '2024-08-29',
-      isActive: true
+  // Fetch QR codes from API
+  const { data: qrCodesData, isLoading, refetch } = useQuery({
+    queryKey: ['qr-codes', restaurantSlug],
+    queryFn: async () => {
+      // First get restaurant ID by slug
+      const restaurantsResponse = await fetch('/api/restaurants');
+      const restaurantsData = await restaurantsResponse.json();
+      
+      if (!restaurantsData.success) {
+        throw new Error('Failed to fetch restaurants');
+      }
+      
+      const restaurant = restaurantsData.restaurants.find((r: any) => r.slug === restaurantSlug);
+      if (!restaurant) {
+        throw new Error('Restaurant not found');
+      }
+      
+      // Then fetch QR codes for this restaurant
+      const qrResponse = await fetch(`/api/qr-codes?restaurantId=${restaurant.id}`);
+      const qrData = await qrResponse.json();
+      
+      if (!qrData.success) {
+        throw new Error('Failed to fetch QR codes');
+      }
+      
+      return qrData.qrCodes;
     },
-    {
-      id: '2', 
-      name: 'Table 1 QR',
-      type: 'table',
-      tableNumber: 1,
-      url: `${window.location.origin}/${restaurantSlug}?table=1`,
-      scans: 67,
-      createdAt: '2024-08-29',
-      isActive: true
-    },
-    {
-      id: '3',
-      name: 'Table 2 QR', 
-      type: 'table',
-      tableNumber: 2,
-      url: `${window.location.origin}/${restaurantSlug}?table=2`,
-      scans: 43,
-      createdAt: '2024-08-29',
-      isActive: true
-    }
-  ])
+    enabled: !!restaurantSlug,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const qrCodes = qrCodesData || [];
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard.writeText(url)
@@ -181,29 +180,56 @@ export default function QRCodesPage() {
     return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwIDEwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUiIHk9IjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxLjIiIGZpbGw9IiM2YjcyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjQiPkxvYWRpbmc8L3RleHQ+PC9zdmc+';
   }
 
-  const handleUpdateTableNumber = (qrId: string, newTableNumber: number) => {
-    setQrCodes(prevCodes => 
-      prevCodes.map(qr => 
-        qr.id === qrId 
-          ? { 
-              ...qr, 
-              tableNumber: newTableNumber,
-              name: `Table ${newTableNumber} QR`,
-              url: `${window.location.origin}/${restaurantSlug}?table=${newTableNumber}`
-            }
-          : qr
-      )
-    )
-    setEditingTable(null)
-    toast({
-      title: "Table Number Updated!",
-      description: `QR code updated for Table ${newTableNumber}`,
-    })
+  const handleUpdateTableNumber = async (qrId: string, newTableNumber: number) => {
+    try {
+      const response = await fetch(`/api/qr-codes/${qrId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tableNumber: newTableNumber,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        refetch(); // Refresh the QR codes list
+        setEditingTable(null);
+        toast({
+          title: "Table Number Updated!",
+          description: `QR code updated for Table ${newTableNumber}`,
+        });
+      } else {
+        throw new Error(data.error || 'Failed to update table number');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update table number. Please try again.",
+        variant: "destructive"
+      });
+    }
   }
 
   const startEditingTable = (qrCode: any) => {
     setEditingTable(qrCode.id)
     setEditTableNumber(qrCode.tableNumber?.toString() || '')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading QR codes...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -322,7 +348,7 @@ export default function QRCodesPage() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{qrCodes.reduce((acc, qr) => acc + qr.scans, 0)}</div>
+            <div className="text-2xl font-bold">{qrCodes.reduce((acc: number, qr: any) => acc + qr.scans, 0)}</div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
         </Card>
@@ -331,11 +357,11 @@ export default function QRCodesPage() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Most Popular</CardTitle>
             <Badge variant="secondary" className="bg-green-100 text-green-800">
-              {qrCodes.reduce((max, qr) => qr.scans > max.scans ? qr : max, qrCodes[0])?.name}
+              {qrCodes.reduce((max: any, qr: any) => qr.scans > max.scans ? qr : max, qrCodes[0])?.name}
             </Badge>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Math.max(...qrCodes.map(qr => qr.scans))}</div>
+            <div className="text-2xl font-bold">{Math.max(...qrCodes.map((qr: any) => qr.scans))}</div>
             <p className="text-xs text-muted-foreground">scans</p>
           </CardContent>
         </Card>
@@ -354,7 +380,7 @@ export default function QRCodesPage() {
 
       {/* QR Codes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {qrCodes.map((qrCode) => (
+        {qrCodes.map((qrCode: any) => (
           <Card key={qrCode.id} className="overflow-hidden">
             <CardHeader>
               <div className="flex items-center justify-between">
