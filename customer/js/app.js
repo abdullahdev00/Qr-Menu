@@ -37,6 +37,9 @@ class MenuApp {
         this.websocket = null;
         this.customerId = this.getCustomerIdFromStorage();
         
+        // Initialize bound event handlers
+        this._boundToggleHandler = null;
+        
         this.init();
     }
 
@@ -1445,11 +1448,15 @@ class MenuApp {
                 orderHistoryToggle.style.display = 'flex';
                 
                 // Remove existing event listeners to avoid duplicates
-                orderHistoryToggle.removeEventListener('click', this.toggleOrderHistory);
+                const boundToggleHandler = this.toggleOrderHistory.bind(this);
+                orderHistoryToggle.removeEventListener('click', this._boundToggleHandler);
                 
-                // Add fresh event listener
-                orderHistoryToggle.addEventListener('click', this.toggleOrderHistory.bind(this));
-                console.log('✅ Order history button event listener added');
+                // Store bound handler for future removal
+                this._boundToggleHandler = boundToggleHandler;
+                
+                // Add fresh event listener with proper binding
+                orderHistoryToggle.addEventListener('click', boundToggleHandler);
+                console.log('✅ Order history button event listener added with proper binding');
             }
             
             // Show notification if there are active orders

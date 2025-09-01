@@ -466,6 +466,14 @@ class ShoppingCart {
                 this.clearCart();
                 this.close();
                 
+                // Force update order history icon and event listeners after order placement
+                setTimeout(() => {
+                    if (window.menuApp && window.menuApp.updateOrderHistoryIcon) {
+                        window.menuApp.updateOrderHistoryIcon();
+                        console.log('🔄 Forced order history icon update after order placement');
+                    }
+                }, 500);
+                
                 // Show order tracking notification
                 setTimeout(() => {
                     this.showOrderTrackingNotification(orderSummary.orderNumber);
