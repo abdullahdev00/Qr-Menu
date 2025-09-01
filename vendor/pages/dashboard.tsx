@@ -538,7 +538,7 @@ export default function VendorDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Welcome back, {user.name}! 👋
+              <span className="hidden md:inline">Welcome back, </span>{user.name}! 👋
             </h1>
             <p className="text-gray-600 dark:text-gray-300 mt-1">
               {user.restaurantName} • Restaurant Dashboard
