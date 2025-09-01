@@ -1479,12 +1479,24 @@ class MenuApp {
         console.log('📋 Current orderHistory array:', this.orderHistory);
         console.log('📋 LocalStorage orderHistory:', localStorage.getItem('orderHistory'));
         
+        // Debug: Check all localStorage keys related to orders
+        console.log('🔍 Debug - All localStorage order keys:');
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.includes('order')) {
+                console.log(`  ${key}: ${localStorage.getItem(key)}`);
+            }
+        }
+        
         // Always load from localStorage first (most reliable)
         try {
             const storedHistory = localStorage.getItem('orderHistory');
             if (storedHistory) {
                 this.orderHistory = JSON.parse(storedHistory);
                 console.log('✅ Loaded order history from localStorage:', this.orderHistory);
+            } else {
+                console.log('📋 No orderHistory in localStorage');
+                this.orderHistory = [];
             }
         } catch (error) {
             console.error('Error loading from localStorage:', error);
@@ -1499,14 +1511,36 @@ class MenuApp {
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.orders && data.orders.length > 0) {
-                        this.orderHistory = data.orders;
+                        // Merge API data with localStorage data instead of overriding
+                        const localStorageOrders = this.orderHistory;
+                        const apiOrders = data.orders;
+                        
+                        // Combine and deduplicate orders based on order ID
+                        const allOrders = [...localStorageOrders];
+                        apiOrders.forEach(apiOrder => {
+                            const existsInLocal = allOrders.find(localOrder => 
+                                localOrder.id === apiOrder.id || localOrder.orderNumber === apiOrder.orderNumber
+                            );
+                            if (!existsInLocal) {
+                                allOrders.unshift(apiOrder);
+                            }
+                        });
+                        
+                        this.orderHistory = allOrders;
                         localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
-                        console.log('✅ Updated order history from API:', this.orderHistory);
+                        console.log('✅ Merged order history from API and localStorage:', this.orderHistory);
+                    } else {
+                        console.log('📋 No orders from API, keeping localStorage data');
                     }
+                } else {
+                    console.log('📋 API request failed, keeping localStorage data');
                 }
+            } else {
+                console.log('📋 No customer ID, keeping localStorage data');
             }
         } catch (error) {
             console.error('Error fetching from API:', error);
+            console.log('📋 API error, keeping localStorage data');
             // Continue with localStorage data
         }
         
@@ -1529,11 +1563,22 @@ class MenuApp {
         if (orderHistoryList) {
             orderHistoryList.style.display = 'flex';
             orderHistoryList.style.flexDirection = 'column';
+            orderHistoryList.style.gap = 'var(--spacing-md)';
             const renderedHTML = this.orderHistory.map(order => this.renderOrderHistoryCard(order)).join('');
             console.log('📋 Rendered HTML length:', renderedHTML.length);
             console.log('📋 First 200 chars of HTML:', renderedHTML.substring(0, 200));
             orderHistoryList.innerHTML = renderedHTML;
             console.log('✅ Order history UI updated - HTML set to orderHistoryList');
+            
+            // Force a reflow to ensure styles are applied
+            orderHistoryList.offsetHeight;
+            
+            // Additional debug - check if items are actually visible
+            const orderItems = orderHistoryList.querySelectorAll('.order-history-item');
+            console.log('📋 Number of order items in DOM:', orderItems.length);
+            orderItems.forEach((item, index) => {
+                console.log(`📋 Order item ${index}:`, item.offsetHeight, 'px height', item.style.display || 'default display');
+            });
         } else {
             console.error('❌ orderHistoryList element not found!');
         }

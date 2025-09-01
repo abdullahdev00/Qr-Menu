@@ -687,17 +687,26 @@ class ShoppingCart {
             };
             
             console.log('💾 Saving order to history:', order);
+            console.log('🔍 OrderSummary received:', orderSummary);
+            console.log('🔍 MenuApp available:', !!window.menuApp);
+            console.log('🔍 MenuApp.addToOrderHistory available:', !!(window.menuApp && window.menuApp.addToOrderHistory));
             
             // Always save to both MenuApp and localStorage for consistency
             if (window.menuApp && window.menuApp.addToOrderHistory) {
                 console.log('✅ Adding order to MenuApp history');
                 window.menuApp.addToOrderHistory(order);
+                
+                // Double check if it was saved
+                const savedHistory = localStorage.getItem('orderHistory');
+                console.log('🔍 After MenuApp save - localStorage orderHistory:', savedHistory);
             } else {
                 console.warn('⚠️ MenuApp not available, using localStorage fallback');
                 // Fallback to localStorage
                 const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+                console.log('🔍 Existing orders before save:', orders);
                 orders.unshift(order);
                 localStorage.setItem('orderHistory', JSON.stringify(orders));
+                console.log('🔍 Orders after save:', orders);
                 
                 // Also update the icon manually if MenuApp isn't available
                 const orderHistoryToggle = document.getElementById('orderHistoryToggle');
@@ -707,6 +716,10 @@ class ShoppingCart {
             }
             
             console.log('✅ Order saved to history successfully');
+            
+            // Force verification
+            const finalHistory = localStorage.getItem('orderHistory');
+            console.log('🔍 Final verification - localStorage orderHistory:', finalHistory);
         } catch (error) {
             console.error('Error saving order to history:', error);
         }
