@@ -12,7 +12,7 @@ export default async function handler(req: any, res: any) {
       }
       
       // Generate the menu URL
-      const menuUrl = `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/customer/${restaurantSlug}${tableNumber ? `?table=${tableNumber}` : ''}`;
+      const menuUrl = `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurantSlug}${tableNumber ? `?table=${tableNumber}` : ''}`;
       
       // Set QR code size based on parameter
       const sizeMap = {

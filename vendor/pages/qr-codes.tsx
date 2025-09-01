@@ -34,7 +34,14 @@ export default function QRCodesPage() {
   const { toast } = useToast()
   
   const user = getCurrentUser()
-  const restaurantId = 'demo-restaurant-id' // TODO: Get from actual user context
+  // Get restaurant slug from URL path
+  const getRestaurantSlug = () => {
+    const path = window.location.pathname;
+    const pathParts = path.split('/');
+    return pathParts[1] || 'al-baik-restaurant'; // Default to first restaurant
+  };
+  
+  const restaurantSlug = getRestaurantSlug();
 
   // QR codes data with table numbers
   const [qrCodes, setQrCodes] = useState([
@@ -43,7 +50,7 @@ export default function QRCodesPage() {
       name: 'Main Menu QR',
       type: 'menu',
       tableNumber: null,
-      url: `${window.location.origin}/customer?restaurant=${restaurantId}`,
+      url: `${window.location.origin}/${restaurantSlug}`,
       scans: 245,
       createdAt: '2024-08-29',
       isActive: true
@@ -53,7 +60,7 @@ export default function QRCodesPage() {
       name: 'Table 1 QR',
       type: 'table',
       tableNumber: 1,
-      url: `${window.location.origin}/customer?restaurant=${restaurantId}&table=1`,
+      url: `${window.location.origin}/${restaurantSlug}?table=1`,
       scans: 67,
       createdAt: '2024-08-29',
       isActive: true
@@ -63,7 +70,7 @@ export default function QRCodesPage() {
       name: 'Table 2 QR', 
       type: 'table',
       tableNumber: 2,
-      url: `${window.location.origin}/customer?restaurant=${restaurantId}&table=2`,
+      url: `${window.location.origin}/${restaurantSlug}?table=2`,
       scans: 43,
       createdAt: '2024-08-29',
       isActive: true
@@ -157,7 +164,7 @@ export default function QRCodesPage() {
     }
     
     // Fetch preview data
-    fetch(`/api/qr-codes/generate?preview=true&restaurantSlug=demo-restaurant&tableNumber=${qrCode.tableNumber || ''}&size=small`)
+    fetch(`/api/qr-codes/generate?preview=true&restaurantSlug=${restaurantSlug}&tableNumber=${qrCode.tableNumber || ''}&size=small`)
       .then(response => response.json())
       .then(data => {
         if (data.success && data.dataUrl) {
@@ -181,7 +188,7 @@ export default function QRCodesPage() {
               ...qr, 
               tableNumber: newTableNumber,
               name: `Table ${newTableNumber} QR`,
-              url: `${window.location.origin}/customer?restaurant=${restaurantId}&table=${newTableNumber}`
+              url: `${window.location.origin}/${restaurantSlug}?table=${newTableNumber}`
             }
           : qr
       )
