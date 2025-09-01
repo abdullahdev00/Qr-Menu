@@ -51,11 +51,14 @@ export default function QRCodesPage() {
       const restaurantsResponse = await fetch('/api/restaurants');
       const restaurantsData = await restaurantsResponse.json();
       
-      if (!restaurantsData.success) {
-        throw new Error('Failed to fetch restaurants');
+      // Handle direct array response from API
+      const restaurantsList = Array.isArray(restaurantsData) ? restaurantsData : restaurantsData.restaurants;
+      
+      if (!restaurantsList || !Array.isArray(restaurantsList)) {
+        throw new Error('Failed to fetch restaurants - invalid response format');
       }
       
-      const restaurant = restaurantsData.restaurants.find((r: any) => r.slug === restaurantSlug);
+      const restaurant = restaurantsList.find((r: any) => r.slug === restaurantSlug);
       if (!restaurant) {
         throw new Error('Restaurant not found');
       }
@@ -64,11 +67,10 @@ export default function QRCodesPage() {
       const qrResponse = await fetch(`/api/qr-codes?restaurantId=${restaurant.id}`);
       const qrData = await qrResponse.json();
       
-      if (!qrData.success) {
-        throw new Error('Failed to fetch QR codes');
-      }
+      // Handle QR codes response - might be direct array or wrapped object
+      const qrCodesList = Array.isArray(qrData) ? qrData : (qrData.success ? qrData.qrCodes : qrData.data);
       
-      return qrData.qrCodes;
+      return qrCodesList || [];
     },
     enabled: !!restaurantSlug,
     staleTime: 5 * 60 * 1000, // 5 minutes
