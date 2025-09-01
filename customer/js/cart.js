@@ -302,6 +302,8 @@ class ShoppingCart {
         };
 
         console.log('Checkout initiated:', orderSummary);
+        console.log('Restaurant ID from MenuApp:', menuApp?.restaurantId);
+        console.log('Table Number:', tableNumber);
         
         // Show checkout confirmation
         this.showCheckoutModal(orderSummary);
@@ -414,8 +416,12 @@ class ShoppingCart {
                 body: JSON.stringify(orderData)
             });
             
+            const responseData = await response.text();
+            
             if (response.ok) {
                 console.log('Order confirmed:', orderSummary);
+                console.log('Order data sent:', orderData);
+                console.log('API Response:', responseData);
                 this.showToast('Order placed successfully!');
                 
                 // Save order to history
@@ -429,7 +435,8 @@ class ShoppingCart {
                     this.showOrderTrackingNotification(orderSummary.orderNumber);
                 }, 1000);
             } else {
-                throw new Error('Failed to place order');
+                console.error('Order placement failed:', responseData);
+                throw new Error(`Failed to place order: ${responseData}`);
             }
         } catch (error) {
             console.error('Error confirming order:', error);
