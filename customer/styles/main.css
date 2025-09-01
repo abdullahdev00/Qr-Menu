@@ -2829,6 +2829,15 @@ select:focus {
     height: 300px;
 }
 
+.order-history-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
 .order-history-empty i {
     font-size: 3rem;
     color: var(--text-secondary);
@@ -2846,12 +2855,17 @@ select:focus {
 }
 
 .order-history-item {
-    background-color: var(--secondary-dark);
+    background-color: var(--secondary-dark) !important;
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all var(--transition-fast);
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    min-height: 200px !important;
 }
 
 .order-history-item:hover {
@@ -2861,31 +2875,35 @@ select:focus {
 }
 
 .order-header {
-    display: flex;
+    display: flex !important;
     justify-content: space-between;
     align-items: center;
     margin-bottom: var(--spacing-md);
+    visibility: visible !important;
 }
 
 .order-header h4 {
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
     font-weight: 600;
     margin: 0;
+    display: block !important;
 }
 
 .order-date {
-    color: var(--text-secondary);
+    color: var(--text-secondary) !important;
     font-size: 0.9rem;
+    display: block !important;
 }
 
 .order-status {
-    display: inline-block;
+    display: inline-block !important;
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 600;
     text-transform: uppercase;
     margin-top: var(--spacing-xs);
+    visibility: visible !important;
 }
 
 .order-status.pending {
@@ -2909,18 +2927,20 @@ select:focus {
 }
 
 .order-details {
-    display: flex;
+    display: flex !important;
     flex-wrap: wrap;
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-md);
+    visibility: visible !important;
 }
 
 .order-details p {
-    color: var(--text-secondary);
+    color: var(--text-secondary) !important;
     font-size: 0.9rem;
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: var(--spacing-xs);
+    margin: 0 !important;
 }
 
 .order-details i {
@@ -2928,9 +2948,32 @@ select:focus {
 }
 
 .order-items-summary {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     gap: var(--spacing-xs);
+    visibility: visible !important;
+}
+
+.order-items-summary .item-name {
+    color: var(--text-primary) !important;
+    font-size: 0.9rem;
+    display: block !important;
+}
+
+.order-items-summary .more-items {
+    color: var(--text-secondary) !important;
+    font-style: italic;
+    display: block !important;
+}
+
+.order-total {
+    color: var(--accent-gold) !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: var(--spacing-md);
+    text-align: right;
+    display: block !important;
+    visibility: visible !important;
 }
 
 .item-name {

@@ -1,0 +1,99 @@
+app.js:1401 🔄 Toggle order history clicked
+app.js:1403 📋 Sidebar element found: true
+app.js:1406 📋 Sidebar current classes: order-history-sidebar
+app.js:1411 📋 Opening order history
+app.js:1420 🔽 Opening order history sidebar
+app.js:1423 📋 Adding active class to sidebar
+app.js:1426 📋 Loading order history data
+app.js:1477 🔄 Loading order history...
+app.js:1478 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1479 📋 Current orderHistory array: (3) [{…}, {…}, {…}]
+app.js:1480 📋 LocalStorage orderHistory: [{"id":"dc0be5df-6bf4-4409-b9ff-90f81e473b41","orderNumber":"ORD271854","status":"pending","total":1187.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"86bfe8f4-05c4-4fc9-846e-ec706c6e8dde","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T10:41:16.522Z"},{"id":"7f3f6113-9c67-439e-8014-5f22c607a0c6","orderNumber":"ORD717465","status":"pending","total":2125,"estimatedTime":25,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"3bc28b3d-476f-476e-888c-8a2fd78943fc","name":"Chicken Karahi","quantity":2,"price":"1062.50","total":"2125.00"}],"createdAt":"2025-09-01T10:32:01.972Z"},{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1483 🔍 Debug - All localStorage order keys:
+app.js:1487   orderHistory: [{"id":"dc0be5df-6bf4-4409-b9ff-90f81e473b41","orderNumber":"ORD271854","status":"pending","total":1187.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"86bfe8f4-05c4-4fc9-846e-ec706c6e8dde","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T10:41:16.522Z"},{"id":"7f3f6113-9c67-439e-8014-5f22c607a0c6","orderNumber":"ORD717465","status":"pending","total":2125,"estimatedTime":25,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"3bc28b3d-476f-476e-888c-8a2fd78943fc","name":"Chicken Karahi","quantity":2,"price":"1062.50","total":"2125.00"}],"createdAt":"2025-09-01T10:32:01.972Z"},{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1496 ✅ Loaded order history from localStorage: (3) [{…}, {…}, {…}]
+app.js:1428 ✅ Order history sidebar opened
+app.js:1401 🔄 Toggle order history clicked
+app.js:1403 📋 Sidebar element found: true
+app.js:1406 📋 Sidebar current classes: order-history-sidebar active
+app.js:1408 📋 Closing order history
+al-baik-restaurant?table=1:683 📋 Order history button clicked directly
+app.js:1401 🔄 Toggle order history clicked
+app.js:1403 📋 Sidebar element found: true
+app.js:1406 📋 Sidebar current classes: order-history-sidebar
+app.js:1411 📋 Opening order history
+app.js:1420 🔽 Opening order history sidebar
+app.js:1423 📋 Adding active class to sidebar
+app.js:1426 📋 Loading order history data
+app.js:1477 🔄 Loading order history...
+app.js:1478 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1479 📋 Current orderHistory array: (3) [{…}, {…}, {…}]
+app.js:1480 📋 LocalStorage orderHistory: [{"id":"dc0be5df-6bf4-4409-b9ff-90f81e473b41","orderNumber":"ORD271854","status":"pending","total":1187.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"86bfe8f4-05c4-4fc9-846e-ec706c6e8dde","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T10:41:16.522Z"},{"id":"7f3f6113-9c67-439e-8014-5f22c607a0c6","orderNumber":"ORD717465","status":"pending","total":2125,"estimatedTime":25,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"3bc28b3d-476f-476e-888c-8a2fd78943fc","name":"Chicken Karahi","quantity":2,"price":"1062.50","total":"2125.00"}],"createdAt":"2025-09-01T10:32:01.972Z"},{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1483 🔍 Debug - All localStorage order keys:
+app.js:1487   orderHistory: [{"id":"dc0be5df-6bf4-4409-b9ff-90f81e473b41","orderNumber":"ORD271854","status":"pending","total":1187.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"86bfe8f4-05c4-4fc9-846e-ec706c6e8dde","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T10:41:16.522Z"},{"id":"7f3f6113-9c67-439e-8014-5f22c607a0c6","orderNumber":"ORD717465","status":"pending","total":2125,"estimatedTime":25,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"3bc28b3d-476f-476e-888c-8a2fd78943fc","name":"Chicken Karahi","quantity":2,"price":"1062.50","total":"2125.00"}],"createdAt":"2025-09-01T10:32:01.972Z"},{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1496 ✅ Loaded order history from localStorage: (3) [{…}, {…}, {…}]
+app.js:1428 ✅ Order history sidebar opened
+app.js:1401 🔄 Toggle order history clicked
+app.js:1403 📋 Sidebar element found: true
+app.js:1406 📋 Sidebar current classes: order-history-sidebar active
+app.js:1408 📋 Closing order history
+app.js:1401 🔄 Toggle order history clicked
+app.js:1403 📋 Sidebar element found: true
+app.js:1406 📋 Sidebar current classes: order-history-sidebar
+app.js:1411 📋 Opening order history
+app.js:1420 🔽 Opening order history sidebar
+app.js:1423 📋 Adding active class to sidebar
+app.js:1426 📋 Loading order history data
+app.js:1477 🔄 Loading order history...
+app.js:1478 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1479 📋 Current orderHistory array: (3) [{…}, {…}, {…}]
+app.js:1480 📋 LocalStorage orderHistory: [{"id":"dc0be5df-6bf4-4409-b9ff-90f81e473b41","orderNumber":"ORD271854","status":"pending","total":1187.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"86bfe8f4-05c4-4fc9-846e-ec706c6e8dde","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T10:41:16.522Z"},{"id":"7f3f6113-9c67-439e-8014-5f22c607a0c6","orderNumber":"ORD717465","status":"pending","total":2125,"estimatedTime":25,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"3bc28b3d-476f-476e-888c-8a2fd78943fc","name":"Chicken Karahi","quantity":2,"price":"1062.50","total":"2125.00"}],"createdAt":"2025-09-01T10:32:01.972Z"},{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1483 🔍 Debug - All localStorage order keys:
+app.js:1487   orderHistory: [{"id":"dc0be5df-6bf4-4409-b9ff-90f81e473b41","orderNumber":"ORD271854","status":"pending","total":1187.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"86bfe8f4-05c4-4fc9-846e-ec706c6e8dde","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T10:41:16.522Z"},{"id":"7f3f6113-9c67-439e-8014-5f22c607a0c6","orderNumber":"ORD717465","status":"pending","total":2125,"estimatedTime":25,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"3bc28b3d-476f-476e-888c-8a2fd78943fc","name":"Chicken Karahi","quantity":2,"price":"1062.50","total":"2125.00"}],"createdAt":"2025-09-01T10:32:01.972Z"},{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1496 ✅ Loaded order history from localStorage: (3) [{…}, {…}, {…}]
+app.js:1428 ✅ Order history sidebar opened
+app.js:1531 ✅ Merged order history from API and localStorage: (3) [{…}, {…}, {…}]
+app.js:1547 📊 Final orderHistory length: 3
+app.js:1548 📊 Final orderHistory data: (3) [{…}, {…}, {…}]
+app.js:1557 📋 Displaying orders: 3
+app.js:1558 📋 First order structure: {id: 'dc0be5df-6bf4-4409-b9ff-90f81e473b41', orderNumber: 'ORD271854', status: 'pending', total: 1187.5, estimatedTime: 45, …}
+app.js:1561 📋 Hidden empty state
+app.js:1568 📋 Rendered HTML length: 4035
+app.js:1569 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="dc0be5df-6bf4-4409-b9ff-90f81e473b41" data-testid="order-card-dc0be5df-6bf4-4409-b9ff-90f81e473b41">
+                <div class="order-heade
+app.js:1571 ✅ Order history UI updated - HTML set to orderHistoryList
+app.js:1578 📋 Number of order items in DOM: 3
+app.js:1580 📋 Order item 0: 368 px height default display
+app.js:1580 📋 Order item 1: 368 px height default display
+app.js:1580 📋 Order item 2: 368 px height default display
+app.js:1531 ✅ Merged order history from API and localStorage: (3) [{…}, {…}, {…}]
+app.js:1547 📊 Final orderHistory length: 3
+app.js:1548 📊 Final orderHistory data: (3) [{…}, {…}, {…}]
+app.js:1557 📋 Displaying orders: 3
+app.js:1558 📋 First order structure: {id: 'dc0be5df-6bf4-4409-b9ff-90f81e473b41', orderNumber: 'ORD271854', status: 'pending', total: 1187.5, estimatedTime: 45, …}
+app.js:1561 📋 Hidden empty state
+app.js:1568 📋 Rendered HTML length: 4035
+app.js:1569 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="dc0be5df-6bf4-4409-b9ff-90f81e473b41" data-testid="order-card-dc0be5df-6bf4-4409-b9ff-90f81e473b41">
+                <div class="order-heade
+app.js:1571 ✅ Order history UI updated - HTML set to orderHistoryList
+app.js:1578 📋 Number of order items in DOM: 3
+app.js:1580 📋 Order item 0: 368 px height default display
+app.js:1580 📋 Order item 1: 368 px height default display
+app.js:1580 📋 Order item 2: 368 px height default display
+app.js:1531 ✅ Merged order history from API and localStorage: (3) [{…}, {…}, {…}]
+app.js:1547 📊 Final orderHistory length: 3
+app.js:1548 📊 Final orderHistory data: (3) [{…}, {…}, {…}]
+app.js:1557 📋 Displaying orders: 3
+app.js:1558 📋 First order structure: {id: 'dc0be5df-6bf4-4409-b9ff-90f81e473b41', orderNumber: 'ORD271854', status: 'pending', total: 1187.5, estimatedTime: 45, …}
+app.js:1561 📋 Hidden empty state
+app.js:1568 📋 Rendered HTML length: 4035
+app.js:1569 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="dc0be5df-6bf4-4409-b9ff-90f81e473b41" data-testid="order-card-dc0be5df-6bf4-4409-b9ff-90f81e473b41">
+                <div class="order-heade
+app.js:1571 ✅ Order history UI updated - HTML set to orderHistoryList
+app.js:1578 📋 Number of order items in DOM: 3
+app.js:1580 📋 Order item 0: 368 px height default display
+app.js:1580 📋 Order item 1: 368 px height default display
+app.js:1580 📋 Order item 2: 368 px height default display
