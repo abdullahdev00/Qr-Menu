@@ -44,7 +44,7 @@ export default async function handler(req: any, res: any) {
                 body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: transparent; }
                 .qr-container {
                   width: 400px;
-                  height: 460px;
+                  height: 600px;
                   background-color: #2a2a2a;
                   border: 3px solid #b08968;
                   border-radius: 8px;
@@ -64,20 +64,29 @@ export default async function handler(req: any, res: any) {
                 }
                 .menu-title {
                   text-align: center;
-                  padding-top: 16px;
-                  padding-bottom: 16px;
+                  padding-top: 24px;
+                  padding-bottom: 8px;
                 }
                 .menu-title h1 {
                   color: #b08968;
-                  font-size: 36px;
+                  font-size: 60px;
                   font-weight: bold;
-                  letter-spacing: 6px;
+                  letter-spacing: 8px;
+                  margin: 0;
+                  margin-bottom: 8px;
+                }
+                .restaurant-name {
+                  color: #b08968;
+                  font-size: 24px;
+                  font-weight: normal;
+                  letter-spacing: 3px;
                   margin: 0;
                 }
                 .qr-code-container {
                   display: flex;
                   justify-content: center;
                   padding: 0 32px;
+                  margin-top: 20px;
                 }
                 .qr-code-box {
                   background: white;
@@ -104,7 +113,11 @@ export default async function handler(req: any, res: any) {
                 }
                 .table-section {
                   text-align: center;
-                  margin-top: 16px;
+                  margin-top: 24px;
+                  position: absolute;
+                  bottom: 24px;
+                  left: 50%;
+                  transform: translateX(-50%);
                 }
                 .table-label {
                   color: #b08968;
@@ -135,7 +148,8 @@ export default async function handler(req: any, res: any) {
                 <div class="inner-border"></div>
                 
                 <div class="menu-title">
-                  <h1>${restaurant.name.toUpperCase()}</h1>
+                  <h1>MENU</h1>
+                  <div class="restaurant-name">${restaurant.name.toUpperCase()}</div>
                 </div>
 
                 <div class="qr-code-container">
@@ -184,11 +198,11 @@ export default async function handler(req: any, res: any) {
         
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        await page.setViewport({ width: 500, height: 560 });
+        await page.setViewport({ width: 500, height: 700 });
         
         const screenshot = await page.screenshot({
           type: 'png',
-          clip: { x: 50, y: 50, width: 400, height: 460 }
+          clip: { x: 50, y: 50, width: 400, height: 600 }
         });
         
         await browser.close();
