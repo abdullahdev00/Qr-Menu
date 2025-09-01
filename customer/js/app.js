@@ -1453,35 +1453,57 @@ class MenuApp {
         const orderHistoryList = document.getElementById('orderHistoryList');
         const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
         
+        console.log('🔄 Loading order history...');
+        console.log('📋 Current orderHistory array:', this.orderHistory);
+        console.log('📋 LocalStorage orderHistory:', localStorage.getItem('orderHistory'));
+        
+        // Always load from localStorage first (most reliable)
         try {
-            // Fetch orders from API
+            const storedHistory = localStorage.getItem('orderHistory');
+            if (storedHistory) {
+                this.orderHistory = JSON.parse(storedHistory);
+                console.log('✅ Loaded order history from localStorage:', this.orderHistory);
+            }
+        } catch (error) {
+            console.error('Error loading from localStorage:', error);
+            this.orderHistory = [];
+        }
+        
+        // Try to fetch fresh data from API as well
+        try {
             const customerId = this.getCustomerIdFromStorage();
             if (customerId) {
                 const response = await fetch(`/api/customer/orders?customerId=${customerId}`);
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.success && data.orders) {
+                    if (data.success && data.orders && data.orders.length > 0) {
                         this.orderHistory = data.orders;
                         localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
+                        console.log('✅ Updated order history from API:', this.orderHistory);
                     }
                 }
             }
         } catch (error) {
-            console.error('Error fetching order history:', error);
-            // Fallback to localStorage
+            console.error('Error fetching from API:', error);
+            // Continue with localStorage data
         }
         
+        console.log('📊 Final orderHistory length:', this.orderHistory.length);
+        
         if (this.orderHistory.length === 0) {
+            console.log('📋 No orders found, showing empty state');
             if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'flex';
             if (orderHistoryList) orderHistoryList.style.display = 'none';
             return;
         }
         
+        console.log('📋 Displaying orders:', this.orderHistory.length);
         if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'none';
         if (orderHistoryList) {
             orderHistoryList.style.display = 'flex';
             orderHistoryList.style.flexDirection = 'column';
             orderHistoryList.innerHTML = this.orderHistory.map(order => this.renderOrderHistoryCard(order)).join('');
+            console.log('✅ Order history UI updated');
         }
     }
 
@@ -1525,11 +1547,15 @@ class MenuApp {
     }
 
     addToOrderHistory(order) {
+        console.log('➕ Adding order to history:', order);
         this.orderHistory.unshift(order);
         this.currentOrders.push(order);
         localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
         localStorage.setItem('currentOrders', JSON.stringify(this.currentOrders));
+        console.log('💾 Order history saved:', this.orderHistory.length, 'orders');
+        console.log('📋 Order history array:', this.orderHistory);
         this.updateOrderHistoryIcon();
+        console.log('✅ Order history icon updated');
     }
 
     updateOrderStatus(orderId, newStatus) {
