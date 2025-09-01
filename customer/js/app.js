@@ -1416,7 +1416,16 @@ class MenuApp {
         const orderNotification = document.getElementById('orderNotification');
         
         if (this.orderHistory.length > 0) {
-            if (orderHistoryToggle) orderHistoryToggle.style.display = 'flex';
+            if (orderHistoryToggle) {
+                orderHistoryToggle.style.display = 'flex';
+                
+                // Remove existing event listeners to avoid duplicates
+                orderHistoryToggle.removeEventListener('click', this.toggleOrderHistory);
+                
+                // Add fresh event listener
+                orderHistoryToggle.addEventListener('click', this.toggleOrderHistory.bind(this));
+                console.log('✅ Order history button event listener added');
+            }
             
             // Show notification if there are active orders
             const activeOrders = this.currentOrders.filter(order => 

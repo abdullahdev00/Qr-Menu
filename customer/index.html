@@ -649,6 +649,23 @@
                         console.error('❌ Cart button not found');
                     }
                     
+                    // Debug order history button
+                    const orderHistoryButton = document.getElementById('orderHistoryToggle');
+                    if (orderHistoryButton) {
+                        console.log('✅ Order history button found:', orderHistoryButton);
+                        // Add direct event listener as backup
+                        orderHistoryButton.addEventListener('click', function() {
+                            console.log('📋 Order history button clicked directly');
+                            if (window.menuApp && window.menuApp.toggleOrderHistory) {
+                                window.menuApp.toggleOrderHistory();
+                            } else {
+                                console.error('❌ Menu app not available');
+                            }
+                        });
+                    } else {
+                        console.log('ℹ️ Order history button not found (will appear after order)');
+                    }
+                    
                     console.log('✅ Customer website initialized successfully');
                 } catch (error) {
                     console.error('❌ Error initializing customer website:', error);
