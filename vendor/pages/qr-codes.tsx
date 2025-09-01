@@ -327,7 +327,15 @@ export default function QRCodesPage() {
                     // Get restaurant data
                     const restaurantsResponse = await fetch('/api/restaurants');
                     const restaurantsData = await restaurantsResponse.json();
-                    const restaurant = restaurantsData.restaurants.find((r: any) => r.slug === restaurantSlug);
+                    
+                    // Handle direct array response from API
+                    const restaurantsList = Array.isArray(restaurantsData) ? restaurantsData : restaurantsData.restaurants;
+                    
+                    if (!restaurantsList || !Array.isArray(restaurantsList)) {
+                      throw new Error('Failed to fetch restaurants - invalid response format');
+                    }
+                    
+                    const restaurant = restaurantsList.find((r: any) => r.slug === restaurantSlug);
                     
                     if (!restaurant) {
                       throw new Error('Restaurant not found');
