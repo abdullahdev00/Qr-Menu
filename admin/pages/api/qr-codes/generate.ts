@@ -44,13 +44,13 @@ export default async function handler(req: any, res: any) {
                 body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: transparent; }
                 .qr-container {
                   width: 400px;
-                  height: 600px;
+                  height: 650px;
                   background-color: #2a2a2a;
                   border: 3px solid #b08968;
                   border-radius: 8px;
                   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
                   position: relative;
-                  margin: 0 auto;
+                  margin: 0;
                 }
                 .inner-border {
                   position: absolute;
@@ -115,7 +115,7 @@ export default async function handler(req: any, res: any) {
                   text-align: center;
                   margin-top: 24px;
                   position: absolute;
-                  bottom: 24px;
+                  bottom: 16px;
                   left: 50%;
                   transform: translateX(-50%);
                 }
@@ -198,11 +198,11 @@ export default async function handler(req: any, res: any) {
         
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        await page.setViewport({ width: 500, height: 700 });
+        await page.setViewport({ width: 400, height: 650 });
         
         const screenshot = await page.screenshot({
           type: 'png',
-          clip: { x: 50, y: 50, width: 400, height: 600 }
+          clip: { x: 0, y: 0, width: 400, height: 650 }
         });
         
         await browser.close();
