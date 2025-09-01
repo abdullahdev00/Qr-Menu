@@ -1,0 +1,41 @@
+🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar
+app.js:1408 📋 Opening order history
+app.js:1417 🔽 Opening order history sidebar
+app.js:1420 📋 Adding active class to sidebar
+app.js:1423 📋 Loading order history data
+app.js:1470 🔄 Loading order history...
+app.js:1471 📋 Current orderHistory array: [{…}]
+app.js:1472 📋 LocalStorage orderHistory: [{"id":"29a95533-708c-4b78-91b8-58b6b2ba0803","orderNumber":"ORD550788","status":"pending","total":1562.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"b1cd302f-43fc-444e-bde0-476ed6cb9b5b","name":"Gulab Jamun","quantity":1,"price":"375.00","total":"375.00"},{"menuItemId":"23d63676-1266-49d3-b3fb-fe97de35da46","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T09:55:54.487Z"}]
+app.js:1479 ✅ Loaded order history from localStorage: [{…}]
+app.js:1425 ✅ Order history sidebar opened
+app.js:1398 🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar active
+app.js:1405 📋 Closing order history
+al-baik-restaurant?table=1:683 📋 Order history button clicked directly
+app.js:1398 🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar
+app.js:1408 📋 Opening order history
+app.js:1417 🔽 Opening order history sidebar
+app.js:1420 📋 Adding active class to sidebar
+app.js:1423 📋 Loading order history data
+app.js:1470 🔄 Loading order history...
+app.js:1471 📋 Current orderHistory array: [{…}]
+app.js:1472 📋 LocalStorage orderHistory: [{"id":"29a95533-708c-4b78-91b8-58b6b2ba0803","orderNumber":"ORD550788","status":"pending","total":1562.5,"estimatedTime":45,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"b1cd302f-43fc-444e-bde0-476ed6cb9b5b","name":"Gulab Jamun","quantity":1,"price":"375.00","total":"375.00"},{"menuItemId":"23d63676-1266-49d3-b3fb-fe97de35da46","name":"Beef Biryani","quantity":1,"price":"1187.50","total":"1187.50"}],"createdAt":"2025-09-01T09:55:54.487Z"}]
+app.js:1479 ✅ Loaded order history from localStorage: [{…}]
+app.js:1425 ✅ Order history sidebar opened
+app.js:1398 🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar active
+app.js:1405 📋 Closing order history
+app.js:1496 ✅ Updated order history from API: [{…}]
+app.js:1505 📊 Final orderHistory length: 1
+app.js:1514 📋 Displaying orders: 1
+app.js:1520 ✅ Order history UI updated
+app.js:1496 ✅ Updated order history from API: [{…}]
+app.js:1505 📊 Final orderHistory length: 1
+app.js:1514 📋 Displaying orders: 1
+app.js:1520 ✅ Order history UI updated
