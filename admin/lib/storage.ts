@@ -28,9 +28,16 @@ import {
   type OrderItem, type InsertOrderItem
 } from "../../shared/schema";
 
+// Create connection with proper error handling and SSL configuration
 const sql = postgres(process.env.DATABASE_URL!, {
-  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
+  ssl: false, // Disable SSL for development
   max: 1,
+  idle_timeout: 20,
+  max_lifetime: 60 * 30,
+  connection: {
+    application_name: 'qr_menu_admin',
+  },
+  onnotice: () => {}, // Suppress notices
 });
 const db = drizzle(sql);
 

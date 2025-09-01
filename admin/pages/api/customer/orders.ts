@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { db } from '../../lib/storage';
+import { restaurants, orders, orderItems, menuItems } from '@shared/schema';
+import { eq, and, desc } from 'drizzle-orm';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -16,88 +16,69 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Get restaurant ID from slug if provided
       let restaurantId = null;
       if (restaurantSlug) {
-        const restaurants = await sql`SELECT id FROM restaurants WHERE slug = ${restaurantSlug} LIMIT 1`;
-        if (restaurants.length > 0) {
-          restaurantId = restaurants[0].id;
+        const restaurantsList = await db.select({ id: restaurants.id }).from(restaurants).where(eq(restaurants.slug, restaurantSlug as string)).limit(1);
+        if (restaurantsList.length > 0) {
+          restaurantId = restaurantsList[0].id;
         }
       }
       
-      // Fetch orders for customer
-      let orders;
+      // Fetch orders for customer using Drizzle ORM
+      let ordersList;
       
       if (restaurantId) {
-        orders = await sql`
-          SELECT 
-            o.*, 
-            r.name as restaurant_name,
-            r.slug as restaurant_slug,
-            COALESCE(
-              json_agg(
-                json_build_object(
-                  'menuItemId', oi.menu_item_id,
-                  'name', mi.name,
-                  'quantity', oi.quantity,
-                  'price', oi.unit_price,
-                  'total', oi.total_price
-                )
-              ) FILTER (WHERE oi.id IS NOT NULL), 
-              '[]'::json
-            ) as items
-          FROM orders o
-          LEFT JOIN restaurants r ON o.restaurant_id = r.id
-          LEFT JOIN order_items oi ON o.id = oi.order_id
-          LEFT JOIN menu_items mi ON oi.menu_item_id = mi.id
-          WHERE o.customer_id = ${customerId as string} AND o.restaurant_id = ${restaurantId}
-          GROUP BY o.id, r.name, r.slug
-          ORDER BY o.created_at DESC
-          LIMIT 50
-        `;
+        ordersList = await db.select()
+          .from(orders)
+          .where(and(
+            eq(orders.customerId, customerId as string),
+            eq(orders.restaurantId, restaurantId)
+          ))
+          .orderBy(desc(orders.createdAt))
+          .limit(50);
       } else {
-        orders = await sql`
-          SELECT 
-            o.*, 
-            r.name as restaurant_name,
-            r.slug as restaurant_slug,
-            COALESCE(
-              json_agg(
-                json_build_object(
-                  'menuItemId', oi.menu_item_id,
-                  'name', mi.name,
-                  'quantity', oi.quantity,
-                  'price', oi.unit_price,
-                  'total', oi.total_price
-                )
-              ) FILTER (WHERE oi.id IS NOT NULL), 
-              '[]'::json
-            ) as items
-          FROM orders o
-          LEFT JOIN restaurants r ON o.restaurant_id = r.id
-          LEFT JOIN order_items oi ON o.id = oi.order_id
-          LEFT JOIN menu_items mi ON oi.menu_item_id = mi.id
-          WHERE o.customer_id = ${customerId as string}
-          GROUP BY o.id, r.name, r.slug
-          ORDER BY o.created_at DESC
-          LIMIT 50
-        `;
+        ordersList = await db.select()
+          .from(orders)
+          .where(eq(orders.customerId, customerId as string))
+          .orderBy(desc(orders.createdAt))
+          .limit(50);
       }
       
-      // Format orders for frontend
-      const formattedOrders = orders.map(order => ({
-        id: order.id,
-        orderNumber: `ORD${order.order_number}`,
-        status: order.status,
-        total: parseFloat(order.total_amount),
-        estimatedTime: order.estimated_time,
-        tableNumber: order.table_number,
-        restaurantName: order.restaurant_name,
-        restaurantSlug: order.restaurant_slug,
-        items: order.items || [],
-        createdAt: order.created_at
+      // Get restaurant details and order items for each order
+      const ordersWithDetails = await Promise.all(ordersList.map(async (order: any) => {
+        // Get restaurant details
+        const restaurantDetails = await db.select({ name: restaurants.name, slug: restaurants.slug })
+          .from(restaurants)
+          .where(eq(restaurants.id, order.restaurantId))
+          .limit(1);
+        
+        // Get order items with menu item details
+        const items = await db.select({
+          menuItemId: orderItems.menuItemId,
+          name: menuItems.name,
+          quantity: orderItems.quantity,
+          price: orderItems.unitPrice,
+          total: orderItems.totalPrice
+        })
+        .from(orderItems)
+        .leftJoin(menuItems, eq(orderItems.menuItemId, menuItems.id))
+        .where(eq(orderItems.orderId, order.id));
+
+        return {
+          id: order.id,
+          orderNumber: `ORD${order.orderNumber}`,
+          status: order.status,
+          total: parseFloat(order.totalAmount),
+          estimatedTime: order.estimatedTime,
+          tableNumber: order.tableNumber,
+          restaurantName: restaurantDetails[0]?.name || 'Unknown Restaurant',
+          restaurantSlug: restaurantDetails[0]?.slug || '',
+          items: items,
+          createdAt: order.createdAt
+        };
       }));
       
       res.status(200).json({
         success: true,
-        orders: formattedOrders
+        orders: ordersWithDetails
       });
       
     } catch (error) {
@@ -132,9 +113,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // If restaurantId looks like a slug, convert it to actual ID
       if (restaurantId && !restaurantId.match(/^[0-9a-f-]{36}$/)) {
-        const restaurants = await sql`SELECT id FROM restaurants WHERE slug = ${restaurantId} LIMIT 1`;
-        if (restaurants.length > 0) {
-          restaurantId = restaurants[0].id;
+        const restaurantsList = await db.select({ id: restaurants.id }).from(restaurants).where(eq(restaurants.slug, restaurantId)).limit(1);
+        if (restaurantsList.length > 0) {
+          restaurantId = restaurantsList[0].id;
         } else {
           restaurantId = null;
         }
@@ -145,9 +126,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const referer = (req.headers && req.headers.referer) || '';
         const slugMatch = referer.match(/\/([^\/\?]+)/);
         if (slugMatch) {
-          const restaurants = await sql`SELECT id FROM restaurants WHERE slug = ${slugMatch[1]} LIMIT 1`;
-          if (restaurants.length > 0) {
-            restaurantId = restaurants[0].id;
+          const restaurantsList = await db.select({ id: restaurants.id }).from(restaurants).where(eq(restaurants.slug, slugMatch[1])).limit(1);
+          if (restaurantsList.length > 0) {
+            restaurantId = restaurantsList[0].id;
           }
         }
       }
@@ -161,19 +142,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         req.headers['customer-id'] ||
         'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       
-      // Create order record
-      const newOrder = await sql`
-        INSERT INTO orders (
-          restaurant_id, customer_id, table_number, order_number, status, total_amount,
-          currency, delivery_type, payment_method, payment_status, estimated_time
-        ) VALUES (
-          ${restaurantId}, ${customerId}, ${orderData.tableNumber || 'Online'}, 
-          ${parseInt(orderData.orderNumber.replace('ORD', ''))},
-          'pending', ${orderData.total}, 'PKR', 
-          ${orderData.tableNumber ? 'dine_in' : 'takeaway'},
-          'cash', 'pending', ${orderData.estimatedTime}
-        ) RETURNING *
-      `;
+      // Create order record using Drizzle ORM
+      const newOrder = await db.insert(orders).values({
+        restaurantId: restaurantId,
+        customerId: customerId,
+        tableNumber: orderData.tableNumber || 'Online',
+        orderNumber: parseInt(orderData.orderNumber.replace('ORD', '')),
+        status: 'pending',
+        totalAmount: orderData.total.toFixed(2),
+        currency: 'PKR',
+        deliveryType: orderData.tableNumber ? 'dine_in' : 'takeaway',
+        paymentMethod: 'cash',
+        paymentStatus: 'pending',
+        estimatedTime: orderData.estimatedTime,
+      }).returning();
       
       if (newOrder.length === 0) {
         return res.status(500).json({ error: 'Failed to create order' });
@@ -181,17 +163,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       const orderId = newOrder[0].id;
       
-      // Create order items
+      // Create order items using Drizzle ORM
       for (const item of orderData.items) {
-        await sql`
-          INSERT INTO order_items (
-            order_id, menu_item_id, quantity, unit_price, total_price, special_requests
-          ) VALUES (
-            ${orderId}, ${item.menuItemId}, ${item.quantity},
-            ${item.price}, ${item.price * item.quantity},
-            ${item.customizations ? JSON.stringify(item.customizations) : null}
-          )
-        `;
+        await db.insert(orderItems).values({
+          orderId: orderId,
+          menuItemId: item.menuItemId,
+          quantity: item.quantity,
+          unitPrice: item.price.toFixed(2),
+          totalPrice: (item.price * item.quantity).toFixed(2),
+          specialRequests: item.customizations ? JSON.stringify(item.customizations) : null,
+        });
       }
       
       res.status(201).json({
@@ -213,7 +194,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: 'Failed to place order' });
     }
   } else {
-    res.setHeader('Allow', ['POST']);
+    res.setHeader('Allow', ['GET', 'POST']);
     res.status(405).json({ error: `Method ${req.method} not allowed` });
   }
 }
