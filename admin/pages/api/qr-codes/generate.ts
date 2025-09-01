@@ -41,10 +41,10 @@ export default async function handler(req: any, res: any) {
           <html>
             <head>
               <style>
-                body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f0f0f0; }
+                body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: transparent; }
                 .qr-container {
                   width: 400px;
-                  height: 550px;
+                  height: 460px;
                   background-color: #2a2a2a;
                   border: 3px solid #b08968;
                   border-radius: 8px;
@@ -64,14 +64,14 @@ export default async function handler(req: any, res: any) {
                 }
                 .menu-title {
                   text-align: center;
-                  padding-top: 32px;
-                  padding-bottom: 24px;
+                  padding-top: 16px;
+                  padding-bottom: 16px;
                 }
                 .menu-title h1 {
                   color: #b08968;
-                  font-size: 48px;
+                  font-size: 36px;
                   font-weight: bold;
-                  letter-spacing: 8px;
+                  letter-spacing: 6px;
                   margin: 0;
                 }
                 .qr-code-container {
@@ -94,7 +94,7 @@ export default async function handler(req: any, res: any) {
                 }
                 .scan-text {
                   text-align: center;
-                  margin-top: 24px;
+                  margin-top: 16px;
                 }
                 .scan-text p {
                   color: #b08968;
@@ -102,23 +102,9 @@ export default async function handler(req: any, res: any) {
                   letter-spacing: 2px;
                   margin: 0;
                 }
-                .icon-container {
-                  display: flex;
-                  justify-content: center;
-                  margin-top: 32px;
-                }
-                .icon-circle {
-                  width: 60px;
-                  height: 60px;
-                  background-color: #b08968;
-                  border-radius: 50%;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                }
                 .table-section {
                   text-align: center;
-                  margin-top: 24px;
+                  margin-top: 16px;
                 }
                 .table-label {
                   color: #b08968;
@@ -162,21 +148,15 @@ export default async function handler(req: any, res: any) {
                   <p>SCAN FOR DIGITAL MENU</p>
                 </div>
 
-                <div class="icon-container">
-                  <div class="icon-circle">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                      <path d="M11 2v7l-2 2v11h4V11l-2-2V2zM6 2v5c0 1.1.9 2 2 2v13h2V9c1.1 0 2-.9 2-2V2H6z" fill="#2a2a2a"/>
-                      <path d="M16 2v20h2V12h2V2h-4z" fill="#2a2a2a"/>
-                    </svg>
-                  </div>
-                </div>
 
+                ${tableNumber ? `
                 <div class="table-section">
                   <div class="table-label">TABLE NO.</div>
                   <div class="table-number">
-                    <div class="table-number-box">${tableNumber || '-'}</div>
+                    <div class="table-number-box">${tableNumber}</div>
                   </div>
                 </div>
+                ` : ''}
               </div>
             </body>
           </html>
@@ -204,11 +184,11 @@ export default async function handler(req: any, res: any) {
         
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        await page.setViewport({ width: 500, height: 650 });
+        await page.setViewport({ width: 500, height: 560 });
         
         const screenshot = await page.screenshot({
           type: 'png',
-          clip: { x: 50, y: 50, width: 400, height: 550 }
+          clip: { x: 50, y: 50, width: 400, height: 460 }
         });
         
         await browser.close();
