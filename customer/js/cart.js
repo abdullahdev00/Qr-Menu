@@ -492,27 +492,65 @@ class ShoppingCart {
         const notification = document.createElement('div');
         notification.className = 'order-notification';
         notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas fa-check-circle"></i>
-                <div class="notification-text">
-                    <h4>Order Confirmed!</h4>
-                    <p>Order #${orderNumber} is being prepared</p>
+            <div class="notification-content" style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 12px;
+            ">
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 8px;
+                ">
+                    <div style="
+                        width: 32px;
+                        height: 32px;
+                        background: rgba(255,255,255,0.2);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 18px;
+                    ">✓</div>
+                    <div class="notification-text">
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600;">Order Confirmed!</h4>
+                        <p style="margin: 2px 0 0 0; font-size: 13px; opacity: 0.9;">Order #${orderNumber} is being prepared</p>
+                    </div>
                 </div>
-                <button class="track-order-btn" onclick="window.cart.showOrderHistory()">View Order History</button>
+                <button class="track-order-btn" style="
+                    background: rgba(255,255,255,0.2);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    width: 100%;
+                ">View Order History</button>
             </div>
         `;
         
         notification.style.cssText = `
             position: fixed;
-            top: 80px;
+            top: 20px;
             right: 20px;
             background: var(--success-green);
             color: white;
-            padding: 16px;
+            padding: 20px;
             border-radius: 12px;
-            z-index: 10000;
+            z-index: 999999;
             animation: slideInRight 0.5s ease;
-            max-width: 300px;
+            max-width: 320px;
+            min-width: 280px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            font-family: inherit;
         `;
         
         document.body.appendChild(notification);

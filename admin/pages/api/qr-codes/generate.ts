@@ -1,6 +1,6 @@
 import QRCode from 'qrcode';
 import puppeteer from 'puppeteer';
-import { db } from '../../../server/db';
+import { db } from '../../../admin/lib/storage';
 import { restaurants } from '../../../shared/schema';
 import { eq } from 'drizzle-orm';
 
