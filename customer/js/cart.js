@@ -11,6 +11,15 @@ class ShoppingCart {
         this.init();
     }
 
+    getCustomerIdFromStorage() {
+        let customerId = localStorage.getItem('customerId');
+        if (!customerId) {
+            customerId = 'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('customerId', customerId);
+        }
+        return customerId;
+    }
+
     init() {
         this.bindEvents();
         this.updateCartUI();
@@ -407,7 +416,7 @@ class ShoppingCart {
     async confirmOrder(orderSummary) {
         try {
             // Get customer ID for order tracking
-            const customerId = this.menuApp.getCustomerIdFromStorage();
+            const customerId = this.getCustomerIdFromStorage();
             
             // Send order to server with table information
             const orderData = {
