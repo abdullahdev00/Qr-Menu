@@ -311,7 +311,67 @@ export default function QRCodesPage() {
                 </Select>
               </div>
               
-              <Button className="w-full" disabled={isGenerating}>
+              <Button 
+                className="w-full" 
+                disabled={isGenerating}
+                onClick={async () => {
+                  setIsGenerating(true);
+                  try {
+                    // Get form values
+                    const qrType = (document.querySelector('[placeholder="Select type"]') as HTMLInputElement)?.value || 'menu';
+                    const qrName = (document.querySelector('[placeholder="e.g., Table 5 QR"]') as HTMLInputElement)?.value || 'New QR Code';
+                    const tableNumber = (document.querySelector('[placeholder="e.g., 5"]') as HTMLInputElement)?.value;
+                    
+                    // Get restaurant data
+                    const restaurantsResponse = await fetch('/api/restaurants');
+                    const restaurantsData = await restaurantsResponse.json();
+                    const restaurant = restaurantsData.restaurants.find((r: any) => r.slug === restaurantSlug);
+                    
+                    if (!restaurant) {
+                      throw new Error('Restaurant not found');
+                    }
+                    
+                    // Create QR code
+                    const response = await fetch('/api/qr-codes', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        restaurantId: restaurant.id,
+                        tableNumber: tableNumber || null,
+                        name: qrName,
+                        customization: {
+                          colors: {
+                            primary: '#b08968',
+                            secondary: '#2a2a2a'
+                          }
+                        }
+                      }),
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                      toast({
+                        title: "QR Code Created!",
+                        description: `${qrName} has been created successfully`,
+                      });
+                      refetch(); // Refresh the QR codes list
+                    } else {
+                      throw new Error(data.error || 'Failed to create QR code');
+                    }
+                  } catch (error) {
+                    console.error('QR creation error:', error);
+                    toast({
+                      title: "Creation Failed",
+                      description: "Failed to create QR code. Please try again.",
+                      variant: "destructive"
+                    });
+                  }
+                  setIsGenerating(false);
+                }}
+              >
                 {isGenerating ? (
                   <>
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
