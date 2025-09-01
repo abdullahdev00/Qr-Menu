@@ -3,6 +3,7 @@ import { createServer as createHttpServer } from 'http';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
+import { WebSocketServer, WebSocket } from 'ws';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -178,9 +179,76 @@ async function startServer() {
 
   const server = createHttpServer(app);
 
+  // WebSocket Server for real-time updates
+  const wss = new WebSocketServer({ server, path: '/ws' });
+  const clients = new Map();
+
+  wss.on('connection', (ws, req) => {
+    console.log('📡 WebSocket client connected');
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        // Handle different message types
+        switch (data.type) {
+          case 'join-restaurant':
+            clients.set(ws, { type: 'restaurant', restaurantId: data.restaurantId });
+            console.log(`🏪 Restaurant ${data.restaurantId} connected`);
+            break;
+          case 'join-customer':
+            clients.set(ws, { type: 'customer', customerId: data.customerId, restaurantId: data.restaurantId });
+            console.log(`👤 Customer ${data.customerId} connected`);
+            break;
+          case 'order-update':
+            // Broadcast order updates to relevant clients
+            broadcastOrderUpdate(data);
+            break;
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    });
+
+    ws.on('close', () => {
+      clients.delete(ws);
+      console.log('📡 WebSocket client disconnected');
+    });
+
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      clients.delete(ws);
+    });
+  });
+
+  function broadcastOrderUpdate(orderData: any) {
+    clients.forEach((clientInfo, ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        // Send to restaurant panel if it's the right restaurant
+        if (clientInfo.type === 'restaurant' && clientInfo.restaurantId === orderData.restaurantId) {
+          ws.send(JSON.stringify({
+            type: 'order-update',
+            data: orderData
+          }));
+        }
+        // Send to customer if it's their order
+        if (clientInfo.type === 'customer' && clientInfo.customerId === orderData.customerId) {
+          ws.send(JSON.stringify({
+            type: 'order-status-update',
+            data: orderData
+          }));
+        }
+      }
+    });
+  }
+
+  // Make broadcast function available globally for API routes
+  (global as any).broadcastOrderUpdate = broadcastOrderUpdate;
+
   server.listen(port, '0.0.0.0', () => {
     console.log(`🚀 Server running on http://0.0.0.0:${port}`);
     console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔌 WebSocket server running on ws://0.0.0.0:${port}/ws`);
   });
 
   // Handle graceful shutdown

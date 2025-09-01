@@ -50,6 +50,10 @@
                 <button class="search-toggle" id="searchToggle" data-testid="button-search-toggle" aria-label="Search menu">
                     <i class="fas fa-search"></i>
                 </button>
+                <button class="order-history-toggle" id="orderHistoryToggle" data-testid="button-order-history-toggle" aria-label="Order history" style="display: none;">
+                    <i class="fas fa-receipt"></i>
+                    <span class="order-notification" id="orderNotification" data-testid="text-order-notification" style="display: none;"></span>
+                </button>
                 <button class="cart-toggle" id="cartToggle" data-testid="button-cart-toggle" aria-label="View cart">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cartCount" data-testid="text-cart-count">0</span>
@@ -415,6 +419,29 @@
                             Skip for Now
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div class="order-history-modal" id="orderHistoryModal">
+        <div class="modal-overlay" id="orderHistoryOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order History</h3>
+                <button class="modal-close" id="orderHistoryClose" data-testid="button-order-history-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="orderHistoryBody">
+                <div class="order-history-empty" id="orderHistoryEmpty">
+                    <i class="fas fa-receipt"></i>
+                    <p>No orders yet</p>
+                    <small>Your order history will appear here</small>
+                </div>
+                <div class="order-history-list" id="orderHistoryList">
+                    <!-- Order history items will be loaded here -->
                 </div>
             </div>
         </div>

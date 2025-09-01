@@ -523,7 +523,13 @@ class ShoppingCart {
 
     async showOrderHistory() {
         try {
-            // Get orders from localStorage for now (can be enhanced with API later)
+            // Use MenuApp's order history if available
+            if (window.menuApp && window.menuApp.toggleOrderHistory) {
+                window.menuApp.toggleOrderHistory();
+                return;
+            }
+            
+            // Fallback to localStorage
             const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
             
             const modal = document.createElement('div');
@@ -605,13 +611,29 @@ class ShoppingCart {
 
     saveOrderToHistory(orderSummary) {
         try {
-            const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-            orders.push({
-                ...orderSummary,
-                createdAt: new Date().toISOString(),
-                id: 'order_' + Date.now()
-            });
-            localStorage.setItem('orderHistory', JSON.stringify(orders));
+            const order = {
+                id: 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                orderNumber: orderSummary.orderNumber,
+                items: orderSummary.items,
+                subtotal: orderSummary.subtotal,
+                tax: orderSummary.tax,
+                total: orderSummary.total,
+                tableNumber: orderSummary.tableNumber,
+                restaurantId: orderSummary.restaurantId,
+                estimatedTime: orderSummary.estimatedTime,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add to MenuApp order history if available
+            if (window.menuApp && window.menuApp.addToOrderHistory) {
+                window.menuApp.addToOrderHistory(order);
+            } else {
+                // Fallback to localStorage
+                const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+                orders.unshift(order);
+                localStorage.setItem('orderHistory', JSON.stringify(orders));
+            }
         } catch (error) {
             console.error('Error saving order to history:', error);
         }

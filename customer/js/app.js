@@ -29,6 +29,14 @@ class MenuApp {
         this.isQRScan = !!this.tableNumber;
         this.restaurantId = this.getRestaurantFromURL();
         
+        // Order history management
+        this.orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+        this.currentOrders = JSON.parse(localStorage.getItem('currentOrders') || '[]');
+        
+        // WebSocket connection for real-time updates
+        this.websocket = null;
+        this.customerId = this.getCustomerIdFromStorage();
+        
         this.init();
     }
 
@@ -42,6 +50,8 @@ class MenuApp {
         this.renderMenuItems();
         this.updateFavoriteButtons();
         this.updateCategoryTabs();
+        this.updateOrderHistoryIcon();
+        this.initializeWebSocket();
     }
 
     bindEvents() {
@@ -53,6 +63,10 @@ class MenuApp {
         if (searchToggle) searchToggle.addEventListener('click', this.toggleSearch.bind(this));
         if (cartToggle) cartToggle.addEventListener('click', this.toggleCart.bind(this));
         if (themeToggle) themeToggle.addEventListener('click', this.toggleTheme.bind(this));
+        
+        // Order history events
+        const orderHistoryToggle = document.getElementById('orderHistoryToggle');
+        if (orderHistoryToggle) orderHistoryToggle.addEventListener('click', this.toggleOrderHistory.bind(this));
 
         // Search events (both desktop and mobile)
         const searchInput = document.getElementById('searchInput');
@@ -111,12 +125,20 @@ class MenuApp {
             layoutToggle.addEventListener('click', this.toggleLayout.bind(this));
         }
 
+        // Order history modal events
+        const orderHistoryClose = document.getElementById('orderHistoryClose');
+        const orderHistoryOverlay = document.getElementById('orderHistoryOverlay');
+        
+        if (orderHistoryClose) orderHistoryClose.addEventListener('click', this.closeOrderHistory.bind(this));
+        if (orderHistoryOverlay) orderHistoryOverlay.addEventListener('click', this.closeOrderHistory.bind(this));
+
         // Escape key handling
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
                 this.closeFilterSidebar();
                 this.closeSearch();
+                this.closeOrderHistory();
             }
         });
 
@@ -1309,6 +1331,189 @@ class MenuApp {
                 themeIcon.className = 'fas fa-moon'; // Show moon icon in light mode (to switch to dark)
             }
         }
+    }
+
+    // Order History Management Methods
+    toggleOrderHistory() {
+        const modal = document.getElementById('orderHistoryModal');
+        if (modal) {
+            modal.classList.toggle('active');
+            if (modal.classList.contains('active')) {
+                this.loadOrderHistory();
+            }
+        }
+    }
+
+    closeOrderHistory() {
+        const modal = document.getElementById('orderHistoryModal');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+
+    updateOrderHistoryIcon() {
+        const orderHistoryToggle = document.getElementById('orderHistoryToggle');
+        const orderNotification = document.getElementById('orderNotification');
+        
+        if (this.orderHistory.length > 0) {
+            if (orderHistoryToggle) orderHistoryToggle.style.display = 'flex';
+            
+            // Show notification if there are active orders
+            const activeOrders = this.currentOrders.filter(order => 
+                ['pending', 'confirmed', 'preparing', 'ready'].includes(order.status)
+            );
+            
+            if (activeOrders.length > 0 && orderNotification) {
+                orderNotification.style.display = 'block';
+            }
+        }
+    }
+
+    async loadOrderHistory() {
+        const orderHistoryList = document.getElementById('orderHistoryList');
+        const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
+        
+        if (this.orderHistory.length === 0) {
+            if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'block';
+            if (orderHistoryList) orderHistoryList.style.display = 'none';
+            return;
+        }
+        
+        if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'none';
+        if (orderHistoryList) {
+            orderHistoryList.style.display = 'flex';
+            orderHistoryList.innerHTML = this.orderHistory.map(order => this.renderOrderItem(order)).join('');
+        }
+    }
+
+    renderOrderItem(order) {
+        const statusClass = order.status.toLowerCase();
+        const statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+        const orderDate = new Date(order.createdAt).toLocaleDateString();
+        const itemsCount = order.items.length;
+        const firstItems = order.items.slice(0, 2).map(item => item.name).join(', ');
+        const moreItems = itemsCount > 2 ? ` +${itemsCount - 2} more` : '';
+        
+        return `
+            <div class="order-item" data-order-id="${order.id}">
+                <div class="order-header">
+                    <span class="order-id">Order #${order.id.slice(-6)}</span>
+                    <span class="order-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="order-details">
+                    <span>${orderDate}</span>
+                    <span class="order-total">₨${order.total}</span>
+                </div>
+                <div class="order-items-summary">
+                    ${firstItems}${moreItems}
+                </div>
+                <div class="order-actions">
+                    ${['pending', 'confirmed', 'preparing', 'ready'].includes(order.status) ? 
+                        '<button class="order-track-btn">Track Order</button>' : 
+                        '<button class="order-reorder-btn">Reorder</button>'
+                    }
+                </div>
+            </div>
+        `;
+    }
+
+    addToOrderHistory(order) {
+        this.orderHistory.unshift(order);
+        this.currentOrders.push(order);
+        localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
+        localStorage.setItem('currentOrders', JSON.stringify(this.currentOrders));
+        this.updateOrderHistoryIcon();
+    }
+
+    updateOrderStatus(orderId, newStatus) {
+        const historyOrder = this.orderHistory.find(o => o.id === orderId);
+        if (historyOrder) {
+            historyOrder.status = newStatus;
+        }
+        
+        const currentOrder = this.currentOrders.find(o => o.id === orderId);
+        if (currentOrder) {
+            currentOrder.status = newStatus;
+            if (['completed', 'cancelled'].includes(newStatus)) {
+                this.currentOrders = this.currentOrders.filter(o => o.id !== orderId);
+            }
+        }
+        
+        localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
+        localStorage.setItem('currentOrders', JSON.stringify(this.currentOrders));
+        this.updateOrderHistoryIcon();
+        this.showOrderStatusNotification(orderId, newStatus);
+    }
+
+    showOrderStatusNotification(orderId, status) {
+        const statusMessages = {
+            confirmed: 'Order confirmed! Your food is being prepared.',
+            preparing: 'Your order is being prepared.',
+            ready: 'Your order is ready for pickup!',
+            completed: 'Order completed. Enjoy your meal!',
+            cancelled: 'Order has been cancelled.'
+        };
+        
+        const message = statusMessages[status] || `Order status updated to ${status}`;
+        console.log(`Order #${orderId.slice(-6)}: ${message}`);
+    }
+
+    // WebSocket Methods
+    initializeWebSocket() {
+        if (!this.customerId || !this.restaurantId) return;
+        
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        
+        this.websocket = new WebSocket(wsUrl);
+        
+        this.websocket.onopen = () => {
+            console.log('🔌 Connected to WebSocket server');
+            this.websocket.send(JSON.stringify({
+                type: 'join-customer',
+                customerId: this.customerId,
+                restaurantId: this.restaurantId
+            }));
+        };
+        
+        this.websocket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                this.handleWebSocketMessage(data);
+            } catch (error) {
+                console.error('Error parsing WebSocket message:', error);
+            }
+        };
+        
+        this.websocket.onclose = () => {
+            console.log('🔌 WebSocket connection closed');
+            setTimeout(() => {
+                this.initializeWebSocket();
+            }, 5000);
+        };
+        
+        this.websocket.onerror = (error) => {
+            console.error('🔌 WebSocket error:', error);
+        };
+    }
+
+    handleWebSocketMessage(data) {
+        switch (data.type) {
+            case 'order-status-update':
+                this.updateOrderStatus(data.data.orderId, data.data.status);
+                break;
+            default:
+                console.log('Unknown WebSocket message type:', data.type);
+        }
+    }
+
+    getCustomerIdFromStorage() {
+        let customerId = localStorage.getItem('customerId');
+        if (!customerId) {
+            customerId = 'customer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('customerId', customerId);
+        }
+        return customerId;
     }
 }
 
