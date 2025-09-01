@@ -69,10 +69,10 @@ class MenuApp {
         if (orderHistoryToggle) orderHistoryToggle.addEventListener('click', this.toggleOrderHistory.bind(this));
         
         // Order history close events
-        const orderHistoryClose = document.getElementById('orderHistoryClose');
-        const orderHistoryOverlay = document.getElementById('orderHistoryOverlay');
-        if (orderHistoryClose) orderHistoryClose.addEventListener('click', this.closeOrderHistory.bind(this));
-        if (orderHistoryOverlay) orderHistoryOverlay.addEventListener('click', this.closeOrderHistory.bind(this));
+        const orderHistoryCloseBtn = document.getElementById('orderHistoryClose');
+        const orderHistoryOverlayEl = document.getElementById('orderHistoryOverlay');
+        if (orderHistoryCloseBtn) orderHistoryCloseBtn.addEventListener('click', this.closeOrderHistory.bind(this));
+        if (orderHistoryOverlayEl) orderHistoryOverlayEl.addEventListener('click', this.closeOrderHistory.bind(this));
 
         // Search events (both desktop and mobile)
         const searchInput = document.getElementById('searchInput');
@@ -132,11 +132,11 @@ class MenuApp {
         }
 
         // Order history modal events
-        const orderHistoryClose = document.getElementById('orderHistoryClose');
-        const orderHistoryOverlay = document.getElementById('orderHistoryOverlay');
+        const orderHistoryCloseModal = document.getElementById('orderHistoryClose');
+        const orderHistoryOverlayModal = document.getElementById('orderHistoryOverlay');
         
-        if (orderHistoryClose) orderHistoryClose.addEventListener('click', this.closeOrderHistory.bind(this));
-        if (orderHistoryOverlay) orderHistoryOverlay.addEventListener('click', this.closeOrderHistory.bind(this));
+        if (orderHistoryCloseModal) orderHistoryCloseModal.addEventListener('click', this.closeOrderHistory.bind(this));
+        if (orderHistoryOverlayModal) orderHistoryOverlayModal.addEventListener('click', this.closeOrderHistory.bind(this));
 
         // Escape key handling
         document.addEventListener('keydown', (e) => {

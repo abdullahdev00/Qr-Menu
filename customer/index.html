@@ -610,5 +610,22 @@
     <script src="/customer/js/cart.js"></script>
     <script src="/customer/js/filters.js"></script>
     <script src="/customer/js/auth.js"></script>
+    
+    <script>
+        // Initialize application after all scripts are loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Initialize components
+                window.menuApp = new MenuApp();
+                window.cart = new ShoppingCart();
+                window.auth = new AuthenticationManager();
+                window.filters = new FilterManager();
+                
+                console.log('✅ Customer website initialized successfully');
+            } catch (error) {
+                console.error('❌ Error initializing customer website:', error);
+            }
+        });
+    </script>
 </body>
 </html>
