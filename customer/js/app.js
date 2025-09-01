@@ -21,6 +21,9 @@ class MenuApp {
         // Default to single-column which means multi-column grid on desktop (confusing naming)
         this.currentLayout = localStorage.getItem('menuLayout') || 'single-column';
         
+        // Theme management
+        this.currentTheme = localStorage.getItem('theme') || 'dark';
+        
         // QR scan detection
         this.tableNumber = this.getTableFromURL();
         this.isQRScan = !!this.tableNumber;
@@ -30,6 +33,7 @@ class MenuApp {
     }
 
     async init() {
+        this.initializeTheme(); // Initialize theme first
         this.bindEvents();
         this.initializeLayout();
         this.handleQRScan(); // Handle QR scan first
@@ -44,9 +48,11 @@ class MenuApp {
         // Header events
         const searchToggle = document.getElementById('searchToggle');
         const cartToggle = document.getElementById('cartToggle');
+        const themeToggle = document.getElementById('themeToggle');
         
         if (searchToggle) searchToggle.addEventListener('click', this.toggleSearch.bind(this));
         if (cartToggle) cartToggle.addEventListener('click', this.toggleCart.bind(this));
+        if (themeToggle) themeToggle.addEventListener('click', this.toggleTheme.bind(this));
 
         // Search events (both desktop and mobile)
         const searchInput = document.getElementById('searchInput');
@@ -1261,6 +1267,46 @@ class MenuApp {
             } else {
                 icon.className = 'fas fa-bars';
                 layoutToggle.setAttribute('title', 'Switch to 1 column');
+            }
+        }
+    }
+
+    // Theme Management Methods
+    initializeTheme() {
+        // Apply theme to document
+        document.documentElement.setAttribute('data-theme', this.currentTheme);
+        
+        // Update theme icon
+        this.updateThemeIcon();
+    }
+
+    toggleTheme() {
+        // Switch between light and dark themes
+        this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Save to localStorage
+        localStorage.setItem('theme', this.currentTheme);
+        
+        // Apply theme to document
+        document.documentElement.setAttribute('data-theme', this.currentTheme);
+        
+        // Update theme icon
+        this.updateThemeIcon();
+        
+        // Add smooth transition effect
+        document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+        setTimeout(() => {
+            document.body.style.transition = '';
+        }, 300);
+    }
+
+    updateThemeIcon() {
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+            if (this.currentTheme === 'dark') {
+                themeIcon.className = 'fas fa-sun'; // Show sun icon in dark mode (to switch to light)
+            } else {
+                themeIcon.className = 'fas fa-moon'; // Show moon icon in light mode (to switch to dark)
             }
         }
     }

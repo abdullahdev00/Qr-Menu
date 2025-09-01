@@ -6,7 +6,7 @@
 }
 
 :root {
-    /* Color System */
+    /* Dark Mode Color System (Default) */
     --primary-dark: #0a0a0a;
     --secondary-dark: #1a1a1a;
     --card-background: #2a2a2a;
@@ -16,7 +16,23 @@
     --text-secondary: #cccccc;
     --success-green: #00c851;
     --warning-red: #ff4444;
-    
+}
+
+/* Light Mode Color System */
+[data-theme="light"] {
+    --primary-dark: #ffffff;
+    --secondary-dark: #f8f9fa;
+    --card-background: #ffffff;
+    --accent-gold: #e67e22;
+    --accent-amber: #f39c12;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --success-green: #28a745;
+    --warning-red: #dc3545;
+}
+
+/* Typography, Spacing, and Common Variables */
+:root {
     /* Typography */
     --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --font-secondary: 'Playfair Display', Georgia, serif;
@@ -45,6 +61,38 @@
     --transition-fast: 0.15s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
+}
+
+/* Light Mode Shadows and Styling Adjustments */
+[data-theme="light"] {
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Light mode header adjustments */
+[data-theme="light"] .header {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode mobile search bar */
+[data-theme="light"] .mobile-search-bar {
+    background: var(--secondary-dark);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode navbar search styling */
+[data-theme="light"] .navbar-search .search-container input {
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .navbar-search .search-container input:focus {
+    border-color: var(--accent-gold);
+    background: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.1);
 }
 
 html {
@@ -159,8 +207,10 @@ html::-webkit-scrollbar {
     gap: var(--spacing-sm);
 }
 
+.theme-toggle,
 .search-toggle,
-.cart-toggle {
+.cart-toggle,
+.profile-toggle {
     position: relative;
     width: 44px;
     height: 44px;
@@ -175,10 +225,20 @@ html::-webkit-scrollbar {
     justify-content: center;
 }
 
+.theme-toggle:hover,
 .search-toggle:hover,
-.cart-toggle:hover {
+.cart-toggle:hover,
+.profile-toggle:hover {
     background: rgba(255, 255, 255, 0.1);
     color: var(--accent-gold);
+}
+
+/* Light mode hover states */
+[data-theme="light"] .theme-toggle:hover,
+[data-theme="light"] .search-toggle:hover,
+[data-theme="light"] .cart-toggle:hover,
+[data-theme="light"] .profile-toggle:hover {
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .cart-count {
