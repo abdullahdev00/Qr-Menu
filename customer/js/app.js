@@ -67,6 +67,12 @@ class MenuApp {
         // Order history events
         const orderHistoryToggle = document.getElementById('orderHistoryToggle');
         if (orderHistoryToggle) orderHistoryToggle.addEventListener('click', this.toggleOrderHistory.bind(this));
+        
+        // Order history close events
+        const orderHistoryClose = document.getElementById('orderHistoryClose');
+        const orderHistoryOverlay = document.getElementById('orderHistoryOverlay');
+        if (orderHistoryClose) orderHistoryClose.addEventListener('click', this.closeOrderHistory.bind(this));
+        if (orderHistoryOverlay) orderHistoryOverlay.addEventListener('click', this.closeOrderHistory.bind(this));
 
         // Search events (both desktop and mobile)
         const searchInput = document.getElementById('searchInput');

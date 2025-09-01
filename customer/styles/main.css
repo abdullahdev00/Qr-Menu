@@ -1158,42 +1158,72 @@ html::-webkit-scrollbar {
     color: var(--text-secondary);
 }
 
-/* Order History Modal */
+/* Order History Sidebar */
 .order-history-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    align-items: center;
-    justify-content: center;
     z-index: 10000;
-    backdrop-filter: blur(5px);
+    pointer-events: none;
+    transition: all var(--transition-normal);
 }
 
 .order-history-modal.active {
-    display: flex;
+    pointer-events: auto;
+}
+
+.order-history-modal .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.order-history-modal.active .modal-overlay {
+    opacity: 1;
 }
 
 .order-history-modal .modal-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
     background: var(--card-background);
-    border-radius: var(--radius-xl);
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    box-shadow: var(--shadow-xl);
-    position: relative;
+    /* Hide scrollbars */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.order-history-modal .modal-content::-webkit-scrollbar {
+    display: none;
+}
+
+.order-history-modal.active .modal-content {
+    transform: translateX(0);
 }
 
 .order-history-modal .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+    padding: var(--spacing-lg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--secondary-dark);
+    flex-shrink: 0;
 }
 
 .order-history-modal .modal-header h3 {
@@ -1203,10 +1233,33 @@ html::-webkit-scrollbar {
     font-weight: 600;
 }
 
+.order-history-modal .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    padding: var(--spacing-xs);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.order-history-modal .modal-close:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .order-history-modal .modal-body {
+    flex: 1;
     padding: var(--spacing-lg);
-    max-height: 60vh;
     overflow-y: auto;
+    /* Hide scrollbars */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.order-history-modal .modal-body::-webkit-scrollbar {
+    display: none;
 }
 
 .order-history-empty {
