@@ -164,7 +164,7 @@ export default function RestaurantTable({
 
   return (
     <div className="bg-gradient-to-br from-white via-blue-50/50 to-purple-50/50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl overflow-hidden border-2 border-gradient-to-r from-blue-100 to-purple-100 dark:border-gray-700">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-gradient-to-r from-blue-100 via-purple-50 to-pink-100 dark:from-gray-800 dark:via-gray-750 dark:to-gray-800 border-b-2 border-blue-200">
@@ -175,11 +175,11 @@ export default function RestaurantTable({
                   aria-label="Select all restaurants"
                 />
               </TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Restaurant Info</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Subscription</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Performance</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Location</TableHead>
-              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4">Actions</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4 min-w-[200px]">Restaurant Info</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4 min-w-[120px]">Subscription</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4 min-w-[140px]">Performance</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4 min-w-[160px]">Location</TableHead>
+              <TableHead className="font-bold text-gray-700 dark:text-gray-200 py-4 min-w-[180px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -201,12 +201,12 @@ export default function RestaurantTable({
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
                       <span className="text-white font-bold text-sm">{restaurant.name[0]?.toUpperCase()}</span>
                     </div>
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white">{restaurant.name}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">{restaurant.ownerName}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-gray-900 dark:text-white truncate">{restaurant.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400 truncate">{restaurant.ownerName}</div>
                       <div className="flex items-center text-xs text-gray-400 mt-1">
-                        <Mail className="w-3 h-3 mr-1" />
-                        {restaurant.ownerEmail}
+                        <Mail className="w-3 h-3 mr-1 flex-shrink-0" />
+                        <span className="truncate">{restaurant.ownerEmail}</span>
                       </div>
                     </div>
                   </div>
@@ -231,12 +231,12 @@ export default function RestaurantTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="space-y-1">
-                    <div className="font-medium">{restaurant.city || 'Karachi'}</div>
-                    <div className="text-sm text-gray-500">DHA Phase 2</div>
-                    <div className="text-xs text-gray-400 flex items-center">
-                      <MapPin className="w-3 h-3 mr-1" />
-                      {restaurant.address || 'Address not provided'}
+                  <div className="space-y-1 min-w-0">
+                    <div className="font-medium truncate">{restaurant.city || 'Karachi'}</div>
+                    <div className="text-sm text-gray-500 truncate">DHA Phase 2</div>
+                    <div className="text-xs text-gray-400 flex items-center min-w-0">
+                      <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{restaurant.address || 'Address not provided'}</span>
                     </div>
                   </div>
                 </TableCell>

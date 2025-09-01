@@ -751,17 +751,17 @@ export default function RestaurantsPage() {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto overflow-y-hidden">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Restaurant</TableHead>
-                    <TableHead>Owner Details</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Plan</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="min-w-[180px]">Restaurant</TableHead>
+                    <TableHead className="min-w-[200px]">Owner Details</TableHead>
+                    <TableHead className="min-w-[160px]">Location</TableHead>
+                    <TableHead className="min-w-[80px]">Status</TableHead>
+                    <TableHead className="min-w-[100px]">Plan</TableHead>
+                    <TableHead className="min-w-[100px]">Created</TableHead>
+                    <TableHead className="text-right min-w-[140px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -783,34 +783,34 @@ export default function RestaurantsPage() {
                             <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                               <Store className="h-5 w-5 text-blue-600" />
                             </div>
-                            <div>
-                              <div className="font-medium text-gray-900 dark:text-white">{restaurant.name}</div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">{restaurant.slug}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-gray-900 dark:text-white truncate">{restaurant.name}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400 truncate">{restaurant.slug}</div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div>
-                            <div className="font-medium text-gray-900 dark:text-white">{restaurant.ownerName}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                              <Mail className="h-3 w-3 mr-1" />
-                              {restaurant.ownerEmail}
+                          <div className="min-w-0">
+                            <div className="font-medium text-gray-900 dark:text-white truncate">{restaurant.ownerName}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center min-w-0">
+                              <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
+                              <span className="truncate">{restaurant.ownerEmail}</span>
                             </div>
                             {restaurant.ownerPhone && (
-                              <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                                <Phone className="h-3 w-3 mr-1" />
-                                {restaurant.ownerPhone}
+                              <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center min-w-0">
+                                <Phone className="h-3 w-3 mr-1 flex-shrink-0" />
+                                <span className="truncate">{restaurant.ownerPhone}</span>
                               </div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center text-sm text-gray-900 dark:text-white">
-                            <MapPin className="h-4 w-4 mr-1 text-gray-400 dark:text-gray-500" />
-                            <div>
-                              {restaurant.city}
+                          <div className="flex items-center text-sm text-gray-900 dark:text-white min-w-0">
+                            <MapPin className="h-4 w-4 mr-1 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate">{restaurant.city}</div>
                               {restaurant.address && (
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
                                   {restaurant.address}
                                 </div>
                               )}
