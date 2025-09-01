@@ -14,6 +14,7 @@ import CustomerAuthTestPage from '../pages/customer-auth-test';
 console.log('📦 DashboardPage imported:', typeof DashboardPage);
 import RestaurantDashboardPage from '../pages/restaurant-dashboard';
 import RestaurantsPage from '../pages/restaurants';
+import QrCodesPage from '../pages/qr-codes';
 import PaymentsPage from '../pages/payments';
 import MenuTemplatesPage from '../pages/menu-templates';
 import SubscriptionsPage from '../pages/subscriptions';
@@ -90,6 +91,7 @@ function App() {
                     <Route path="/dashboard" component={DashboardPage} />
                     <Route path="/restaurant-dashboard" component={RestaurantDashboardPage} />
                     <Route path="/restaurants" component={RestaurantsPage} />
+                    <Route path="/qr-codes" component={QrCodesPage} />
                     <Route path="/payments" component={PaymentsPage} />
                     <Route path="/menu-templates" component={MenuTemplatesPage} />
                     <Route path="/subscriptions" component={SubscriptionsPage} />

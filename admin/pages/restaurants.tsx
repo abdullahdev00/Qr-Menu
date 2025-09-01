@@ -15,7 +15,7 @@ import { validators, generateSlug } from '../lib/validation';
 import { 
   Plus, Search, Filter, MoreHorizontal, Edit, Trash2, 
   Eye, Store, MapPin, Phone, Mail, Calendar,
-  Users, TrendingUp, Clock, Star, AlertCircle, XCircle
+  Users, TrendingUp, Clock, Star, AlertCircle, XCircle, QrCode
 } from 'lucide-react';
 
 interface User {
@@ -840,6 +840,15 @@ export default function RestaurantsPage() {
                               data-testid={`button-view-${restaurant.id}`}
                             >
                               <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => setLocation(`/qr-codes?restaurant=${restaurant.id}`)}
+                              data-testid={`button-qr-codes-${restaurant.id}`}
+                              title="Manage QR Codes"
+                            >
+                              <QrCode className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="ghost" 
