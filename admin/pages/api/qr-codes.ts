@@ -1,5 +1,5 @@
-import { db } from '../../../admin/lib/storage';
-import { restaurants, restaurantTables, qrCodes, insertQrCodeSchema } from '../../../shared/schema';
+import { db } from '../../lib/storage';
+import { restaurants, restaurantTables, qrCodes } from '../../../shared/schema';
 import { eq, desc } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {

@@ -121,14 +121,14 @@ export default function QrCodesPage() {
     }
   });
 
-  const qrCodes = qrCodesData?.qrCodes || [];
+  const qrCodes = (qrCodesData as any)?.qrCodes || [];
   const filteredQrCodes = qrCodes.filter((qr: QrCodeData) => {
     const matchesSearch = qr.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || qr.type === typeFilter;
     return matchesSearch && matchesType;
   });
 
-  const selectedRestaurantData = restaurants?.restaurants?.find((r: Restaurant) => r.id === selectedRestaurant);
+  const selectedRestaurantData = (restaurants as any)?.find((r: Restaurant) => r.id === selectedRestaurant);
 
   const handleGenerateQrCode = async (formData: FormData) => {
     if (!selectedRestaurant) {
@@ -244,7 +244,7 @@ export default function QrCodesPage() {
               {restaurantsLoading ? (
                 <SelectItem value="loading" disabled>Loading restaurants...</SelectItem>
               ) : (
-                restaurants?.restaurants?.map((restaurant: Restaurant) => (
+                (restaurants as any)?.map((restaurant: Restaurant) => (
                   <SelectItem key={restaurant.id} value={restaurant.id}>
                     {restaurant.name} ({restaurant.slug})
                   </SelectItem>
@@ -348,8 +348,8 @@ export default function QrCodesPage() {
                     <Button type="button" variant="outline" onClick={() => setIsGenerateDialogOpen(false)}>
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={generateQrMutation.isPending}>
-                      {generateQrMutation.isPending ? 'Generating...' : 'Generate QR'}
+                    <Button type="submit" disabled={createQrMutation.isPending}>
+                      {createQrMutation.isPending ? 'Generating...' : 'Generate QR'}
                     </Button>
                   </DialogFooter>
                 </form>
