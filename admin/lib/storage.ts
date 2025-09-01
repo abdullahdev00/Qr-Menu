@@ -29,8 +29,12 @@ import {
 } from "../../shared/schema";
 
 // Create connection with proper error handling and SSL configuration
-const sql = postgres(process.env.DATABASE_URL!, {
-  ssl: false, // Disable SSL for development
+const databaseUrl = process.env.DATABASE_URL!.includes('sslmode=')
+  ? process.env.DATABASE_URL!
+  : `${process.env.DATABASE_URL!}?sslmode=require`;
+
+const sql = postgres(databaseUrl, {
+  ssl: { rejectUnauthorized: false },
   max: 1,
   idle_timeout: 20,
   max_lifetime: 60 * 30,
