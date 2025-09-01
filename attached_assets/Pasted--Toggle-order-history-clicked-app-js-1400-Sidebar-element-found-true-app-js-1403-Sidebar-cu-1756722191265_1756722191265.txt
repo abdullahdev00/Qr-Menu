@@ -1,0 +1,57 @@
+🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar
+app.js:1408 📋 Opening order history
+app.js:1417 🔽 Opening order history sidebar
+app.js:1420 📋 Adding active class to sidebar
+app.js:1423 📋 Loading order history data
+app.js:1470 🔄 Loading order history...
+app.js:1471 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1472 📋 Current orderHistory array: [{…}]
+app.js:1473 📋 LocalStorage orderHistory: [{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1480 ✅ Loaded order history from localStorage: [{…}]
+app.js:1425 ✅ Order history sidebar opened
+app.js:1398 🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar active
+app.js:1405 📋 Closing order history
+al-baik-restaurant?table=1:683 📋 Order history button clicked directly
+app.js:1398 🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar
+app.js:1408 📋 Opening order history
+app.js:1417 🔽 Opening order history sidebar
+app.js:1420 📋 Adding active class to sidebar
+app.js:1423 📋 Loading order history data
+app.js:1470 🔄 Loading order history...
+app.js:1471 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1472 📋 Current orderHistory array: [{…}]
+app.js:1473 📋 LocalStorage orderHistory: [{"id":"f046d309-1ca6-48e6-90a2-6ca52d9940aa","orderNumber":"ORD972369","status":"pending","total":312.5,"estimatedTime":15,"tableNumber":"1","restaurantName":"Al-Baik Restaurant","restaurantSlug":"al-baik-restaurant","items":[{"menuItemId":"44dff279-1485-456d-b6da-3291ebcd2f4c","name":"Chicken Samosa","quantity":1,"price":"312.50","total":"312.50"}],"createdAt":"2025-09-01T10:19:37.239Z"}]
+app.js:1480 ✅ Loaded order history from localStorage: [{…}]
+app.js:1425 ✅ Order history sidebar opened
+app.js:1398 🔄 Toggle order history clicked
+app.js:1400 📋 Sidebar element found: true
+app.js:1403 📋 Sidebar current classes: order-history-sidebar active
+app.js:1405 📋 Closing order history
+app.js:1497 ✅ Updated order history from API: [{…}]
+app.js:1506 📊 Final orderHistory length: 1
+app.js:1507 📊 Final orderHistory data: [{…}]
+app.js:1516 📋 Displaying orders: 1
+app.js:1517 📋 First order structure: {id: 'f046d309-1ca6-48e6-90a2-6ca52d9940aa', orderNumber: 'ORD972369', status: 'pending', total: 312.5, estimatedTime: 15, …}
+app.js:1520 📋 Hidden empty state
+app.js:1526 📋 Rendered HTML length: 1345
+app.js:1527 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="f046d309-1ca6-48e6-90a2-6ca52d9940aa" data-testid="order-card-f046d309-1ca6-48e6-90a2-6ca52d9940aa">
+                <div class="order-heade
+app.js:1529 ✅ Order history UI updated - HTML set to orderHistoryList
+app.js:1497 ✅ Updated order history from API: [{…}]
+app.js:1506 📊 Final orderHistory length: 1
+app.js:1507 📊 Final orderHistory data: [{…}]
+app.js:1516 📋 Displaying orders: 1
+app.js:1517 📋 First order structure: {id: 'f046d309-1ca6-48e6-90a2-6ca52d9940aa', orderNumber: 'ORD972369', status: 'pending', total: 312.5, estimatedTime: 15, …}
+app.js:1520 📋 Hidden empty state
+app.js:1526 📋 Rendered HTML length: 1345
+app.js:1527 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="f046d309-1ca6-48e6-90a2-6ca52d9940aa" data-testid="order-card-f046d309-1ca6-48e6-90a2-6ca52d9940aa">
+                <div class="order-heade
+app.js:1529 ✅ Order history UI updated - HTML set to orderHistoryList
