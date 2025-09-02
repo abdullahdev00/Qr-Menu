@@ -19,7 +19,8 @@ import {
   Clock,
   ChefHat,
   ShoppingBag,
-  Home
+  Home,
+  Download
 } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../admin/components/ui/dialog'
 import { Button } from '../../admin/components/ui/button'
@@ -493,11 +494,11 @@ export default function VendorDashboard() {
   }, [])
 
   // Fetch real dashboard data
-  const { data: menuItemsData } = useQuery({
-    queryKey: ['/api/menu-items', user?.restaurantId],
+  const { data: dashboardMetrics } = useQuery({
+    queryKey: ['/api/vendor/dashboard/metrics', user?.restaurantId],
     queryFn: async () => {
       if (!user?.restaurantId) return null
-      const response = await fetch(`/api/menu-items?restaurantId=${user.restaurantId}`)
+      const response = await fetch(`/api/vendor/dashboard/metrics?restaurantId=${user.restaurantId}`)
       return response.json()
     },
     enabled: !!user?.restaurantId,
@@ -514,12 +515,12 @@ export default function VendorDashboard() {
   })
 
   // Calculate stats from real data
-  const menuItemsCount = menuItemsData?.length || 0
-  const qrScansCount = restaurantData?.qrScansCount || 0
-  const avgRating = restaurantData?.avgRating || "0.0"
-  const totalReviews = restaurantData?.totalReviews || 0
-  const popularItem = menuItemsData?.find(item => item.isPopular) || menuItemsData?.[0] || { name: 'No items yet' }
-  const subscriptionPlan = restaurantData?.planId ? 'Pro Plan' : 'Basic Plan' // Real subscription check
+  const menuItemsCount = dashboardMetrics?.menuItemsCount || 0
+  const qrScansCount = dashboardMetrics?.qrScansCount || 0
+  const avgRating = dashboardMetrics?.avgRating || "0.0"
+  const totalReviews = dashboardMetrics?.totalReviews || 0
+  const popularItem = dashboardMetrics?.popularItem || { name: 'No items yet' }
+  const subscriptionPlan = dashboardMetrics?.subscriptionPlan || 'Basic Plan'
 
   if (!user) {
     return (
@@ -635,7 +636,7 @@ export default function VendorDashboard() {
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">{subscriptionPlan}</h3>
           <p className="text-sm text-gray-600 dark:text-gray-300">Subscription</p>
           <div className="mt-2 text-xs text-orange-600 dark:text-orange-400">
-            {restaurantData?.subscriptionStatus === 'active' ? 'Active subscription' : 'Renews: March 15'}
+            {dashboardMetrics?.subscriptionStatus === 'active' ? 'Active subscription' : 'Renews: March 15'}
           </div>
         </div>
       </div>
@@ -648,15 +649,16 @@ export default function VendorDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <AddItemDialog restaurantId={user.restaurantId} />
               
-              <button className="flex flex-col items-center p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                  <QrCode className="w-6 h-6" />
-                </div>
-                <span className="text-sm font-medium text-center">Generate QR</span>
-              </button>
+              <QRGenerationDialog 
+                restaurantId={user.restaurantId} 
+                restaurantSlug={dashboardMetrics?.restaurant?.slug || restaurantData?.slug || 'restaurant'} 
+              />
               
-              <Link href="/analytics">
-                <button className="w-full flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+              <Link href={`/${dashboardMetrics?.restaurant?.slug || restaurantData?.slug || 'vendor'}/analytics`}>
+                <button 
+                  className="w-full flex flex-col items-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                  data-testid="button-view-analytics"
+                >
                   <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
                     <BarChart3 className="w-6 h-6" />
                   </div>
@@ -664,12 +666,17 @@ export default function VendorDashboard() {
                 </button>
               </Link>
               
-              <button className="flex flex-col items-center p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                  <Settings className="w-6 h-6" />
-                </div>
-                <span className="text-sm font-medium text-center">Settings</span>
-              </button>
+              <Link href={`/${dashboardMetrics?.restaurant?.slug || restaurantData?.slug || 'vendor'}/settings`}>
+                <button 
+                  className="w-full flex flex-col items-center p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                  data-testid="button-settings"
+                >
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                    <Settings className="w-6 h-6" />
+                  </div>
+                  <span className="text-sm font-medium text-center">Settings</span>
+                </button>
+              </Link>
               
               <button className="flex flex-col items-center p-4 bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
@@ -744,4 +751,172 @@ export default function VendorDashboard() {
       </div>
     </div>
   )
+}
+
+// QR Generation Dialog Component
+function QRGenerationDialog({ restaurantId, restaurantSlug }: { restaurantId: string; restaurantSlug: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [qrType, setQrType] = useState('menu');
+  const [qrName, setQrName] = useState('');
+  const [tableNumber, setTableNumber] = useState('');
+  const [selectedSize, setSelectedSize] = useState('medium');
+  const { toast } = useToast();
+
+  const handleGenerateQR = async () => {
+    if (!qrName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a QR code name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (qrType === 'table' && !tableNumber.trim()) {
+      toast({
+        title: "Error", 
+        description: "Please enter a table number for table-specific QR.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const params = new URLSearchParams({
+        restaurantSlug: restaurantSlug,
+        size: selectedSize,
+        useCustomDesign: 'true',
+        preview: 'false'
+      });
+
+      if (qrType === 'table' && tableNumber) {
+        params.set('tableNumber', tableNumber);
+      }
+
+      const response = await fetch(`/api/qr-codes/generate?${params}`);
+      
+      if (response.ok) {
+        // Create download
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `qr_${restaurantSlug}_${qrType === 'table' ? `table_${tableNumber}` : 'menu'}.png`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        toast({
+          title: "Success!",
+          description: "QR code generated and downloaded successfully.",
+        });
+        setIsOpen(false);
+        setQrName('');
+        setTableNumber('');
+      } else {
+        throw new Error('Failed to generate QR code');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate QR code. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <button 
+          className="flex flex-col items-center p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+          data-testid="button-generate-qr"
+        >
+          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+            <QrCode className="w-6 h-6" />
+          </div>
+          <span className="text-sm font-medium text-center">Generate QR</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Generate New QR Code</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="qr-type">QR Code Type</Label>
+            <Select value={qrType} onValueChange={setQrType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="menu">Full Menu</SelectItem>
+                <SelectItem value="table">Table Specific</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label htmlFor="qr-name">QR Code Name</Label>
+            <Input 
+              placeholder="e.g., Table 5 QR" 
+              value={qrName}
+              onChange={(e) => setQrName(e.target.value)}
+            />
+          </div>
+          
+          {qrType === 'table' && (
+            <div>
+              <Label htmlFor="table-number">Table Number</Label>
+              <Input 
+                type="number" 
+                placeholder="e.g., 5" 
+                min="1"
+                value={tableNumber}
+                onChange={(e) => setTableNumber(e.target.value)}
+              />
+            </div>
+          )}
+          
+          <div>
+            <Label htmlFor="qr-size">Size</Label>
+            <Select value={selectedSize} onValueChange={setSelectedSize}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="small">Small (300x300)</SelectItem>
+                <SelectItem value="medium">Medium (500x500)</SelectItem>
+                <SelectItem value="large">Large (700x700)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <Button 
+            className="w-full" 
+            onClick={handleGenerateQR}
+            disabled={isGenerating}
+            data-testid="button-generate-qr-confirm"
+          >
+            {isGenerating ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4 mr-2" />
+                Generate & Download
+              </>
+            )}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
