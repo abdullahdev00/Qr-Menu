@@ -24,6 +24,15 @@
     .footer-content {
         padding: var(--spacing-lg) 12px;
     }
+    
+    /* Ensure mobile search functionality works on small screens */
+    .mobile-search-bar {
+        display: block !important;
+    }
+    
+    .search-toggle {
+        display: flex !important;
+    }
 }
 
 /* Tablet Portrait: 481px - 768px */
@@ -49,6 +58,15 @@
     
     .footer-content {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Ensure mobile search functionality works on tablets too */
+    .mobile-search-bar {
+        display: block !important;
+    }
+    
+    .search-toggle {
+        display: flex !important;
     }
 }
 
@@ -249,7 +267,7 @@
         display: none;
     }
     
-    /* Hide mobile search bar on desktop */
+    /* Hide mobile search bar on desktop - search is in navbar */
     .mobile-search-bar {
         display: none !important;
     }

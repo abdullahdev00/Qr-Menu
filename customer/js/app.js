@@ -1003,9 +1003,10 @@ class MenuApp {
     // Removed mobile menu functionality as hamburger menu is removed
 
     toggleSearch() {
-        console.log('Toggle search clicked!', 'app.js:883');
+        console.log('🔍 MOBILE SEARCH: Toggle search clicked!');
         const mobileSearchBar = document.getElementById('mobileSearchBar');
-        console.log('Mobile search bar element found:', !!mobileSearchBar, 'app.js:885');
+        console.log('🔍 MOBILE SEARCH: Mobile search bar element found:', !!mobileSearchBar);
+        console.log('🔍 MOBILE SEARCH: Current screen width:', window.innerWidth);
         
         if (!mobileSearchBar) {
             console.error('Mobile search bar element not found!', 'app.js:887');
