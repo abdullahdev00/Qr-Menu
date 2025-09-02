@@ -35,7 +35,7 @@ interface PaymentRequestFormData {
   amount: string;
   paymentMethod: string;
   description: string;
-  transactionRef: string;
+  transactionRef?: string;
   bankName?: string;
   accountNumber?: string;
   accountHolder?: string;
@@ -84,19 +84,19 @@ export default function PaymentRequestPage() {
 
   // Fetch restaurant data including plan and balance info
   const { data: restaurantData, isLoading: restaurantLoading } = useQuery({
-    queryKey: ['/api/restaurants', user?.restaurantId],
-    enabled: !!user?.restaurantId,
+    queryKey: ['/api/restaurants', (user as any)?.restaurantId || (user as any)?.id],
+    enabled: !!(user as any)?.restaurantId || !!(user as any)?.id,
   });
 
   // Fetch subscription plans for upgrade options
-  const { data: subscriptionPlans, isLoading: plansLoading } = useQuery({
+  const { data: subscriptionPlans = [], isLoading: plansLoading } = useQuery({
     queryKey: ['/api/subscription-plans'],
   });
 
   // Fetch payment requests history
-  const { data: paymentRequests, isLoading: requestsLoading } = useQuery({
-    queryKey: ['/api/payment-requests', user?.restaurantId],
-    enabled: !!user?.restaurantId,
+  const { data: paymentRequests = [], isLoading: requestsLoading } = useQuery({
+    queryKey: ['/api/payment-requests', (user as any)?.restaurantId || (user as any)?.id],
+    enabled: !!(user as any)?.restaurantId || !!(user as any)?.id,
   });
 
   // Create payment request mutation
@@ -119,6 +119,7 @@ export default function PaymentRequestPage() {
         amount: "",
         paymentMethod: "",
         description: "",
+        transactionRef: "",
         receiptImage: null
       });
       setImagePreview({ preview: null, isDragOver: false });
@@ -148,7 +149,7 @@ export default function PaymentRequestPage() {
     submitData.append('amount', formData.amount);
     submitData.append('paymentMethod', formData.paymentMethod);
     submitData.append('description', formData.description);
-    submitData.append('restaurantId', user?.restaurantId || '');
+    submitData.append('restaurantId', (user as any)?.restaurantId || (user as any)?.id || '');
     if (formData.receiptImage) {
       submitData.append('receiptImage', formData.receiptImage);
     }

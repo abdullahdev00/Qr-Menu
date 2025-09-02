@@ -29,6 +29,8 @@ import VendorAnalyticsPage from '../../vendor/pages/analytics';
 import VendorDashboardPage from '../../vendor/pages/dashboard';
 import VendorDesignPage from '../../vendor/pages/design';
 import VendorQRCodesPage from '../../vendor/pages/qr-codes';
+import VendorPaymentRequestPage from '../../vendor/pages/payment-request';
+import VendorSettingsPage from '../../vendor/pages/settings';
 
 import MainLayout from '../components/layout/main-layout';
 
@@ -109,9 +111,13 @@ function App() {
                     <Route path="/:slug/design" component={VendorDesignPage} />
                     <Route path="/:slug/analytics" component={VendorAnalyticsPage} />
                     <Route path="/:slug/orders" component={OrdersPage} />
+                    <Route path="/:slug/payment-request" component={VendorPaymentRequestPage} />
+                    <Route path="/:slug/settings" component={VendorSettingsPage} />
                     <Route path="/vendor/dashboard" component={VendorDashboardPage} />
                     <Route path="/vendor/menu-management" component={MenuManagementPage} />
                     <Route path="/vendor/qr-codes" component={VendorQRCodesPage} />
+                    <Route path="/vendor/payment-request" component={VendorPaymentRequestPage} />
+                    <Route path="/vendor/settings" component={VendorSettingsPage} />
                     <Route path="/vendor/design" component={VendorDesignPage} />
                     <Route path="/vendor/analytics" component={VendorAnalyticsPage} />
                     <Route path="/vendor/orders" component={OrdersPage} />
