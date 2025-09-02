@@ -2830,6 +2830,15 @@ select:focus {
     justify-content: center;
     text-align: center;
     height: 300px;
+    z-index: 1;
+}
+
+.order-history-empty.hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
 }
 
 .order-history-list {
@@ -2839,6 +2848,12 @@ select:focus {
     width: 100% !important;
     visibility: visible !important;
     opacity: 1 !important;
+    position: relative !important;
+    z-index: 10 !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
 }
 
 .order-history-empty i {

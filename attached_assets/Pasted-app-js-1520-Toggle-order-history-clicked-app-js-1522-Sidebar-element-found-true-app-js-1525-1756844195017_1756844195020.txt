@@ -1,0 +1,99 @@
+app.js:1520 🔄 Toggle order history clicked
+app.js:1522 📋 Sidebar element found: true
+app.js:1525 📋 Sidebar current classes: order-history-sidebar
+app.js:1530 📋 Opening order history
+app.js:1539 🔽 Opening order history sidebar
+app.js:1542 📋 Adding active class to sidebar
+app.js:1545 📋 Loading order history data
+app.js:1601 🔄 Loading order history...
+app.js:1602 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1603 📋 Current orderHistory array: (2) [{…}, {…}]
+app.js:1604 📋 LocalStorage orderHistory: [{"id":"order_1756843617483_5bouksl76","orderNumber":"ORD614683","items":[{"id":"cart_1756843610890_39j9hr7tv","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T20:06:50.890Z"}],"subtotal":1187.5,"tax":0,"total":1187.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T20:06:57.483Z"},{"id":"order_1756843186882_opj542m0l","orderNumber":"ORD184490","items":[{"id":"cart_1756843179790_mesu8iiwb","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T19:59:39.790Z"},{"id":"cart_1756843181063_hb96jtjuc","menuItemId":"f2629505-4926-461f-adb2-f1ed8464fb77","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-02T19:59:41.064Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T19:59:46.882Z"}]
+app.js:1607 🔍 Debug - All localStorage order keys:
+app.js:1611   orderHistory: [{"id":"order_1756843617483_5bouksl76","orderNumber":"ORD614683","items":[{"id":"cart_1756843610890_39j9hr7tv","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T20:06:50.890Z"}],"subtotal":1187.5,"tax":0,"total":1187.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T20:06:57.483Z"},{"id":"order_1756843186882_opj542m0l","orderNumber":"ORD184490","items":[{"id":"cart_1756843179790_mesu8iiwb","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T19:59:39.790Z"},{"id":"cart_1756843181063_hb96jtjuc","menuItemId":"f2629505-4926-461f-adb2-f1ed8464fb77","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-02T19:59:41.064Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T19:59:46.882Z"}]
+app.js:1620 ✅ Loaded order history from localStorage: (2) [{…}, {…}]
+app.js:1547 ✅ Order history sidebar opened
+app.js:1520 🔄 Toggle order history clicked
+app.js:1522 📋 Sidebar element found: true
+app.js:1525 📋 Sidebar current classes: order-history-sidebar active
+app.js:1527 📋 Closing order history
+al-baik-restaurant?t=YjVlOGI3MWItOGIzMC00ZGQ0LThmOTMtYThkMTUxNGY3Y2U3fDV8MTc1Njg0Mjk5MjE1OQ__:683 📋 Order history button clicked directly
+app.js:1520 🔄 Toggle order history clicked
+app.js:1522 📋 Sidebar element found: true
+app.js:1525 📋 Sidebar current classes: order-history-sidebar
+app.js:1530 📋 Opening order history
+app.js:1539 🔽 Opening order history sidebar
+app.js:1542 📋 Adding active class to sidebar
+app.js:1545 📋 Loading order history data
+app.js:1601 🔄 Loading order history...
+app.js:1602 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1603 📋 Current orderHistory array: (2) [{…}, {…}]
+app.js:1604 📋 LocalStorage orderHistory: [{"id":"order_1756843617483_5bouksl76","orderNumber":"ORD614683","items":[{"id":"cart_1756843610890_39j9hr7tv","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T20:06:50.890Z"}],"subtotal":1187.5,"tax":0,"total":1187.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T20:06:57.483Z"},{"id":"order_1756843186882_opj542m0l","orderNumber":"ORD184490","items":[{"id":"cart_1756843179790_mesu8iiwb","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T19:59:39.790Z"},{"id":"cart_1756843181063_hb96jtjuc","menuItemId":"f2629505-4926-461f-adb2-f1ed8464fb77","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-02T19:59:41.064Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T19:59:46.882Z"}]
+app.js:1607 🔍 Debug - All localStorage order keys:
+app.js:1611   orderHistory: [{"id":"order_1756843617483_5bouksl76","orderNumber":"ORD614683","items":[{"id":"cart_1756843610890_39j9hr7tv","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T20:06:50.890Z"}],"subtotal":1187.5,"tax":0,"total":1187.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T20:06:57.483Z"},{"id":"order_1756843186882_opj542m0l","orderNumber":"ORD184490","items":[{"id":"cart_1756843179790_mesu8iiwb","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T19:59:39.790Z"},{"id":"cart_1756843181063_hb96jtjuc","menuItemId":"f2629505-4926-461f-adb2-f1ed8464fb77","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-02T19:59:41.064Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T19:59:46.882Z"}]
+app.js:1620 ✅ Loaded order history from localStorage: (2) [{…}, {…}]
+app.js:1547 ✅ Order history sidebar opened
+app.js:1520 🔄 Toggle order history clicked
+app.js:1522 📋 Sidebar element found: true
+app.js:1525 📋 Sidebar current classes: order-history-sidebar active
+app.js:1527 📋 Closing order history
+app.js:1520 🔄 Toggle order history clicked
+app.js:1522 📋 Sidebar element found: true
+app.js:1525 📋 Sidebar current classes: order-history-sidebar
+app.js:1530 📋 Opening order history
+app.js:1539 🔽 Opening order history sidebar
+app.js:1542 📋 Adding active class to sidebar
+app.js:1545 📋 Loading order history data
+app.js:1601 🔄 Loading order history...
+app.js:1602 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1603 📋 Current orderHistory array: (2) [{…}, {…}]
+app.js:1604 📋 LocalStorage orderHistory: [{"id":"order_1756843617483_5bouksl76","orderNumber":"ORD614683","items":[{"id":"cart_1756843610890_39j9hr7tv","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T20:06:50.890Z"}],"subtotal":1187.5,"tax":0,"total":1187.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T20:06:57.483Z"},{"id":"order_1756843186882_opj542m0l","orderNumber":"ORD184490","items":[{"id":"cart_1756843179790_mesu8iiwb","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T19:59:39.790Z"},{"id":"cart_1756843181063_hb96jtjuc","menuItemId":"f2629505-4926-461f-adb2-f1ed8464fb77","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-02T19:59:41.064Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T19:59:46.882Z"}]
+app.js:1607 🔍 Debug - All localStorage order keys:
+app.js:1611   orderHistory: [{"id":"order_1756843617483_5bouksl76","orderNumber":"ORD614683","items":[{"id":"cart_1756843610890_39j9hr7tv","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T20:06:50.890Z"}],"subtotal":1187.5,"tax":0,"total":1187.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T20:06:57.483Z"},{"id":"order_1756843186882_opj542m0l","orderNumber":"ORD184490","items":[{"id":"cart_1756843179790_mesu8iiwb","menuItemId":"807c1748-09ee-4340-8155-cf8b44db1ce8","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-02T19:59:39.790Z"},{"id":"cart_1756843181063_hb96jtjuc","menuItemId":"f2629505-4926-461f-adb2-f1ed8464fb77","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-02T19:59:41.064Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"5","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-02T19:59:46.882Z"}]
+app.js:1620 ✅ Loaded order history from localStorage: (2) [{…}, {…}]
+app.js:1547 ✅ Order history sidebar opened
+app.js:1655 ✅ Merged order history from API and localStorage: (2) [{…}, {…}]
+app.js:1671 📊 Final orderHistory length: 2
+app.js:1672 📊 Final orderHistory data: (2) [{…}, {…}]
+app.js:1681 📋 Displaying orders: 2
+app.js:1682 📋 First order structure: {id: 'order_1756843617483_5bouksl76', orderNumber: 'ORD614683', items: Array(1), subtotal: 1187.5, tax: 0, …}
+app.js:1685 📋 Hidden empty state
+app.js:1692 📋 Rendered HTML length: 2723
+app.js:1693 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="order_1756843617483_5bouksl76" data-testid="order-card-order_1756843617483_5bouksl76">
+                <div class="order-header">
+          
+app.js:1695 ✅ Order history UI updated - HTML set to orderHistoryList
+app.js:1702 📋 Number of order items in DOM: 2
+app.js:1704 📋 Order item 0: 368 px height default display
+app.js:1704 📋 Order item 1: 390 px height default display
+ ✅ Merged order history from API and localStorage: (2) [{…}, {…}]
+ 📊 Final orderHistory length: 2
+ 📊 Final orderHistory data: (2) [{…}, {…}]
+ 📋 Displaying orders: 2
+ 📋 First order structure: {id: 'order_1756843617483_5bouksl76', orderNumber: 'ORD614683', items: Array(1), subtotal: 1187.5, tax: 0, …}
+ 📋 Hidden empty state
+ 📋 Rendered HTML length: 2723
+ 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="order_1756843617483_5bouksl76" data-testid="order-card-order_1756843617483_5bouksl76">
+                <div class="order-header">
+          
+ ✅ Order history UI updated - HTML set to orderHistoryList
+ 📋 Number of order items in DOM: 2
+ 📋 Order item 0: 368 px height default display
+ 📋 Order item 1: 390 px height default display
+ ✅ Merged order history from API and localStorage: (2) [{…}, {…}]
+ 📊 Final orderHistory length: 2
+ 📊 Final orderHistory data: (2) [{…}, {…}]
+ 📋 Displaying orders: 2
+ 📋 First order structure: {id: 'order_1756843617483_5bouksl76', orderNumber: 'ORD614683', items: Array(1), subtotal: 1187.5, tax: 0, …}
+ 📋 Hidden empty state
+ 📋 Rendered HTML length: 2723
+ 📋 First 200 chars of HTML: 
+            <div class="order-history-item" data-order-id="order_1756843617483_5bouksl76" data-testid="order-card-order_1756843617483_5bouksl76">
+                <div class="order-header">
+          
+ ✅ Order history UI updated - HTML set to orderHistoryList
+ 📋 Number of order items in DOM: 2
+ 📋 Order item 0: 368 px height default display
+ 📋 Order item 1: 390 px height default display

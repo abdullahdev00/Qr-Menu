@@ -1682,7 +1682,12 @@ class MenuApp {
         console.log('📋 First order structure:', this.orderHistory[0]);
         if (orderHistoryEmpty) {
             orderHistoryEmpty.style.display = 'none';
-            console.log('📋 Hidden empty state');
+            orderHistoryEmpty.style.visibility = 'hidden';
+            orderHistoryEmpty.style.opacity = '0';
+            orderHistoryEmpty.style.position = 'absolute';
+            orderHistoryEmpty.style.top = '-9999px';
+            orderHistoryEmpty.classList.add('hidden');
+            console.log('📋 Hidden empty state completely');
         }
         if (orderHistoryList) {
             orderHistoryList.style.display = 'flex';
@@ -1697,12 +1702,28 @@ class MenuApp {
             // Force a reflow to ensure styles are applied
             orderHistoryList.offsetHeight;
             
-            // Additional debug - check if items are actually visible
+            // Force visibility of all order items with direct styles
             const orderItems = orderHistoryList.querySelectorAll('.order-history-item');
             console.log('📋 Number of order items in DOM:', orderItems.length);
             orderItems.forEach((item, index) => {
-                console.log(`📋 Order item ${index}:`, item.offsetHeight, 'px height', item.style.display || 'default display');
+                // Force each order item to be visible with explicit styles
+                item.style.display = 'block';
+                item.style.visibility = 'visible';
+                item.style.opacity = '1';
+                item.style.position = 'relative';
+                item.style.zIndex = '20';
+                item.style.backgroundColor = 'var(--secondary-dark)';
+                item.style.padding = '16px';
+                item.style.marginBottom = '16px';
+                item.style.borderRadius = '8px';
+                item.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                item.style.minHeight = '200px';
+                item.style.width = '100%';
+                
+                console.log(`📋 Order item ${index}: Forced visible - Height: ${item.offsetHeight}px`);
             });
+            
+            console.log('🔧 Applied explicit visibility styles to all order items');
         } else {
             console.error('❌ orderHistoryList element not found!');
         }
