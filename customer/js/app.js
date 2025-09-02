@@ -67,17 +67,28 @@ class MenuApp {
     
     loadOrderHistoryFromStorage() {
         try {
+            console.log('🔍 DEBUG - Loading order history from storage...');
             const storedHistory = localStorage.getItem('orderHistory');
             const storedCurrentOrders = localStorage.getItem('currentOrders');
+            
+            console.log('🔍 DEBUG - storedHistory raw:', storedHistory);
+            console.log('🔍 DEBUG - storedCurrentOrders raw:', storedCurrentOrders);
             
             if (storedHistory) {
                 this.orderHistory = JSON.parse(storedHistory);
                 console.log('📋 Loaded order history from localStorage:', this.orderHistory.length, 'orders');
+                console.log('📋 First order preview:', this.orderHistory[0]);
+            } else {
+                console.log('⚠️ No orderHistory found in localStorage');
+                this.orderHistory = [];
             }
             
             if (storedCurrentOrders) {
                 this.currentOrders = JSON.parse(storedCurrentOrders);
                 console.log('📋 Loaded current orders from localStorage:', this.currentOrders.length, 'orders');
+            } else {
+                console.log('⚠️ No currentOrders found in localStorage');
+                this.currentOrders = [];
             }
         } catch (error) {
             console.error('Error loading order history from storage:', error);
@@ -1563,6 +1574,8 @@ class MenuApp {
         const orderNotification = document.getElementById('orderNotification');
         
         console.log('🔄 Updating order history icon - orderHistory length:', this.orderHistory.length);
+        console.log('🔍 DEBUG - Current orderHistory array:', this.orderHistory);
+        console.log('🔍 DEBUG - localStorage orderHistory:', localStorage.getItem('orderHistory'));
         
         if (this.orderHistory.length > 0) {
             if (orderHistoryToggle) {
@@ -1602,6 +1615,12 @@ class MenuApp {
         console.log('📋 Elements found - orderHistoryList:', !!orderHistoryList, 'orderHistoryEmpty:', !!orderHistoryEmpty);
         console.log('📋 Current orderHistory array:', this.orderHistory);
         console.log('📋 LocalStorage orderHistory:', localStorage.getItem('orderHistory'));
+        console.log('🔍 DEBUG - All localStorage keys related to orders:');
+        
+        // Debug all localStorage keys
+        Object.keys(localStorage).filter(key => key.includes('order')).forEach(key => {
+            console.log(`  ${key}:`, localStorage.getItem(key));
+        });
         
         // Debug: Check all localStorage keys related to orders
         console.log('🔍 Debug - All localStorage order keys:');
