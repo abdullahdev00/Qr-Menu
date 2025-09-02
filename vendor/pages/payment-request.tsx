@@ -117,7 +117,7 @@ export default function PaymentRequestPage() {
     },
     onSuccess: () => {
       toast({
-        title: "Payment Request Submitted! ✅",
+        title: "Payment Request Submitted!",
         description: "Your payment request has been submitted successfully. We'll review it soon.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/payment-requests'] });
@@ -132,7 +132,7 @@ export default function PaymentRequestPage() {
     },
     onError: (error: any) => {
       toast({
-        title: "Submission Failed ❌", 
+        title: "Submission Failed", 
         description: error.message || "Failed to submit payment request",
         variant: "destructive",
       });
@@ -144,7 +144,7 @@ export default function PaymentRequestPage() {
     
     if (!formData.amount || !formData.paymentMethod || !formData.receiptImage) {
       toast({
-        title: "Missing Information ⚠️",
+        title: "Missing Information",
         description: "Please fill all required fields and upload receipt",
         variant: "destructive",
       });
@@ -239,7 +239,7 @@ export default function PaymentRequestPage() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            💰 Payment Request Center
+            Payment Request Center
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Submit payment requests and manage your account balance
@@ -275,7 +275,7 @@ export default function PaymentRequestPage() {
               <div className="flex items-center justify-between">
                 <Wallet className="w-8 h-8" />
                 <Badge variant="secondary" className="bg-white/20 text-white">
-                  💰 BALANCE
+                  BALANCE
                 </Badge>
               </div>
             </CardHeader>
@@ -288,12 +288,12 @@ export default function PaymentRequestPage() {
                 <div className={`text-sm ${accountBalance > 0 ? 'text-green-100' : 'text-red-100'} flex items-center gap-2`}>
                   {accountBalance > 0 ? (
                     <>
-                      <span className="text-lg">✅</span>
+                      <span className="text-lg">✓</span>
                       <span>Positive Balance</span>
                     </>
                   ) : (
                     <>
-                      <span className="text-lg">⚠️</span>
+                      <span className="text-lg">!</span>
                       <span>Low Balance - Add Funds</span>
                     </>
                   )}
@@ -455,7 +455,7 @@ export default function PaymentRequestPage() {
                           </button>
                         </div>
                         <p className="text-sm text-green-600 font-medium">
-                          ✅ {formData.receiptImage?.name}
+                          {formData.receiptImage?.name}
                         </p>
                         <Label htmlFor="receipt" className="cursor-pointer">
                           <span className="text-sm font-medium text-blue-600 hover:text-blue-500">
@@ -514,7 +514,7 @@ export default function PaymentRequestPage() {
                   ) : (
                     <div className="flex items-center gap-2">
                       <Upload className="w-5 h-5" />
-                      <span>💰 Submit Payment Request</span>
+                      <span>Submit Payment Request</span>
                     </div>
                   )}
                 </Button>

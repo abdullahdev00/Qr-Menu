@@ -321,7 +321,7 @@ export default function QRCodesPage() {
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">
             <span className="hidden sm:inline">QR Codes</span>
-            <span className="sm:hidden">QR Codes 📱</span>
+            <span className="sm:hidden">QR Codes</span>
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm truncate hidden sm:block">
             Generate and manage QR codes for your restaurant menu and tables

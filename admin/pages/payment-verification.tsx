@@ -97,7 +97,7 @@ export default function PaymentVerification() {
     },
     onSuccess: (data, variables) => {
       toast({
-        title: `Payment ${variables.action}d! ✅`,
+        title: `Payment ${variables.action}d!`,
         description: `Payment request has been ${variables.action}d successfully.`,
       });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/payment-requests'] });
@@ -107,7 +107,7 @@ export default function PaymentVerification() {
     },
     onError: (error: any) => {
       toast({
-        title: "Verification Failed ❌", 
+        title: "Verification Failed", 
         description: error.message || "Failed to verify payment",
         variant: "destructive",
       });

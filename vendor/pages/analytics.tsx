@@ -265,8 +265,8 @@ export default function VendorAnalytics() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
           <div className="flex-1 min-w-0">
             <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent truncate">
-              <span className="hidden sm:inline">Restaurant Analytics 📊</span>
-              <span className="sm:hidden">Analytics 📊</span>
+              <span className="hidden sm:inline">Restaurant Analytics</span>
+              <span className="sm:hidden">Analytics</span>
             </h1>
             <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm truncate hidden sm:block">
               {user.restaurantName} • Performance Dashboard
@@ -285,7 +285,7 @@ export default function VendorAnalytics() {
         <div className="flex-1 min-w-0">
           <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
             <span className="hidden sm:inline">Performance Analytics</span>
-            <span className="sm:hidden">Charts 📊</span>
+            <span className="sm:hidden">Charts</span>
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 truncate hidden sm:block">Track your business metrics with interactive charts</p>
         </div>

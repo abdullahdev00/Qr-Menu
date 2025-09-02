@@ -156,7 +156,7 @@ export default function PaymentManagement() {
     },
     onSuccess: () => {
       toast({
-        title: "Payment Request Submitted! ✅",
+        title: "Payment Request Submitted!",
         description: "Your payment request has been submitted successfully. We'll review it soon.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/payment-requests'] });
@@ -174,7 +174,7 @@ export default function PaymentManagement() {
     },
     onError: (error: any) => {
       toast({
-        title: "Submission Failed ❌", 
+        title: "Submission Failed", 
         description: error.message || "Failed to submit payment request",
         variant: "destructive",
       });
@@ -208,7 +208,7 @@ export default function PaymentManagement() {
     },
     onError: (error: any) => {
       toast({
-        title: "Upgrade Failed ❌", 
+        title: "Upgrade Failed", 
         description: error.message || "Failed to upgrade plan",
         variant: "destructive",
       });
@@ -220,7 +220,7 @@ export default function PaymentManagement() {
     
     if (!formData.amount || !formData.paymentMethod || !formData.transactionRef || !formData.receiptImage) {
       toast({
-        title: "Missing Information ⚠️",
+        title: "Missing Information",
         description: "Please fill all required fields and upload receipt",
         variant: "destructive",
       });
@@ -254,7 +254,7 @@ export default function PaymentManagement() {
   const handleFileUpload = (file: File) => {
     if (file.size > 5 * 1024 * 1024) { // 5MB limit
       toast({
-        title: "File Too Large ❌",
+        title: "File Too Large",
         description: "Please select a file smaller than 5MB",
         variant: "destructive",
       });
@@ -264,7 +264,7 @@ export default function PaymentManagement() {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       toast({
-        title: "Invalid File Type ❌",
+        title: "Invalid File Type",
         description: "Please upload a JPEG, PNG, or WebP image",
         variant: "destructive",
       });
