@@ -881,14 +881,22 @@ class MenuApp {
     // Removed mobile menu functionality as hamburger menu is removed
 
     toggleSearch() {
+        console.log('Toggle search clicked!', 'app.js:883');
         const mobileSearchBar = document.getElementById('mobileSearchBar');
-        if (!mobileSearchBar) return;
+        console.log('Mobile search bar element found:', !!mobileSearchBar, 'app.js:885');
+        
+        if (!mobileSearchBar) {
+            console.error('Mobile search bar element not found!', 'app.js:887');
+            return;
+        }
         
         const isActive = mobileSearchBar.classList.toggle('active');
+        console.log('Search bar is now active:', isActive, 'app.js:892');
         
         if (isActive) {
             setTimeout(() => {
                 const mobileSearchInput = document.getElementById('mobileSearchInput');
+                console.log('Mobile search input found:', !!mobileSearchInput, 'app.js:896');
                 if (mobileSearchInput) mobileSearchInput.focus();
             }, 300);
         }
