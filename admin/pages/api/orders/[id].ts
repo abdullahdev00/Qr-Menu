@@ -39,6 +39,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: 'Order not found' });
       }
 
+      // Broadcast real-time order status update
+      if ((global as any).broadcastOrderUpdate) {
+        (global as any).broadcastOrderUpdate({
+          ...updatedOrder[0],
+          restaurantId: updatedOrder[0].restaurantId,
+          type: 'status-update'
+        });
+      }
+
       res.status(200).json(updatedOrder[0]);
     } catch (error) {
       console.error('Error updating order:', error);

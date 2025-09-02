@@ -119,6 +119,7 @@ export default function OrdersPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null)
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards')
+  const [wsConnected, setWsConnected] = useState(false)
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
@@ -135,6 +136,77 @@ export default function OrdersPage() {
       setLocation('/login')
     }
   }, [])
+
+  // WebSocket connection for real-time order updates
+  useEffect(() => {
+    if (!user) return
+
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
+    const wsUrl = `${protocol}//${window.location.host}/ws`
+    
+    const ws = new WebSocket(wsUrl)
+    
+    ws.onopen = () => {
+      console.log('🔗 WebSocket connected for restaurant orders')
+      setWsConnected(true)
+      
+      // Join restaurant room
+      ws.send(JSON.stringify({
+        type: 'join-restaurant',
+        restaurantId: user.id
+      }))
+      
+      toast({
+        title: "Live Updates Connected! 🔴",
+        description: "You'll now receive real-time order notifications",
+      })
+    }
+    
+    ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data)
+        
+        if (message.type === 'order-update') {
+          console.log('📦 New order update received:', message.data)
+          
+          // Refresh orders query to get latest data
+          queryClient.invalidateQueries({ queryKey: ['/api/vendor/orders'] })
+          
+          // Show notification for new orders
+          if (message.data.status === 'pending') {
+            toast({
+              title: "🔔 New Order Received!",
+              description: `Order #${message.data.orderNumber} from ${message.data.customerName || 'Customer'}`,
+            })
+          } else {
+            toast({
+              title: "📋 Order Updated",
+              description: `Order #${message.data.orderNumber} status: ${message.data.status}`,
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error)
+      }
+    }
+    
+    ws.onclose = () => {
+      console.log('🔌 WebSocket disconnected')
+      setWsConnected(false)
+    }
+    
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error)
+      setWsConnected(false)
+    }
+    
+    // Cleanup on component unmount
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close()
+      }
+    }
+  }, [user, toast, queryClient])
 
   // Fetch orders
   const { data: orders = [], isLoading } = useQuery({
@@ -331,6 +403,14 @@ export default function OrdersPage() {
             </p>
           </div>
           <div className="flex items-center space-x-3">
+            <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${
+              wsConnected 
+                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+            }`}>
+              <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+              {wsConnected ? 'Live Updates' : 'Reconnecting...'}
+            </div>
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
               <Utensils className="w-6 h-6 text-white" />
             </div>

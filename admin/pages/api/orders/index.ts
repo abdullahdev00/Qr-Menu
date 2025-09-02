@@ -4,7 +4,60 @@ import { neon } from '@neondatabase/serverless';
 const sql = neon(process.env.DATABASE_URL!);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
+  if (req.method === 'POST') {
+    try {
+      const orderData = req.body;
+      
+      // Create new order in database
+      const result = await sql`
+        INSERT INTO orders (
+          restaurant_id, customer_name, customer_phone, customer_email,
+          table_number, delivery_type, delivery_address, total_amount,
+          status, payment_method, payment_status, special_requests,
+          estimated_time, order_number, created_at
+        ) VALUES (
+          ${orderData.restaurantId}, ${orderData.customerName}, 
+          ${orderData.customerPhone}, ${orderData.customerEmail},
+          ${orderData.tableNumber}, ${orderData.deliveryType || 'dine_in'},
+          ${orderData.deliveryAddress}, ${orderData.totalAmount},
+          ${orderData.status || 'pending'}, ${orderData.paymentMethod || 'cash'},
+          ${orderData.paymentStatus || 'pending'}, ${orderData.specialRequests},
+          ${orderData.estimatedTime || 30}, 
+          ${Math.floor(100000 + Math.random() * 900000)}, NOW()
+        ) RETURNING *
+      `;
+      
+      const newOrder = result[0];
+      
+      // Add order items if provided
+      if (orderData.items && orderData.items.length > 0) {
+        for (const item of orderData.items) {
+          await sql`
+            INSERT INTO order_items (
+              order_id, menu_item_id, quantity, unit_price, total_price, special_requests
+            ) VALUES (
+              ${newOrder.id}, ${item.menuItemId}, ${item.quantity},
+              ${item.unitPrice}, ${item.totalPrice}, ${item.specialRequests}
+            )
+          `;
+        }
+      }
+      
+      // Broadcast real-time order update to restaurant
+      if ((global as any).broadcastOrderUpdate) {
+        (global as any).broadcastOrderUpdate({
+          ...newOrder,
+          restaurantId: orderData.restaurantId,
+          type: 'new-order'
+        });
+      }
+      
+      res.status(201).json({ success: true, order: newOrder });
+    } catch (error) {
+      console.error('Error creating order:', error);
+      res.status(500).json({ error: 'Failed to create order' });
+    }
+  } else if (req.method === 'GET') {
     try {
       // Get restaurant ID from query parameters
       const { restaurantId } = req.query;
@@ -84,7 +137,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: 'Failed to fetch orders' });
     }
   } else {
-    res.setHeader('Allow', ['GET']);
+    res.setHeader('Allow', ['GET', 'POST']);
     res.status(405).json({ error: `Method ${req.method} not allowed` });
   }
 }
