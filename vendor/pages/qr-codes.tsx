@@ -221,17 +221,80 @@ export default function QRCodesPage() {
     setEditTableNumber(qrCode.tableNumber?.toString() || '')
   }
 
-  if (isLoading) {
-    return (
-      <div className="p-6 space-y-6">
-        <div className="flex justify-center items-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading QR codes...</p>
-          </div>
+  // Comprehensive Skeleton Loading Component
+  const QRCodesSkeleton = () => (
+    <div className="p-3 sm:p-6 space-y-6 overflow-hidden">
+      {/* Header Skeleton */}
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0 overflow-hidden">
+        <div className="flex-1 min-w-0">
+          <div className="h-8 sm:h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse w-48"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-80 mt-2 hidden sm:block"></div>
+        </div>
+        <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse w-32 sm:w-40 shrink-0"></div>
+      </div>
+
+      {/* Stats Cards Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Card key={index} className="animate-pulse">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+              <div className="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16 mb-2"></div>
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* QR Codes Grid Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <Card key={index} className="overflow-hidden animate-pulse">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+              </div>
+              <div className="space-y-2 mt-2">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {/* QR Code Image Skeleton */}
+              <div className="flex justify-center mb-4">
+                <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+              </div>
+              
+              {/* Action Buttons Skeleton */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Loading Text with Icon */}
+      <div className="flex justify-center items-center py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+          <p className="text-gray-600 dark:text-gray-400 text-sm animate-pulse">Loading QR codes...</p>
         </div>
       </div>
-    );
+    </div>
+  );
+
+  if (isLoading) {
+    return <QRCodesSkeleton />;
   }
 
   return (
