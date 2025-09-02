@@ -58,7 +58,7 @@ export default async function handler(req: Request, res: Response) {
       .leftJoin(restaurantTables, eq(qrCodes.tableId, restaurantTables.id))
       .where(and(
         eq(qrCodes.restaurantId, restaurantId),
-        eq(restaurantTables.tableNumber, tableNumber)
+        eq(restaurantTables.tableNumber, tableNumber.toString())
       ));
 
     const qrCodeData = qrCodesData[0];

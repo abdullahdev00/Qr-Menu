@@ -172,6 +172,7 @@ class MenuApp {
             if (isValid) {
                 return isValid.tableNumber;
             } else {
+                // Only show inactive message if there WAS a QR parameter but it was invalid/inactive
                 this.showInactiveQRMessage();
                 return null;
             }
@@ -183,6 +184,7 @@ class MenuApp {
             return legacyTable;
         }
         
+        // No QR parameters - this is normal browsing, don't show any error message
         return null;
     }
     
