@@ -1548,6 +1548,12 @@ class MenuApp {
 
     openOrderHistory() {
         console.log('🔽 Opening order history sidebar');
+        
+        // Force reload order history data before showing
+        console.log('🔍 FORCE RELOAD: Reloading orderHistory from localStorage...');
+        this.loadOrderHistoryFromStorage();
+        console.log('🔍 After force reload - orderHistory length:', this.orderHistory.length);
+        
         const sidebar = document.getElementById('orderHistorySidebar');
         if (sidebar) {
             console.log('📋 Adding active class to sidebar');
@@ -1613,10 +1619,20 @@ class MenuApp {
         
         console.log('🔄 Loading order history...');
         console.log('📋 Elements found - orderHistoryList:', !!orderHistoryList, 'orderHistoryEmpty:', !!orderHistoryEmpty);
+        
+        // CRITICAL FIX: Always reload from localStorage at the start of this function
+        console.log('🔧 CRITICAL FIX: Force reloading from localStorage at function start...');
+        const freshData = localStorage.getItem('orderHistory');
+        if (freshData) {
+            this.orderHistory = JSON.parse(freshData);
+            console.log('✅ Fresh orderHistory loaded:', this.orderHistory.length, 'orders');
+        } else {
+            console.log('❌ No fresh data in localStorage');
+            this.orderHistory = [];
+        }
+        
         console.log('📋 Current orderHistory array:', this.orderHistory);
         console.log('📋 LocalStorage orderHistory:', localStorage.getItem('orderHistory'));
-        // Simplified debug logging
-        console.log('🔍 Order keys found:', Object.keys(localStorage).filter(key => key.includes('order')).length);
         
         // Always load from localStorage first (most reliable)
         try {
@@ -1678,9 +1694,17 @@ class MenuApp {
         console.log('📊 Final orderHistory data:', this.orderHistory);
         
         if (this.orderHistory.length === 0) {
-            console.log('📋 No orders found, showing empty state');
-            if (orderHistoryEmpty) orderHistoryEmpty.style.display = 'flex';
-            if (orderHistoryList) orderHistoryList.style.display = 'none';
+            console.log('🚨 WARNING: No orders found, showing empty state');
+            console.log('🔍 DEBUG: orderHistory array is empty - this should not happen if orders exist');
+            console.log('🔍 DEBUG: localStorage check:', localStorage.getItem('orderHistory'));
+            if (orderHistoryEmpty) {
+                orderHistoryEmpty.style.display = 'flex';
+                console.log('✅ Empty state shown');
+            }
+            if (orderHistoryList) {
+                orderHistoryList.style.display = 'none';
+                console.log('❌ Order list hidden');
+            }
             return;
         }
         
