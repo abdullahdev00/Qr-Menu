@@ -62,7 +62,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const handleLogout = () => {
     logout();
-    setLocation("/login");
+    setLocation("/");
   };
 
   const handleNavigation = (href: string) => {
