@@ -1615,21 +1615,8 @@ class MenuApp {
         console.log('📋 Elements found - orderHistoryList:', !!orderHistoryList, 'orderHistoryEmpty:', !!orderHistoryEmpty);
         console.log('📋 Current orderHistory array:', this.orderHistory);
         console.log('📋 LocalStorage orderHistory:', localStorage.getItem('orderHistory'));
-        console.log('🔍 DEBUG - All localStorage keys related to orders:');
-        
-        // Debug all localStorage keys
-        Object.keys(localStorage).filter(key => key.includes('order')).forEach(key => {
-            console.log(`  ${key}:`, localStorage.getItem(key));
-        });
-        
-        // Debug: Check all localStorage keys related to orders
-        console.log('🔍 Debug - All localStorage order keys:');
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.includes('order')) {
-                console.log(`  ${key}: ${localStorage.getItem(key)}`);
-            }
-        }
+        // Simplified debug logging
+        console.log('🔍 Order keys found:', Object.keys(localStorage).filter(key => key.includes('order')).length);
         
         // Always load from localStorage first (most reliable)
         try {
@@ -1721,28 +1708,15 @@ class MenuApp {
             // Force a reflow to ensure styles are applied
             orderHistoryList.offsetHeight;
             
-            // Force visibility of all order items with direct styles
+            // Apply styles to ensure visibility
             const orderItems = orderHistoryList.querySelectorAll('.order-history-item');
-            console.log('📋 Number of order items in DOM:', orderItems.length);
-            orderItems.forEach((item, index) => {
-                // Force each order item to be visible with explicit styles
+            console.log('📋 Order items rendered:', orderItems.length);
+            orderItems.forEach((item) => {
+                // Ensure order items are properly styled
                 item.style.display = 'block';
                 item.style.visibility = 'visible';
                 item.style.opacity = '1';
-                item.style.position = 'relative';
-                item.style.zIndex = '20';
-                item.style.backgroundColor = 'var(--secondary-dark)';
-                item.style.padding = '16px';
-                item.style.marginBottom = '16px';
-                item.style.borderRadius = '8px';
-                item.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-                item.style.minHeight = '200px';
-                item.style.width = '100%';
-                
-                console.log(`📋 Order item ${index}: Forced visible - Height: ${item.offsetHeight}px`);
             });
-            
-            console.log('🔧 Applied explicit visibility styles to all order items');
         } else {
             console.error('❌ orderHistoryList element not found!');
         }
