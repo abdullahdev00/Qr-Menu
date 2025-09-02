@@ -25,25 +25,44 @@ export default async function handler(req: Request, res: Response) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { 
-        amount, 
-        paymentMethod, 
-        description, 
-        transactionRef, 
-        bankName, 
-        accountNumber, 
-        accountHolder, 
-        restaurantId 
-      } = req.body;
+      // Handle both FormData and JSON
+      let amount, paymentMethod, description, transactionRef, restaurantId, receiptImage, bankName, accountNumber, accountHolder;
       
-      if (!amount || !paymentMethod || !restaurantId || !transactionRef) {
+      if (req.headers['content-type']?.includes('multipart/form-data')) {
+        // FormData handling - extract data from form fields
+        amount = req.body.amount;
+        paymentMethod = req.body.paymentMethod;
+        description = req.body.description || '';
+        transactionRef = req.body.transactionRef || `TXN-${Date.now()}`;
+        restaurantId = req.body.restaurantId;
+        receiptImage = req.body.receiptImage;
+        bankName = req.body.bankName || '';
+        accountNumber = req.body.accountNumber || '';
+        accountHolder = req.body.accountHolder || '';
+      } else {
+        // JSON handling
+        ({ 
+          amount, 
+          paymentMethod, 
+          description, 
+          transactionRef, 
+          restaurantId,
+          bankName,
+          accountNumber,
+          accountHolder
+        } = req.body);
+        receiptImage = req.body.receiptImage;
+        transactionRef = transactionRef || `TXN-${Date.now()}`;
+        bankName = bankName || '';
+        accountNumber = accountNumber || '';
+        accountHolder = accountHolder || '';
+      }
+      
+      if (!amount || !paymentMethod || !restaurantId) {
         return res.status(400).json({ 
-          error: "Amount, payment method, transaction reference, and restaurant ID are required" 
+          error: "Amount, payment method, and restaurant ID are required" 
         });
       }
-
-      // Handle file upload - for now, store base64 data in receiptUrl field
-      const { receiptImage } = req.body;
       
       const newRequest = await db
         .insert(paymentRequests)

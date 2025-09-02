@@ -26,7 +26,7 @@ export default async function handler(
       qrScansCount: restaurants.qrScansCount,
       avgRating: restaurants.avgRating,
       totalReviews: restaurants.totalReviews,
-      subscriptionStatus: restaurants.subscriptionStatus,
+      status: restaurants.status,
       planId: restaurants.planId
     }).from(restaurants).where(eq(restaurants.id, restaurantId)).limit(1);
 
@@ -70,7 +70,7 @@ export default async function handler(
       totalReviews: restaurant.totalReviews || 0,
       popularItem: popularItem,
       subscriptionPlan: planName,
-      subscriptionStatus: restaurant.subscriptionStatus || 'inactive',
+      subscriptionStatus: restaurant.status || 'inactive',
       restaurant: {
         id: restaurant.id,
         name: restaurant.name,
