@@ -58,13 +58,14 @@ export interface QRGenerationResult {
 }
 
 export class QRGenerator {
-  private baseUrl = 'https://menuqr.pk';
+  private baseUrl = 'https://workspace--vejip54714.replit.app';
   
   constructor() {}
 
   // Generate URL for QR code
   generateMenuUrl(restaurantSlug: string, tableNumber: string): string {
-    return `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : this.baseUrl}/${restaurantSlug}?table=${tableNumber}`;
+    const replitUrl = 'https://workspace--vejip54714.replit.app';
+    return `${process.env.NODE_ENV === 'development' ? replitUrl : this.baseUrl}/${restaurantSlug}?table=${tableNumber}`;
   }
 
   // Main QR generation function

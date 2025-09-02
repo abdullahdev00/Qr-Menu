@@ -1,8 +1,6 @@
 export const qrGenerator = {
   generateMenuUrl(restaurantSlug: string, tableNumber?: string): string {
-    const baseUrl = process.env.NODE_ENV === 'development' 
-      ? 'http://localhost:5000' 
-      : 'https://menuqr.pk';
+    const baseUrl = 'https://workspace--vejip54714.replit.app';
     
     return `${baseUrl}/${restaurantSlug}${tableNumber ? `?table=${tableNumber}` : ''}`;
   },
