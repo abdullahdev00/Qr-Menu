@@ -41,7 +41,7 @@ export default async function handler(req: any, res: any) {
           <html>
             <head>
               <style>
-                body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: transparent; }
+                body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: transparent; display: flex; justify-content: center; align-items: center; }
                 .qr-container {
                   width: 420px;
                   height: 670px;
@@ -198,11 +198,11 @@ export default async function handler(req: any, res: any) {
         
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        await page.setViewport({ width: 420, height: 670 });
+        await page.setViewport({ width: 460, height: 710 });
         
         const screenshot = await page.screenshot({
           type: 'png',
-          clip: { x: 0, y: 0, width: 420, height: 670 }
+          clip: { x: 20, y: 20, width: 420, height: 670 }
         });
         
         await browser.close();
