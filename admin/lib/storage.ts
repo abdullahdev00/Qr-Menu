@@ -1,6 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { eq, like, or, desc } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
 import { 
   adminUsers,
   restaurants,
@@ -59,11 +60,12 @@ class Storage {
       const existingAdmin = await db.select().from(adminUsers).limit(1);
       
       if (existingAdmin.length === 0) {
-        // Create default admin user
+        // Create default admin user with hashed password
+        const hashedPassword = await bcrypt.hash("password123", 10);
         await db.insert(adminUsers).values({
           name: "Super Admin",
           email: "admin@demo.com",
-          password: "password123", // In real app, this would be hashed
+          password: hashedPassword,
           role: "super_admin",
         });
       }
@@ -108,13 +110,14 @@ class Storage {
       const existingRestaurants = await db.select().from(restaurants).limit(1);
       
       if (existingRestaurants.length === 0) {
+        const hashedRestaurantPassword = await bcrypt.hash("restaurant123", 10);
         await db.insert(restaurants).values([
           {
             name: "Al-Baik Restaurant",
             slug: "al-baik-restaurant",
             ownerName: "Ahmed Khan",
             ownerEmail: "ahmed@albaik.com",
-            password: "restaurant123",
+            password: hashedRestaurantPassword,
             ownerPhone: "03001234567",
             address: "Main Gulberg, Lahore",
             city: "Lahore",
@@ -130,7 +133,7 @@ class Storage {
             slug: "karachi-biryani-house",
             ownerName: "Zain Ali",
             ownerEmail: "zain@biryanihouse.com", 
-            password: "restaurant123",
+            password: hashedRestaurantPassword,
             ownerPhone: "03219876543",
             address: "Defence Phase 2, Karachi",
             city: "Karachi",
