@@ -25,40 +25,34 @@ export default async function handler(req: Request, res: Response) {
     }
   } else if (req.method === 'POST') {
     try {
-      // Handle both FormData and JSON
-      let amount, paymentMethod, description, transactionRef, restaurantId, receiptImage, bankName, accountNumber, accountHolder;
+      console.log('Payment request data received:', req.body);
+      console.log('File data received:', req.file);
       
-      if (req.headers['content-type']?.includes('multipart/form-data')) {
-        // FormData handling - extract data from form fields
-        amount = req.body.amount;
-        paymentMethod = req.body.paymentMethod;
-        description = req.body.description || '';
-        transactionRef = req.body.transactionRef || `TXN-${Date.now()}`;
-        restaurantId = req.body.restaurantId;
-        receiptImage = req.body.receiptImage;
-        bankName = req.body.bankName || '';
-        accountNumber = req.body.accountNumber || '';
-        accountHolder = req.body.accountHolder || '';
-      } else {
-        // JSON handling
-        ({ 
-          amount, 
-          paymentMethod, 
-          description, 
-          transactionRef, 
-          restaurantId,
-          bankName,
-          accountNumber,
-          accountHolder
-        } = req.body);
-        receiptImage = req.body.receiptImage;
-        transactionRef = transactionRef || `TXN-${Date.now()}`;
-        bankName = bankName || '';
-        accountNumber = accountNumber || '';
-        accountHolder = accountHolder || '';
+      // Extract data from request body
+      const { 
+        amount, 
+        paymentMethod, 
+        description, 
+        restaurantId,
+        bankName,
+        accountNumber,
+        accountHolder
+      } = req.body;
+      
+      // Handle file upload
+      let receiptImage = null;
+      if (req.file) {
+        // Convert file buffer to base64 for storage
+        receiptImage = req.file.buffer.toString('base64');
       }
       
+      // Generate transaction reference
+      const transactionRef = req.body.transactionRef || `TXN-${Date.now()}`;
+      
+      console.log('Extracted data:', { amount, paymentMethod, restaurantId, transactionRef, hasFile: !!req.file });
+      
       if (!amount || !paymentMethod || !restaurantId) {
+        console.log('Missing required fields:', { amount: !!amount, paymentMethod: !!paymentMethod, restaurantId: !!restaurantId });
         return res.status(400).json({ 
           error: "Amount, payment method, and restaurant ID are required" 
         });

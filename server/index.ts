@@ -4,6 +4,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { WebSocketServer, WebSocket } from 'ws';
+import multer from 'multer';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -16,8 +17,15 @@ import('../admin/lib/storage').then(() => {
   console.error('❌ Database initialization failed:', error);
 });
 
+// Configure multer for file uploads (in memory)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Create and start server
 async function startServer() {
@@ -26,6 +34,9 @@ async function startServer() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
+  // Handle file uploads for payment requests specifically
+  app.use('/api/payment-requests', upload.single('receiptImage'));
+  
   // API Routes - Dynamic import handling
   app.use('/api', async (req, res, next) => {
     const apiPath = req.path.slice(1); // Remove leading slash
