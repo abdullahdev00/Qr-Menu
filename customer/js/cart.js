@@ -472,6 +472,15 @@ class ShoppingCart {
                         window.menuApp.updateOrderHistoryIcon();
                         console.log('🔄 Forced order history icon update after order placement');
                     }
+                    
+                    // Ensure button is visible and clickable
+                    const orderHistoryToggle = document.getElementById('orderHistoryToggle');
+                    if (orderHistoryToggle) {
+                        orderHistoryToggle.style.display = 'flex';
+                        orderHistoryToggle.style.pointerEvents = 'auto';
+                        orderHistoryToggle.style.opacity = '1';
+                        console.log('✅ Order history button forced visible and clickable');
+                    }
                 }, 500);
                 
                 // Show order tracking notification

@@ -1538,9 +1538,13 @@ class MenuApp {
         const orderHistoryToggle = document.getElementById('orderHistoryToggle');
         const orderNotification = document.getElementById('orderNotification');
         
+        console.log('🔄 Updating order history icon - orderHistory length:', this.orderHistory.length);
+        
         if (this.orderHistory.length > 0) {
             if (orderHistoryToggle) {
                 orderHistoryToggle.style.display = 'flex';
+                orderHistoryToggle.style.pointerEvents = 'auto';
+                orderHistoryToggle.style.opacity = '1';
                 
                 // Remove existing event listeners to avoid duplicates
                 const boundToggleHandler = this.toggleOrderHistory.bind(this);
@@ -1552,6 +1556,7 @@ class MenuApp {
                 // Add fresh event listener with proper binding
                 orderHistoryToggle.addEventListener('click', boundToggleHandler);
                 console.log('✅ Order history button event listener added with proper binding');
+                console.log('✅ Order history button made visible and clickable');
             }
             
             // Show notification if there are active orders
