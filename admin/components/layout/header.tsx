@@ -93,7 +93,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </Button>
             <div className="ml-4 lg:ml-0 group">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-700 to-purple-700 dark:from-white dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent drop-shadow-sm transition-all duration-300 group-hover:scale-105">
-                {getPageTitle()}
+                <span className="sm:hidden">{getPageTitle() === "Menu Management" ? "Menu" : getPageTitle()}</span>
+                <span className="hidden sm:inline">{getPageTitle()}</span>
               </h1>
               <p className="hidden md:flex text-sm text-gray-600 dark:text-gray-300 font-medium items-center transition-all duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                 👋 Welcome back, <span className="ml-1 font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{user?.role === "super_admin" ? "Super Admin" : user?.name}</span>

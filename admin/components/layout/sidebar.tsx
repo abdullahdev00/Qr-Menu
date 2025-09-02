@@ -159,7 +159,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   </div>
                   
                   <span className={cn("flex-1 text-left transition-all duration-300", isActive && "drop-shadow-sm")}>
-                    {item.name}
+                    <span className="sm:hidden">{item.name === "Menu Management" ? "Menu" : item.name}</span>
+                    <span className="hidden sm:inline">{item.name}</span>
                   </span>
                   
                   {item.badge && (
