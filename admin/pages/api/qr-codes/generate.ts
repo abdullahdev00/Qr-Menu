@@ -22,7 +22,10 @@ export default async function handler(req: any, res: any) {
       }
       
       // Generate the menu URL
-      const menuUrl = `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurantSlug}${tableNumber ? `?table=${tableNumber}` : ''}`;
+      const baseUrl = process.env.NODE_ENV === 'development' 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+        : 'https://menuqr.pk';
+      const menuUrl = `${baseUrl}/${restaurantSlug}${tableNumber ? `?table=${tableNumber}` : ''}`;
       
       if (useCustomDesign && !preview) {
         // Generate custom designed QR code with your beautiful template

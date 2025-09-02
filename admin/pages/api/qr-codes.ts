@@ -1,6 +1,6 @@
 import { db } from '../../lib/storage';
 import { restaurants, restaurantTables, qrCodes } from '../../../shared/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
   if (req.method === 'GET') {
@@ -34,7 +34,7 @@ export default async function handler(req: any, res: any) {
           name: 'Main Menu QR',
           type: 'menu',
           tableNumber: null,
-          url: `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurant.slug}`,
+          url: `${process.env.NODE_ENV === 'development' ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://menuqr.pk'}/${restaurant.slug}`,
           scans: existingQrCodes.find((qr: any) => !qr.tableId)?.scansCount || 0,
           createdAt: existingQrCodes.find((qr: any) => !qr.tableId)?.createdAt?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
           isActive: existingQrCodes.find((qr: any) => !qr.tableId)?.isActive || true
@@ -47,7 +47,7 @@ export default async function handler(req: any, res: any) {
             name: `Table ${table.tableNumber} QR`,
             type: 'table',
             tableNumber: table.tableNumber,
-            url: `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurant.slug}?table=${table.tableNumber}`,
+            url: `${process.env.NODE_ENV === 'development' ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://menuqr.pk'}/${restaurant.slug}?table=${table.tableNumber}`,
             scans: existingQr?.scansCount || 0,
             createdAt: existingQr?.createdAt?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
             isActive: existingQr?.isActive !== undefined ? existingQr.isActive : table.isActive
@@ -83,8 +83,10 @@ export default async function handler(req: any, res: any) {
       // If table number is provided, find or create the table
       if (tableNumber) {
         const [existingTable] = await db.select().from(restaurantTables)
-          .where(eq(restaurantTables.restaurantId, restaurantId))
-          .where(eq(restaurantTables.tableNumber, tableNumber.toString()));
+          .where(and(
+            eq(restaurantTables.restaurantId, restaurantId),
+            eq(restaurantTables.tableNumber, tableNumber.toString())
+          ));
         
         if (existingTable) {
           tableId = existingTable.id;
@@ -101,7 +103,10 @@ export default async function handler(req: any, res: any) {
       }
       
       // Generate menu URL
-      const menuUrl = `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurant.slug}${tableNumber ? `?table=${tableNumber}` : ''}`;
+      const baseUrl = process.env.NODE_ENV === 'development' 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+        : 'https://menuqr.pk';
+      const menuUrl = `${baseUrl}/${restaurant.slug}${tableNumber ? `?table=${tableNumber}` : ''}`;
       
       // Create QR code record
       const [newQrCode] = await db.insert(qrCodes).values({

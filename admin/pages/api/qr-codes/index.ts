@@ -89,7 +89,10 @@ export default async function handler(req: any, res: any) {
       }
       
       // Generate menu URL
-      const menuUrl = `${process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://menuqr.pk'}/${restaurant.slug}${tableNumber ? `?table=${tableNumber}` : ''}`;
+      const baseUrl = process.env.NODE_ENV === 'development' 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+        : 'https://menuqr.pk';
+      const menuUrl = `${baseUrl}/${restaurant.slug}${tableNumber ? `?table=${tableNumber}` : ''}`;
       
       // Create QR code record
       const [newQrCode] = await db.insert(qrCodes).values({
