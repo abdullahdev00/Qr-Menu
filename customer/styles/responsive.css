@@ -251,7 +251,7 @@
     
     /* Hide mobile search bar on desktop */
     .mobile-search-bar {
-        display: none;
+        display: none !important;
     }
     
     /* Hover effects for desktop */

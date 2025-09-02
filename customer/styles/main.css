@@ -1819,7 +1819,6 @@ html::-webkit-scrollbar {
 }
 
 .mobile-search-bar {
-    display: none; /* Hidden by default */
     position: absolute;
     top: 100%;
     left: 0;
@@ -1831,10 +1830,10 @@ html::-webkit-scrollbar {
     visibility: hidden;
     transition: var(--transition-normal);
     z-index: 999;
+    display: block; /* Always displayed on mobile */
 }
 
 .mobile-search-bar.active {
-    display: block;
     transform: translateY(0);
     opacity: 1;
     visibility: visible;
@@ -1859,6 +1858,10 @@ html::-webkit-scrollbar {
     
     .search-toggle {
         display: flex;
+    }
+    
+    .mobile-search-bar {
+        display: block !important;
     }
 }
 
