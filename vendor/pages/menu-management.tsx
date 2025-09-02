@@ -502,13 +502,15 @@ function EditItemDialog({ item, isOpen, onOpenChange, refetchItems }: { item: an
     },
   });
 
-  // Get categories for select dropdown
+  // Get categories for select dropdown - filter by restaurant
   const { data: categories = [] } = useQuery({
-    queryKey: ['/api/menu-categories'],
+    queryKey: ['/api/menu-categories', item?.restaurantId],
     queryFn: async (): Promise<MenuCategory[]> => {
-      const response = await fetch('/api/menu-categories');
+      if (!item?.restaurantId) return [];
+      const response = await fetch(`/api/menu-categories?restaurantId=${item.restaurantId}`);
       return response.json();
     },
+    enabled: !!item?.restaurantId,
   });
 
   const updateMutation = useMutation({
@@ -1021,13 +1023,15 @@ function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
     },
   });
 
-  // Get categories for select dropdown
+  // Get categories for select dropdown - filter by current user's restaurant
   const { data: categories = [] } = useQuery({
-    queryKey: ['/api/menu-categories'],
+    queryKey: ['/api/menu-categories', currentUser?.restaurantId],
     queryFn: async (): Promise<MenuCategory[]> => {
-      const response = await fetch('/api/menu-categories');
+      if (!currentUser?.restaurantId) return [];
+      const response = await fetch(`/api/menu-categories?restaurantId=${currentUser.restaurantId}`);
       return response.json();
     },
+    enabled: !!currentUser?.restaurantId,
   });
 
   const createMutation = useMutation({
@@ -1046,7 +1050,7 @@ function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
       refetchItems();
       
       // Also refetch categories 
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-categories', currentUser?.restaurantId] });
       
       setIsOpen(false);
       form.reset();
