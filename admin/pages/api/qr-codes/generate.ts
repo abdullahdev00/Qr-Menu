@@ -43,8 +43,8 @@ export default async function handler(req: any, res: any) {
               <style>
                 body { margin: 0; padding: 0; font-family: Arial, sans-serif; background: transparent; }
                 .qr-container {
-                  width: 400px;
-                  height: 650px;
+                  width: 420px;
+                  height: 670px;
                   background-color: #2a2a2a;
                   border: 3px solid #b08968;
                   border-radius: 8px;
@@ -198,11 +198,11 @@ export default async function handler(req: any, res: any) {
         
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        await page.setViewport({ width: 400, height: 650 });
+        await page.setViewport({ width: 420, height: 670 });
         
         const screenshot = await page.screenshot({
           type: 'png',
-          clip: { x: 0, y: 0, width: 400, height: 650 }
+          clip: { x: 0, y: 0, width: 420, height: 670 }
         });
         
         await browser.close();
