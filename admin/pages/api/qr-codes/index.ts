@@ -1,5 +1,5 @@
 import { db } from '../../../../server/db';
-import { restaurants, restaurantTables, qrCodes, insertQrCodeSchema } from '../../../../shared/schema';
+import { restaurants, restaurantTables, qrCodes, insertQrCodeSchema, encodeTableParam } from '../../../../shared/schema';
 import { eq, desc, and } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
@@ -88,11 +88,18 @@ export default async function handler(req: any, res: any) {
         }
       }
       
-      // Generate menu URL
+      // Generate menu URL with secure table parameter
       const baseUrl = process.env.NODE_ENV === 'development' 
         ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
         : 'https://menuqr.pk';
-      const menuUrl = `${baseUrl}/${restaurant.slug}${tableNumber ? `?table=${tableNumber}` : ''}`;
+      
+      let menuUrl;
+      if (tableNumber) {
+        const encodedTable = encodeTableParam(restaurantId, tableNumber.toString());
+        menuUrl = `${baseUrl}/${restaurant.slug}?t=${encodedTable}`;
+      } else {
+        menuUrl = `${baseUrl}/${restaurant.slug}`;
+      }
       
       // Create QR code record
       const [newQrCode] = await db.insert(qrCodes).values({

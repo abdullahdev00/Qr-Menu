@@ -109,6 +109,26 @@ export const restaurantTables = pgTable("restaurant_tables", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Table parameter encoding utilities
+export function encodeTableParam(restaurantId: string, tableNumber: string): string {
+  // Create a hash-like encoded parameter that's harder to manipulate
+  const payload = `${restaurantId}-${tableNumber}-${Date.now()}`;
+  return Buffer.from(payload).toString('base64').replace(/[+=\/]/g, (c) => ({'+': '-', '=': '_', '/': '.'}[c] || c));
+}
+
+export function decodeTableParam(encoded: string): { restaurantId: string; tableNumber: string } | null {
+  try {
+    const decoded = Buffer.from(encoded.replace(/[-_.]/g, (c) => ({'-': '+', '_': '=', '.': '/'}[c] || c)), 'base64').toString();
+    const parts = decoded.split('-');
+    if (parts.length >= 2) {
+      return { restaurantId: parts[0], tableNumber: parts[1] };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 // Menu Items Table
 export const menuItems = pgTable("menu_items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

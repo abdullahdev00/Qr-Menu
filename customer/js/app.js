@@ -24,9 +24,9 @@ class MenuApp {
         // Theme management
         this.currentTheme = localStorage.getItem('theme') || 'dark';
         
-        // QR scan detection
-        this.tableNumber = this.getTableFromURL();
-        this.isQRScan = !!this.tableNumber;
+        // QR scan detection (will be set asynchronously)
+        this.tableNumber = null;
+        this.isQRScan = false;
         this.restaurantId = this.getRestaurantFromURL();
         
         // Order history management
@@ -47,7 +47,12 @@ class MenuApp {
         this.initializeTheme(); // Initialize theme first
         this.bindEvents();
         this.initializeLayout();
-        this.handleQRScan(); // Handle QR scan first
+        
+        // Handle QR scan first (now async)
+        this.tableNumber = await this.getTableFromURL();
+        this.isQRScan = !!this.tableNumber;
+        this.handleQRScan();
+        
         this.generateSkeletonCards();
         await this.loadMenuItems();
         this.renderMenuItems();
@@ -155,10 +160,90 @@ class MenuApp {
         window.addEventListener('scroll', this.handleScroll.bind(this));
     }
 
-    // QR scan detection functions
-    getTableFromURL() {
+    // QR scan detection functions with secure decoding
+    async getTableFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('table');
+        const encodedTable = urlParams.get('t'); // Use 't' instead of 'table'
+        const legacyTable = urlParams.get('table'); // Support legacy links temporarily
+        
+        if (encodedTable) {
+            // Verify this encoded table is valid and QR code is active
+            const isValid = await this.validateEncodedTable(encodedTable);
+            if (isValid) {
+                return isValid.tableNumber;
+            } else {
+                this.showInactiveQRMessage();
+                return null;
+            }
+        }
+        
+        // Legacy support - but show warning
+        if (legacyTable) {
+            console.warn('Legacy table parameter detected - please regenerate QR codes for security');
+            return legacyTable;
+        }
+        
+        return null;
+    }
+    
+    async validateEncodedTable(encodedParam) {
+        try {
+            const response = await fetch('/api/customer/validate-table', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    encodedTable: encodedParam,
+                    restaurantSlug: this.getRestaurantFromURL()
+                })
+            });
+            
+            const data = await response.json();
+            return data.success ? data : null;
+        } catch (error) {
+            console.error('Error validating table:', error);
+            return null;
+        }
+    }
+    
+    showInactiveQRMessage() {
+        const body = document.body;
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'inactive-qr-message';
+        messageDiv.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                color: white;
+                text-align: center;
+                padding: 20px;
+            ">
+                <div style="max-width: 400px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f39c12; margin-bottom: 20px;"></i>
+                    <h2 style="margin-bottom: 15px;">QR Code Inactive</h2>
+                    <p style="margin-bottom: 20px;">This QR code has been deactivated by the restaurant. Please ask staff for assistance or scan a different QR code.</p>
+                    <button onclick="window.location.reload()" style="
+                        background: #d4af37;
+                        color: black;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Try Again</button>
+                </div>
+            </div>
+        `;
+        body.appendChild(messageDiv);
     }
 
     getRestaurantFromURL() {

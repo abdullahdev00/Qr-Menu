@@ -2,6 +2,7 @@ import QRCode from 'qrcode';
 import puppeteer from 'puppeteer';
 import { db } from '../../../../server/db';
 import { restaurants } from '../../../../shared/schema';
+import { encodeTableParam } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
@@ -21,11 +22,18 @@ export default async function handler(req: any, res: any) {
         return res.status(404).json({ error: 'Restaurant not found' });
       }
       
-      // Generate the menu URL
+      // Generate the menu URL with secure table parameter
       const baseUrl = process.env.NODE_ENV === 'development' 
         ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
         : 'https://menuqr.pk';
-      const menuUrl = `${baseUrl}/${restaurantSlug}${tableNumber ? `?table=${tableNumber}` : ''}`;
+      
+      let menuUrl;
+      if (tableNumber) {
+        const encodedTable = encodeTableParam(restaurant.id, tableNumber.toString());
+        menuUrl = `${baseUrl}/${restaurantSlug}?t=${encodedTable}`;
+      } else {
+        menuUrl = `${baseUrl}/${restaurantSlug}`;
+      }
       
       if (useCustomDesign && !preview) {
         // Generate custom designed QR code with your beautiful template

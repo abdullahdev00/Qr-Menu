@@ -10,7 +10,9 @@ import {
   Palette,
   RefreshCw,
   Plus,
-  Edit3
+  Edit3,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react'
 // Import custom QR image
 const customQrImageUrl = '/attached_assets/custom-qr-template.jpeg'
@@ -31,6 +33,9 @@ export default function QRCodesPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [editingTable, setEditingTable] = useState<string | null>(null)
   const [editTableNumber, setEditTableNumber] = useState('')
+  const [showSettingsDialog, setShowSettingsDialog] = useState(false)
+  const [selectedQrCode, setSelectedQrCode] = useState<any>(null)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const { toast } = useToast()
   
   const user = getCurrentUser()
@@ -236,6 +241,78 @@ export default function QRCodesPage() {
   const startEditingTable = (qrCode: any) => {
     setEditingTable(qrCode.id)
     setEditTableNumber(qrCode.tableNumber?.toString() || '')
+  }
+
+  const handleDeleteQR = async (qrId: string) => {
+    try {
+      const response = await fetch(`/api/qr-codes/${qrId}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        refetch(); // Refresh the QR codes list
+        setShowDeleteDialog(false);
+        setSelectedQrCode(null);
+        toast({
+          title: "QR Code Deleted!",
+          description: "QR code has been permanently deleted.",
+        });
+      } else {
+        throw new Error(data.error || 'Failed to delete QR code');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete QR code. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }
+
+  const handleToggleActive = async (qrId: string, isActive: boolean) => {
+    try {
+      const response = await fetch(`/api/qr-codes/${qrId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isActive: !isActive,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        refetch(); // Refresh the QR codes list
+        toast({
+          title: !isActive ? "QR Code Activated!" : "QR Code Deactivated!",
+          description: `QR code is now ${!isActive ? 'active' : 'inactive'}.`,
+        });
+      } else {
+        throw new Error(data.error || 'Failed to update QR code status');
+      }
+    } catch (error) {
+      console.error('Toggle active error:', error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update QR code status. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }
+
+  const openSettingsDialog = (qrCode: any) => {
+    setSelectedQrCode(qrCode);
+    setShowSettingsDialog(true);
+  }
+
+  const openDeleteDialog = (qrCode: any) => {
+    setSelectedQrCode(qrCode);
+    setShowDeleteDialog(true);
   }
 
   // Comprehensive Skeleton Loading Component
@@ -664,9 +741,23 @@ export default function QRCodesPage() {
                   Preview
                 </Button>
                 
-                <Button size="sm" variant="outline">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => openSettingsDialog(qrCode)}
+                >
                   <Settings className="w-4 h-4 mr-1" />
                   Settings
+                </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => openDeleteDialog(qrCode)}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  Delete
                 </Button>
               </div>
             </CardContent>
@@ -751,6 +842,108 @@ export default function QRCodesPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Settings Dialog */}
+      <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5" />
+              QR Code Settings
+            </DialogTitle>
+          </DialogHeader>
+          {selectedQrCode && (
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <h4 className="font-medium mb-2">{selectedQrCode.name}</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {selectedQrCode.type === 'table' ? `Table ${selectedQrCode.tableNumber}` : 'Full Menu'} QR Code
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Scans: {selectedQrCode.scans} • Created: {selectedQrCode.createdAt}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <h5 className="font-medium">QR Code Status</h5>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {selectedQrCode.isActive ? 'Active - customers can scan and access' : 'Inactive - customers cannot access'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={selectedQrCode.isActive ? "default" : "secondary"}>
+                    {selectedQrCode.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setShowSettingsDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className={`flex-1 ${selectedQrCode.isActive ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                  onClick={() => {
+                    handleToggleActive(selectedQrCode.id, selectedQrCode.isActive);
+                    setShowSettingsDialog(false);
+                  }}
+                >
+                  {selectedQrCode.isActive ? 'Deactivate' : 'Activate'} QR
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              Delete QR Code
+            </DialogTitle>
+          </DialogHeader>
+          {selectedQrCode && (
+            <div className="space-y-4">
+              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <h4 className="font-medium text-red-900 dark:text-red-100">
+                  Are you sure you want to delete this QR code?
+                </h4>
+                <p className="text-sm text-red-700 dark:text-red-200 mt-1">
+                  <strong>{selectedQrCode.name}</strong> - This action cannot be undone.
+                </p>
+                <p className="text-xs text-red-600 dark:text-red-300 mt-2">
+                  Current scans: {selectedQrCode.scans} • Created: {selectedQrCode.createdAt}
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setShowDeleteDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 bg-red-600 hover:bg-red-700"
+                  onClick={() => handleDeleteQR(selectedQrCode.id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Permanently
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
