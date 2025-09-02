@@ -198,11 +198,11 @@ export default async function handler(req: any, res: any) {
         
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        await page.setViewport({ width: 440, height: 690 });
+        await page.setViewport({ width: 420, height: 670 });
         
         const screenshot = await page.screenshot({
           type: 'png',
-          clip: { x: 10, y: 10, width: 420, height: 670 }
+          clip: { x: 0, y: 0, width: 420, height: 670 }
         });
         
         await browser.close();

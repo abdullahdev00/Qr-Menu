@@ -86,7 +86,8 @@ export default function QRCodesPage() {
     })
   }
 
-  const handleDownloadQR = async (qrCode: any) => {
+  // Generate QR code for preview (without downloading)
+  const handleGenerateQR = async (qrCode: any) => {
     setIsGenerating(true)
     
     try {
@@ -125,20 +126,15 @@ export default function QRCodesPage() {
       })
       
       if (response.ok) {
-        // Create download link
+        // Show QR code in preview instead of downloading
         const blob = await response.blob()
         const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${qrCode.name.replace(/\s+/g, '_')}.png`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
+        setShowGeneratedQR(url)
+        setGeneratedQRData({ blob, name: qrCode.name })
         
         toast({
-          title: "QR Code Downloaded!",
-          description: `${qrCode.name} with table number has been downloaded`,
+          title: "QR Code Generated!",
+          description: `${qrCode.name} has been generated successfully`,
         })
       } else {
         throw new Error('Failed to generate QR code')
@@ -155,7 +151,28 @@ export default function QRCodesPage() {
     setIsGenerating(false)
   }
 
+  // Download the generated QR code
+  const handleDownloadQR = () => {
+    if (generatedQRData) {
+      const url = URL.createObjectURL(generatedQRData.blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${generatedQRData.name.replace(/\s+/g, '_')}.png`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      
+      toast({
+        title: "QR Code Downloaded!",
+        description: `${generatedQRData.name} has been downloaded`,
+      })
+    }
+  }
+
   const [qrPreviewData, setQrPreviewData] = useState<{[key: string]: string}>({})
+  const [showGeneratedQR, setShowGeneratedQR] = useState<string | null>(null)
+  const [generatedQRData, setGeneratedQRData] = useState<{blob: Blob, name: string} | null>(null)
 
   // Generate QR code preview image
   const getQRCodeImage = (qrCode: any) => {
@@ -604,12 +621,29 @@ export default function QRCodesPage() {
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => handleDownloadQR(qrCode)}
+                  onClick={() => handleGenerateQR(qrCode)}
+                  disabled={isGenerating}
+                  data-testid={`generate-qr-${qrCode.id}`}
+                >
+                  <QrCode className="w-4 h-4 mr-1" />
+                  {isGenerating ? 'Generating...' : 'Generate'}
+                </Button>
+                
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={async () => {
+                    await handleGenerateQR(qrCode);
+                    // Auto download after generation
+                    setTimeout(() => {
+                      handleDownloadQR();
+                    }, 500);
+                  }}
                   disabled={isGenerating}
                   data-testid={`download-qr-${qrCode.id}`}
                 >
                   <Download className="w-4 h-4 mr-1" />
-                  {isGenerating ? 'Downloading...' : 'Download'}
+                  Download
                 </Button>
                 
                 <Button 
@@ -671,6 +705,52 @@ export default function QRCodesPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* QR Code Preview Modal */}
+      {showGeneratedQR && (
+        <Dialog open={!!showGeneratedQR} onOpenChange={() => {
+          setShowGeneratedQR(null);
+          if (showGeneratedQR) {
+            URL.revokeObjectURL(showGeneratedQR);
+          }
+        }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Generated QR Code</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <img 
+                  src={showGeneratedQR} 
+                  alt="Generated QR Code"
+                  className="w-64 h-auto border-2 border-gray-200 dark:border-gray-700 rounded"
+                />
+              </div>
+              <div className="flex gap-2 justify-center">
+                <Button 
+                  variant="outline"
+                  onClick={handleDownloadQR}
+                  disabled={!generatedQRData}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setShowGeneratedQR(null);
+                    if (showGeneratedQR) {
+                      URL.revokeObjectURL(showGeneratedQR);
+                    }
+                  }}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
