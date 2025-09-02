@@ -53,6 +53,9 @@ class MenuApp {
         this.isQRScan = !!this.tableNumber;
         this.handleQRScan();
         
+        // Load order history from localStorage at startup
+        this.loadOrderHistoryFromStorage();
+        
         this.generateSkeletonCards();
         await this.loadMenuItems();
         this.renderMenuItems();
@@ -60,6 +63,27 @@ class MenuApp {
         this.updateCategoryTabs();
         this.updateOrderHistoryIcon();
         this.initializeWebSocket();
+    }
+    
+    loadOrderHistoryFromStorage() {
+        try {
+            const storedHistory = localStorage.getItem('orderHistory');
+            const storedCurrentOrders = localStorage.getItem('currentOrders');
+            
+            if (storedHistory) {
+                this.orderHistory = JSON.parse(storedHistory);
+                console.log('📋 Loaded order history from localStorage:', this.orderHistory.length, 'orders');
+            }
+            
+            if (storedCurrentOrders) {
+                this.currentOrders = JSON.parse(storedCurrentOrders);
+                console.log('📋 Loaded current orders from localStorage:', this.currentOrders.length, 'orders');
+            }
+        } catch (error) {
+            console.error('Error loading order history from storage:', error);
+            this.orderHistory = [];
+            this.currentOrders = [];
+        }
     }
 
     bindEvents() {

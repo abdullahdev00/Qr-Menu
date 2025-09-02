@@ -460,7 +460,9 @@ class ShoppingCart {
                 console.log('API Response:', responseData);
                 this.showToast('Order placed successfully!');
                 
-                // Save order to history
+                // Save order to history - with additional debug info
+                console.log('📝 About to save order to history');
+                console.log('📋 OrderSummary before saving:', orderSummary);
                 this.saveOrderToHistory(orderSummary);
                 
                 this.clearCart();
@@ -738,27 +740,40 @@ class ShoppingCart {
             console.log('🔍 MenuApp available:', !!window.menuApp);
             console.log('🔍 MenuApp.addToOrderHistory available:', !!(window.menuApp && window.menuApp.addToOrderHistory));
             
-            // Always save to both MenuApp and localStorage for consistency
+            // Always save to localStorage first as primary storage, then sync with MenuApp
+            const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+            console.log('🔍 Existing orders before save:', orders);
+            orders.unshift(order);
+            localStorage.setItem('orderHistory', JSON.stringify(orders));
+            console.log('🔍 Orders after localStorage save:', orders);
+            
+            // Update current orders as well
+            const currentOrders = JSON.parse(localStorage.getItem('currentOrders') || '[]');
+            currentOrders.push(order);
+            localStorage.setItem('currentOrders', JSON.stringify(currentOrders));
+            console.log('🔍 Current orders updated:', currentOrders);
+            
+            // Now sync with MenuApp if available
             if (window.menuApp && window.menuApp.addToOrderHistory) {
-                console.log('✅ Adding order to MenuApp history');
-                window.menuApp.addToOrderHistory(order);
+                console.log('✅ Syncing order with MenuApp history');
+                // Update MenuApp's internal arrays to match localStorage
+                window.menuApp.orderHistory = orders;
+                window.menuApp.currentOrders = currentOrders;
+                window.menuApp.updateOrderHistoryIcon();
                 
                 // Double check if it was saved
                 const savedHistory = localStorage.getItem('orderHistory');
-                console.log('🔍 After MenuApp save - localStorage orderHistory:', savedHistory);
+                console.log('🔍 After MenuApp sync - localStorage orderHistory:', savedHistory);
             } else {
-                console.warn('⚠️ MenuApp not available, using localStorage fallback');
-                // Fallback to localStorage
-                const orders = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-                console.log('🔍 Existing orders before save:', orders);
-                orders.unshift(order);
-                localStorage.setItem('orderHistory', JSON.stringify(orders));
-                console.log('🔍 Orders after save:', orders);
+                console.warn('⚠️ MenuApp not available, using localStorage only');
                 
-                // Also update the icon manually if MenuApp isn't available
+                // Manually update the icon if MenuApp isn't available
                 const orderHistoryToggle = document.getElementById('orderHistoryToggle');
                 if (orderHistoryToggle) {
                     orderHistoryToggle.style.display = 'flex';
+                    orderHistoryToggle.style.pointerEvents = 'auto';
+                    orderHistoryToggle.style.opacity = '1';
+                    console.log('✅ Order history button manually enabled');
                 }
             }
             
