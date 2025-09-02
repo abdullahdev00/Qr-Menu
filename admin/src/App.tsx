@@ -6,6 +6,7 @@ import { Toaster } from '../components/ui/toaster';
 import { ThemeProvider } from './lib/theme-provider';
 
 // Import pages
+import WelcomePage from '../pages/welcome';
 import LoginPage from '../pages/login';
 import DashboardPage from '../pages/dashboard';
 import CustomerAuthTestPage from '../pages/customer-auth-test';
@@ -74,10 +75,12 @@ function App() {
         <div className="min-h-screen bg-background">
           {!isAuthenticated ? (
             <Switch>
+              <Route path="/" component={WelcomePage} />
+              <Route path="/welcome" component={WelcomePage} />
               <Route path="/login" component={LoginPage} />
               <Route path="/customer-auth-test" component={CustomerAuthTestPage} />
               <Route>
-                <Redirect to="/login" />
+                <Redirect to="/" />
               </Route>
             </Switch>
           ) : (
