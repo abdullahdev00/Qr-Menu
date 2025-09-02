@@ -235,21 +235,24 @@ export default function QRCodesPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-6 overflow-hidden">
       {/* Header */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">QR Codes</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0 overflow-hidden">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">
+            <span className="hidden sm:inline">QR Codes</span>
+            <span className="sm:hidden">QR Codes 📱</span>
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm truncate hidden sm:block">
             Generate and manage QR codes for your restaurant menu and tables
           </p>
         </div>
         
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Generate New QR
+            <Button className="bg-blue-600 hover:bg-blue-700 px-2 sm:px-4 py-2 shrink-0">
+              <Plus className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Generate New QR</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">

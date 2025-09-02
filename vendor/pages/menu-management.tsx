@@ -226,9 +226,9 @@ function AddCategoryDialog({ refetchCategories }: { refetchCategories: () => voi
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300" data-testid="button-add-category">
-          <Tags className="w-4 h-4 mr-2" />
-          Add Category
+        <Button variant="outline" className="bg-gradient-to-r from-green-500 to-green-600 text-white px-2 sm:px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300" data-testid="button-add-category">
+          <Tags className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Add Category</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
@@ -1104,9 +1104,9 @@ function AddItemDialog({ refetchItems }: { refetchItems: () => void }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" data-testid="button-add-item">
-          <Plus className="w-5 h-5 mr-2" />
-          Add New Item
+        <Button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-2 sm:px-6 py-2 sm:py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105" data-testid="button-add-item">
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+          <span className="hidden sm:inline">Add New Item</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -1798,19 +1798,20 @@ export default function MenuManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-br from-white via-blue-50/40 to-purple-50/40 dark:from-gray-900 dark:via-blue-950/30 dark:to-purple-950/30 rounded-2xl p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-xl">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Menu Management 🍽️
+      <div className="bg-gradient-to-br from-white via-blue-50/40 to-purple-50/40 dark:from-gray-900 dark:via-blue-950/30 dark:to-purple-950/30 rounded-2xl p-3 sm:p-6 border border-blue-200/50 dark:border-blue-800/30 shadow-xl overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent truncate">
+              <span className="hidden sm:inline">Menu Management 🍽️</span>
+              <span className="sm:hidden">Menu 🍽️</span>
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-1">
+            <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm truncate hidden sm:block">
               {user.restaurantName} • Manage your menu items
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 shrink-0">
             <AddCategoryDialog refetchCategories={refetchCategories} />
             <AddItemDialog refetchItems={refetchMenuItems} />
           </div>

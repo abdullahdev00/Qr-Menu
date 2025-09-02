@@ -259,15 +259,16 @@ export default function VendorAnalytics() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       {/* Analytics Header */}
       <div className="bg-gradient-to-br from-white via-purple-50/40 to-blue-50/40 dark:from-gray-900 dark:via-purple-950/30 dark:to-blue-950/30 rounded-2xl p-6 border border-purple-200/50 dark:border-purple-800/30 shadow-xl">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Restaurant Analytics 📊
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent truncate">
+              <span className="hidden sm:inline">Restaurant Analytics 📊</span>
+              <span className="sm:hidden">Analytics 📊</span>
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-1">
+            <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm truncate hidden sm:block">
               {user.restaurantName} • Performance Dashboard
             </p>
           </div>
@@ -280,12 +281,15 @@ export default function VendorAnalytics() {
       </div>
 
       {/* Chart Selector */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Performance Analytics</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Track your business metrics with interactive charts</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 gap-3 overflow-hidden">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+            <span className="hidden sm:inline">Performance Analytics</span>
+            <span className="sm:hidden">Charts 📊</span>
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 truncate hidden sm:block">Track your business metrics with interactive charts</p>
         </div>
-        <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+        <div className="flex items-center space-x-1 sm:space-x-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 overflow-x-auto">
           {chartButtons.map((button) => {
             const Icon = button.icon;
             return (
@@ -301,7 +305,7 @@ export default function VendorAnalytics() {
                 }`}
               >
                 <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{button.label}</span>
+                <span className="hidden md:inline">{button.label}</span>
               </Button>
             )
           })}

@@ -317,33 +317,36 @@ export default function DesignPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       {/* Header Section */}
-      <div className="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Design</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Customize your restaurant's menu appearance and branding</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-gray-200 dark:border-gray-700 gap-3 sm:gap-0 overflow-hidden">
+        <div className="flex-1 min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white truncate">
+            <span className="hidden sm:inline">Design</span>
+            <span className="sm:hidden">Design 🎨</span>
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm truncate hidden sm:block">Customize your restaurant's menu appearance and branding</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
-            Reset
+            <span className="hidden sm:inline">Reset</span>
           </button>
           <button
             onClick={handleSave}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Save className="w-4 h-4" />
-            Save Changes
+            <span className="hidden sm:inline">Save Changes</span>
           </button>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+      <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 overflow-x-auto">
         {[
           { id: 'colors', label: 'Brand Colors', icon: Palette },
           { id: 'typography', label: 'Typography', icon: Type },
@@ -355,14 +358,14 @@ export default function DesignPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+              className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-md transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-white dark:bg-gray-700 text-blue-600 shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
             >
               <Icon className="w-4 h-4" />
-              {tab.label}
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           );
         })}

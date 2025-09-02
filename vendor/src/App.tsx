@@ -55,7 +55,7 @@ function VendorApp() {
     <ThemeProvider defaultTheme="light" storageKey="vendor-theme">
       <QueryClientProvider client={queryClient}>
         <Router>
-          <div className="min-h-screen bg-background">
+          <div className="min-h-screen bg-background overflow-x-hidden">
             {!isAuthenticated ? (
               <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
