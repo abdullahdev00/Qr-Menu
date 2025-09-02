@@ -210,16 +210,20 @@ export const insertOrderItemSchema = createInsertSchema(orderItems, {
 }).omit({ id: true, createdAt: true });
 
 // Payment Requests Table - for vendor payment submissions
+// Updated Payments System with Receipt Management
 export const paymentRequests = pgTable('payment_requests', {
   id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar('vendor_id').references(() => restaurants.id).notNull(),
+  restaurantId: varchar('restaurant_id').references(() => restaurants.id).notNull(),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   paymentMethod: text('payment_method').notNull(), // 'jazzcash', 'easypaisa', 'bank_transfer'
-  bankName: text('bank_name').notNull(),
-  accountNumber: text('account_number').notNull(),
-  accountHolder: text('account_holder').notNull(),
+  bankName: text('bank_name'),
+  accountNumber: text('account_number'),
+  accountHolder: text('account_holder'),
   transactionRef: text('transaction_ref').notNull(),
-  receiptUrl: text('receipt_url').notNull(),
+  receiptUrl: text('receipt_url'), // URL to uploaded receipt
+  receiptFileName: text('receipt_file_name'), // Original file name
+  receiptFileSize: integer('receipt_file_size'), // File size in bytes
+  description: text('description'), // Payment description
   status: text('status').notNull().default('pending'), // 'pending', 'approved', 'rejected', 'under_review'
   submittedAt: timestamp('submitted_at').notNull().defaultNow(),
   processedAt: timestamp('processed_at'),
@@ -230,8 +234,40 @@ export const paymentRequests = pgTable('payment_requests', {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
-// Zod schemas for payment requests
-export const insertPaymentRequestSchema = createInsertSchema(paymentRequests).omit({
+// Payment History for Balance Transactions
+export const paymentHistory = pgTable('payment_history', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar('restaurant_id').references(() => restaurants.id).notNull(),
+  type: text('type').notNull(), // 'credit', 'debit', 'monthly_deduction', 'plan_upgrade'
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  currency: text('currency').notNull().default('PKR'),
+  description: text('description').notNull(),
+  balanceBefore: decimal('balance_before', { precision: 10, scale: 2 }).notNull(),
+  balanceAfter: decimal('balance_after', { precision: 10, scale: 2 }).notNull(),
+  relatedPaymentRequestId: varchar('related_payment_request_id').references(() => paymentRequests.id),
+  relatedPlanId: varchar('related_plan_id').references(() => subscriptionPlans.id),
+  processedBy: varchar('processed_by').references(() => adminUsers.id),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+// Plan Upgrades History
+export const planUpgrades = pgTable('plan_upgrades', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar('restaurant_id').references(() => restaurants.id).notNull(),
+  fromPlanId: varchar('from_plan_id').references(() => subscriptionPlans.id),
+  toPlanId: varchar('to_plan_id').references(() => subscriptionPlans.id).notNull(),
+  priceDifference: decimal('price_difference', { precision: 10, scale: 2 }).notNull(),
+  proRatedAmount: decimal('pro_rated_amount', { precision: 10, scale: 2 }).notNull(),
+  effectiveDate: timestamp('effective_date').notNull(),
+  newExpiryDate: timestamp('new_expiry_date').notNull(),
+  status: text('status').notNull().default('pending'), // 'pending', 'active', 'cancelled'
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+// Zod schemas for payment system
+export const insertPaymentRequestSchema = createInsertSchema(paymentRequests, {
+  amount: z.union([z.string(), z.number()]).transform(val => String(val)),
+}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -242,11 +278,22 @@ export const insertPaymentRequestSchema = createInsertSchema(paymentRequests).om
 
 export const updatePaymentRequestSchema = createInsertSchema(paymentRequests).omit({
   id: true,
-  vendorId: true,
+  restaurantId: true,
   createdAt: true,
   updatedAt: true,
   submittedAt: true
 }).partial();
+
+export const insertPaymentHistorySchema = createInsertSchema(paymentHistory, {
+  amount: z.union([z.string(), z.number()]).transform(val => String(val)),
+  balanceBefore: z.union([z.string(), z.number()]).transform(val => String(val)),
+  balanceAfter: z.union([z.string(), z.number()]).transform(val => String(val)),
+}).omit({ id: true, createdAt: true });
+
+export const insertPlanUpgradeSchema = createInsertSchema(planUpgrades, {
+  priceDifference: z.union([z.string(), z.number()]).transform(val => String(val)),
+  proRatedAmount: z.union([z.string(), z.number()]).transform(val => String(val)),
+}).omit({ id: true, createdAt: true });
 
 // Types
 export type AdminUser = typeof adminUsers.$inferSelect;
@@ -274,6 +321,10 @@ export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type PaymentRequest = typeof paymentRequests.$inferSelect;
 export type InsertPaymentRequest = z.infer<typeof insertPaymentRequestSchema>;
 export type UpdatePaymentRequest = z.infer<typeof updatePaymentRequestSchema>;
+export type PaymentHistory = typeof paymentHistory.$inferSelect;
+export type InsertPaymentHistory = z.infer<typeof insertPaymentHistorySchema>;
+export type PlanUpgrade = typeof planUpgrades.$inferSelect;
+export type InsertPlanUpgrade = z.infer<typeof insertPlanUpgradeSchema>;
 
 // Customer User Management for Mobile Authentication
 export const customerUsers = pgTable("customer_users", {

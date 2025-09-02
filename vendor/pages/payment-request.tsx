@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCurrentUser } from "../../admin/lib/auth";
 import { Button } from "../../admin/components/ui/button";
@@ -9,6 +9,9 @@ import { Badge } from "../../admin/components/ui/badge";
 import { Textarea } from "../../admin/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../admin/components/ui/select";
 import { useToast } from "../../admin/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../admin/components/ui/dialog";
+import { Progress } from "../../admin/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../admin/components/ui/tabs";
 import { 
   Wallet, 
   CreditCard, 
@@ -19,37 +22,65 @@ import {
   Clock,
   AlertCircle,
   Smartphone,
-  Building
+  Building,
+  TrendingUp,
+  History,
+  FileImage,
+  X,
+  Plus
 } from "lucide-react";
+import { insertPaymentRequestSchema, type InsertPaymentRequest } from "../../shared/schema";
 
 interface PaymentRequestFormData {
   amount: string;
   paymentMethod: string;
   description: string;
+  transactionRef: string;
+  bankName?: string;
+  accountNumber?: string;
+  accountHolder?: string;
   receiptImage: File | null;
 }
 
 interface ImagePreviewState {
   preview: string | null;
   isDragOver: boolean;
+  fileName?: string;
+  fileSize?: number;
+}
+
+interface PlanUpgradeData {
+  newPlanId: string;
+  priceDifference: number;
+  proRatedAmount: number;
 }
 
 export default function PaymentRequestPage() {
   const user = getCurrentUser();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<PaymentRequestFormData>({
     amount: "",
     paymentMethod: "",
     description: "",
+    transactionRef: "",
+    bankName: "",
+    accountNumber: "",
+    accountHolder: "",
     receiptImage: null
   });
 
   const [imagePreview, setImagePreview] = useState<ImagePreviewState>({
     preview: null,
-    isDragOver: false
+    isDragOver: false,
+    fileName: undefined,
+    fileSize: undefined
   });
+
+  const [selectedPlanUpgrade, setSelectedPlanUpgrade] = useState<string>("");
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   // Fetch restaurant data including plan and balance info
   const { data: restaurantData, isLoading: restaurantLoading } = useQuery({

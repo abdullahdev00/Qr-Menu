@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../../../lib/storage";
-import { paymentRequests } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { paymentRequests, paymentHistory, restaurants } from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
 
 export default async function handler(req: Request, res: Response) {
   if (req.method === 'GET') {
@@ -15,8 +15,8 @@ export default async function handler(req: Request, res: Response) {
       const requests = await db
         .select()
         .from(paymentRequests)
-        .where(eq(paymentRequests.vendorId, restaurantId as string))
-        .orderBy(paymentRequests.createdAt);
+        .where(eq(paymentRequests.restaurantId, restaurantId as string))
+        .orderBy(desc(paymentRequests.createdAt));
 
       res.json(requests);
     } catch (error) {
@@ -25,11 +25,20 @@ export default async function handler(req: Request, res: Response) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { amount, paymentMethod, description, restaurantId } = req.body;
+      const { 
+        amount, 
+        paymentMethod, 
+        description, 
+        transactionRef, 
+        bankName, 
+        accountNumber, 
+        accountHolder, 
+        restaurantId 
+      } = req.body;
       
-      if (!amount || !paymentMethod || !restaurantId) {
+      if (!amount || !paymentMethod || !restaurantId || !transactionRef) {
         return res.status(400).json({ 
-          error: "Amount, payment method, and restaurant ID are required" 
+          error: "Amount, payment method, transaction reference, and restaurant ID are required" 
         });
       }
 
@@ -40,11 +49,17 @@ export default async function handler(req: Request, res: Response) {
       const newRequest = await db
         .insert(paymentRequests)
         .values({
-          vendorId: restaurantId,
+          restaurantId,
           amount: amount.toString(),
           paymentMethod,
           description: description || "",
-          receiptImage: receiptImageUrl,
+          transactionRef,
+          bankName: bankName || "",
+          accountNumber: accountNumber || "",
+          accountHolder: accountHolder || "",
+          receiptUrl: receiptImageUrl,
+          receiptFileName: req.file?.originalname,
+          receiptFileSize: req.file?.size,
           status: "pending",
         })
         .returning();

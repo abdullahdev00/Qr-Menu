@@ -12,6 +12,7 @@ import Orders from '../pages/orders';
 import Analytics from '../pages/analytics';
 import Design from '../pages/design';
 import PaymentRequest from '../pages/payment-request';
+import PaymentManagement from '../pages/payments';
 import QRCodes from '../pages/qr-codes';
 import Settings from '../pages/settings';
 
@@ -72,6 +73,7 @@ function VendorApp() {
                 <Route path="/qr-codes" component={QRCodes} />
                 <Route path="/design" component={Design} />
                 <Route path="/payment-request" component={PaymentRequest} />
+                <Route path="/payments" component={PaymentManagement} />
                 <Route path="/analytics" component={Analytics} />
                 <Route path="/orders" component={Orders} />
                 <Route path="/settings" component={Settings} />

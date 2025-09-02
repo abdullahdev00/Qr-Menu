@@ -16,6 +16,7 @@ import RestaurantDashboardPage from '../pages/restaurant-dashboard';
 import RestaurantsPage from '../pages/restaurants';
 import QrCodesPage from '../pages/qr-codes';
 import PaymentsPage from '../pages/payments';
+import PaymentVerificationPage from '../pages/payment-verification';
 import MenuTemplatesPage from '../pages/menu-templates';
 import SubscriptionsPage from '../pages/subscriptions';
 import AnalyticsPage from '../pages/analytics';
@@ -93,6 +94,7 @@ function App() {
                     <Route path="/restaurants" component={RestaurantsPage} />
                     <Route path="/qr-codes" component={QrCodesPage} />
                     <Route path="/payments" component={PaymentsPage} />
+                    <Route path="/payment-verification" component={PaymentVerificationPage} />
                     <Route path="/menu-templates" component={MenuTemplatesPage} />
                     <Route path="/subscriptions" component={SubscriptionsPage} />
                     <Route path="/analytics" component={AnalyticsPage} />
