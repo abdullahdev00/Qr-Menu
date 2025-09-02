@@ -22,6 +22,7 @@ export default async function handler(req: Request, res: Response) {
 
     // Decode the table parameter
     const decodedData = decodeTableParam(encodedTable);
+    
     if (!decodedData) {
       return res.status(400).json({ 
         error: 'Invalid or corrupted table parameter',

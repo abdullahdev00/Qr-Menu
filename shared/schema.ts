@@ -112,14 +112,15 @@ export const restaurantTables = pgTable("restaurant_tables", {
 // Table parameter encoding utilities
 export function encodeTableParam(restaurantId: string, tableNumber: string): string {
   // Create a hash-like encoded parameter that's harder to manipulate
-  const payload = `${restaurantId}-${tableNumber}-${Date.now()}`;
+  // Use a separator that won't conflict with UUID hyphens
+  const payload = `${restaurantId}|${tableNumber}|${Date.now()}`;
   return Buffer.from(payload).toString('base64').replace(/[+=\/]/g, (c) => ({'+': '-', '=': '_', '/': '.'}[c] || c));
 }
 
 export function decodeTableParam(encoded: string): { restaurantId: string; tableNumber: string } | null {
   try {
     const decoded = Buffer.from(encoded.replace(/[-_.]/g, (c) => ({'-': '+', '_': '=', '.': '/'}[c] || c)), 'base64').toString();
-    const parts = decoded.split('-');
+    const parts = decoded.split('|'); // Use pipe separator instead of hyphen
     if (parts.length >= 2) {
       return { restaurantId: parts[0], tableNumber: parts[1] };
     }
