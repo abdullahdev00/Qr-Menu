@@ -25,21 +25,24 @@ interface User {
 
 interface PaymentRequest {
   id: string;
-  vendorId: string;
-  vendorName: string;
+  restaurantId: string;
   restaurantName: string;
-  amount: number;
+  restaurantEmail: string;
+  amount: string;
   paymentMethod: 'jazzcash' | 'easypaisa' | 'bank_transfer';
-  bankName: string;
-  accountNumber: string;
-  accountHolder: string;
+  bankName?: string;
+  accountNumber?: string;
+  accountHolder?: string;
   transactionRef: string;
-  receiptUrl: string;
+  receiptUrl?: string;
+  description?: string;
   status: 'pending' | 'approved' | 'rejected' | 'under_review';
   submittedAt: string;
   processedAt?: string;
+  processedBy?: string;
   adminNotes?: string;
   rejectionReason?: string;
+  createdAt: string;
 }
 
 export default function PaymentsPage() {
@@ -67,67 +70,53 @@ export default function PaymentsPage() {
     }
   }, [setLocation]);
 
-  // Mock data for development
-  const mockPayments: PaymentRequest[] = [
-    {
-      id: '1',
-      vendorId: 'v1',
-      vendorName: 'Ahmed Ali',
-      restaurantName: 'Karachi Biryani House',
-      amount: 5000,
-      paymentMethod: 'jazzcash',
-      bankName: 'JazzCash',
-      accountNumber: '03001234567',
-      accountHolder: 'Ahmed Ali',
-      transactionRef: 'JC123456789',
-      receiptUrl: '/images/receipt1.jpg',
-      status: 'pending',
-      submittedAt: '2025-08-26T10:30:00Z',
-    },
-    {
-      id: '2',
-      vendorId: 'v2',
-      vendorName: 'Sarah Khan',
-      restaurantName: 'Lahore Food Court',
-      amount: 8500,
-      paymentMethod: 'easypaisa',
-      bankName: 'EasyPaisa',
-      accountNumber: '03211234567',
-      accountHolder: 'Sarah Khan',
-      transactionRef: 'EP987654321',
-      receiptUrl: '/images/receipt2.jpg',
-      status: 'under_review',
-      submittedAt: '2025-08-26T09:15:00Z',
-    },
-    {
-      id: '3',
-      vendorId: 'v3',
-      vendorName: 'Muhammad Hassan',
-      restaurantName: 'Islamabad Delights',
-      amount: 12000,
-      paymentMethod: 'bank_transfer',
-      bankName: 'Meezan Bank',
-      accountNumber: '****1234',
-      accountHolder: 'Muhammad Hassan',
-      transactionRef: 'MB202500001',
-      receiptUrl: '/images/receipt3.jpg',
-      status: 'approved',
-      submittedAt: '2025-08-25T14:20:00Z',
-      processedAt: '2025-08-25T15:30:00Z',
-    }
-  ];
-
-  // For now using mock data, later will be replaced with actual API call
-  const { data: payments = [], isLoading } = useQuery({
-    queryKey: ['/api/payments'],
-    queryFn: () => Promise.resolve(mockPayments),
+  // Fetch payment requests from database
+  const { data: payments = [], isLoading } = useQuery<PaymentRequest[]>({
+    queryKey: ['/api/admin/payment-requests'],
     refetchInterval: 30000, // Auto-refresh every 30 seconds
   });
 
+  // Process payment request mutation
+  const processPaymentMutation = useMutation({
+    mutationFn: async ({ paymentId, action, notes }: { paymentId: string; action: 'approve' | 'reject'; notes?: string }) => {
+      const response = await fetch(`/api/payment-requests/${paymentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: action === 'approve' ? 'approved' : 'rejected',
+          adminNotes: notes,
+          rejectionReason: action === 'reject' ? notes : undefined,
+          processedBy: user?.id,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to process payment');
+      return response.json();
+    },
+    onSuccess: (_, { action }) => {
+      toast({
+        title: action === 'approve' ? "Payment Approved! ✅" : "Payment Rejected! ❌",
+        description: `Payment request has been ${action}d successfully.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/payment-requests'] });
+      setIsProcessDialogOpen(false);
+      setProcessingPayment(null);
+      setAdminNotes('');
+      setRejectionReason('');
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Processing Failed ❌",
+        description: error.message || "Failed to process payment request",
+        variant: "destructive",
+      });
+    },
+  });
+
+
   // Filter payments based on search and status
   const filteredPayments = payments.filter((payment: PaymentRequest) => {
-    const matchesSearch = payment.restaurantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         payment.vendorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = payment.restaurantName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         payment.restaurantEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          payment.transactionRef.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || payment.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -135,10 +124,10 @@ export default function PaymentsPage() {
 
   // Statistics
   const stats = {
-    pending: payments.filter(p => p.status === 'pending').length,
-    approved: payments.filter(p => p.status === 'approved').length,
-    rejected: payments.filter(p => p.status === 'rejected').length,
-    underReview: payments.filter(p => p.status === 'under_review').length,
+    pending: payments.filter((p: PaymentRequest) => p.status === 'pending').length,
+    approved: payments.filter((p: PaymentRequest) => p.status === 'approved').length,
+    rejected: payments.filter((p: PaymentRequest) => p.status === 'rejected').length,
+    underReview: payments.filter((p: PaymentRequest) => p.status === 'under_review').length,
   };
 
   const handleViewReceipt = (payment: PaymentRequest) => {
@@ -157,17 +146,13 @@ export default function PaymentsPage() {
   const confirmProcessPayment = () => {
     if (!processingPayment || !actionType) return;
 
-    // Here would be API call to process payment
-    toast({
-      title: actionType === 'approve' ? 'Payment Approved' : 'Payment Rejected',
-      description: `Payment of ₨${processingPayment.amount} has been ${actionType}d.`,
-      variant: actionType === 'approve' ? 'default' : 'destructive',
+    const notes = actionType === 'reject' ? rejectionReason : adminNotes;
+    
+    processPaymentMutation.mutate({
+      paymentId: processingPayment.id,
+      action: actionType,
+      notes: notes,
     });
-
-    setIsProcessDialogOpen(false);
-    setProcessingPayment(null);
-    setActionType(null);
-    // queryClient.invalidateQueries({ queryKey: ['/api/payments'] });
   };
 
   const getStatusBadge = (status: string) => {
@@ -328,7 +313,7 @@ export default function PaymentsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>S.No</TableHead>
-                    <TableHead>Vendor Info</TableHead>
+                    <TableHead>Restaurant Info</TableHead>
                     <TableHead>Payment Details</TableHead>
                     <TableHead>Receipt</TableHead>
                     <TableHead>Status</TableHead>
@@ -358,14 +343,14 @@ export default function PaymentsPage() {
                             </div>
                             <div>
                               <div className="font-medium text-gray-900">{payment.restaurantName}</div>
-                              <div className="text-sm text-gray-500">{payment.vendorName}</div>
-                              <div className="text-xs text-gray-400">ID: {payment.vendorId}</div>
+                              <div className="text-sm text-gray-500">{payment.restaurantEmail}</div>
+                              <div className="text-xs text-gray-400">ID: {payment.restaurantId}</div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="text-lg font-bold text-gray-900">₨{payment.amount.toLocaleString()}</div>
+                            <div className="text-lg font-bold text-gray-900">₨{parseFloat(payment.amount).toLocaleString()}</div>
                             <div className="text-sm text-gray-500 flex items-center">
                               {getPaymentMethodIcon(payment.paymentMethod)}
                               <span className="ml-1 capitalize">{payment.paymentMethod.replace('_', ' ')}</span>
@@ -453,10 +438,10 @@ export default function PaymentsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <strong>Vendor:</strong> {viewingReceipt.vendorName}
+                  <strong>Restaurant:</strong> {viewingReceipt.restaurantName}
                 </div>
                 <div>
-                  <strong>Amount:</strong> ₨{viewingReceipt.amount.toLocaleString()}
+                  <strong>Amount:</strong> ₨{parseFloat(viewingReceipt.amount).toLocaleString()}
                 </div>
                 <div>
                   <strong>Payment Method:</strong> {viewingReceipt.paymentMethod.replace('_', ' ')}
@@ -494,8 +479,8 @@ export default function PaymentsPage() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {actionType === 'approve' 
-                ? `Are you sure you want to approve this payment of ₨${processingPayment?.amount.toLocaleString()} to ${processingPayment?.vendorName}?`
-                : `Are you sure you want to reject this payment of ₨${processingPayment?.amount.toLocaleString()} from ${processingPayment?.vendorName}?`
+                ? `Are you sure you want to approve this payment of ₨${processingPayment ? parseFloat(processingPayment.amount).toLocaleString() : 0} to ${processingPayment?.restaurantName}?`
+                : `Are you sure you want to reject this payment of ₨${processingPayment ? parseFloat(processingPayment.amount).toLocaleString() : 0} from ${processingPayment?.restaurantName}?`
               }
             </AlertDialogDescription>
           </AlertDialogHeader>

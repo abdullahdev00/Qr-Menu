@@ -1,28 +1,39 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { storage } from '../../../lib/storage'
+import type { Request, Response } from "express";
+import { db } from "../../../lib/storage";
+import { paymentRequests } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const { id } = req.query
+export default async function handler(req: Request, res: Response) {
+  const { id } = req.params;
   
   try {
     if (req.method === 'PATCH') {
-      const { status, adminNotes, rejectionReason, processedBy } = req.body
+      const { status, adminNotes, rejectionReason, processedBy } = req.body;
       
-      // For now, return a mock updated response until backend is fully implemented
-      const updatedPaymentRequest = await storage.updatePaymentRequest?.(
-        id as string, 
-        { status, adminNotes, rejectionReason, processedBy }
-      ) || { id, status, adminNotes, rejectionReason, processedBy };
+      const updatedRequest = await db
+        .update(paymentRequests)
+        .set({
+          status,
+          adminNotes,
+          rejectionReason,
+          processedBy,
+          processedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(paymentRequests.id, id as string))
+        .returning();
       
-      res.json(updatedPaymentRequest)
+      if (updatedRequest.length === 0) {
+        return res.status(404).json({ error: "Payment request not found" });
+      }
+      
+      res.json(updatedRequest[0]);
     } else {
-      res.status(405).json({ message: 'Method not allowed' })
+      res.setHeader('Allow', ['PATCH']);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
-    console.error('Payment request update API error:', error)
-    res.status(500).json({ message: 'Failed to update payment request', error: String(error) })
+    console.error('Payment request update API error:', error);
+    res.status(500).json({ error: "Failed to update payment request" });
   }
 }

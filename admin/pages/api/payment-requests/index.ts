@@ -42,10 +42,9 @@ export default async function handler(req: Request, res: Response) {
         });
       }
 
-      // Handle file upload (receipt image) here in real implementation
-      // For now, we'll use a placeholder
-      const receiptImageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-
+      // Handle file upload - for now, store base64 data in receiptUrl field
+      const { receiptImage } = req.body;
+      
       const newRequest = await db
         .insert(paymentRequests)
         .values({
@@ -57,9 +56,9 @@ export default async function handler(req: Request, res: Response) {
           bankName: bankName || "",
           accountNumber: accountNumber || "",
           accountHolder: accountHolder || "",
-          receiptUrl: receiptImageUrl,
-          receiptFileName: req.file?.originalname,
-          receiptFileSize: req.file?.size,
+          receiptUrl: receiptImage || null, // Store base64 image data temporarily
+          receiptFileName: receiptImage ? "receipt.png" : null,
+          receiptFileSize: receiptImage ? receiptImage.length : null,
           status: "pending",
         })
         .returning();

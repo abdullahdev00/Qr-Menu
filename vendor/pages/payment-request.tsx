@@ -83,7 +83,7 @@ export default function PaymentRequestPage() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   // Fetch restaurant data including plan and balance info
-  const { data: restaurantData, isLoading: restaurantLoading } = useQuery({
+  const { data: restaurantData = {}, isLoading: restaurantLoading } = useQuery({
     queryKey: ['/api/restaurants', (user as any)?.restaurantId || (user as any)?.id],
     enabled: !!(user as any)?.restaurantId || !!(user as any)?.id,
   });
@@ -95,7 +95,13 @@ export default function PaymentRequestPage() {
 
   // Fetch payment requests history
   const { data: paymentRequests = [], isLoading: requestsLoading } = useQuery({
-    queryKey: ['/api/payment-requests', (user as any)?.restaurantId || (user as any)?.id],
+    queryKey: ['/api/payment-requests'],
+    queryFn: () => {
+      const restaurantId = (user as any)?.restaurantId || (user as any)?.id;
+      return fetch(`/api/payment-requests?restaurantId=${restaurantId}`)
+        .then(res => res.json())
+        .catch(() => []);
+    },
     enabled: !!(user as any)?.restaurantId || !!(user as any)?.id,
   });
 
@@ -223,9 +229,9 @@ export default function PaymentRequestPage() {
     );
   }
 
-  const currentPlan = subscriptionPlans?.find(plan => plan.id === restaurantData?.planId);
-  const accountBalance = parseFloat(restaurantData?.accountBalance || "0");
-  const planExpiryDate = restaurantData?.planExpiryDate ? new Date(restaurantData.planExpiryDate) : null;
+  const currentPlan = Array.isArray(subscriptionPlans) ? subscriptionPlans.find((plan: any) => plan.id === (restaurantData as any)?.planId) : null;
+  const accountBalance = parseFloat((restaurantData as any)?.accountBalance || "0");
+  const planExpiryDate = (restaurantData as any)?.planExpiryDate ? new Date((restaurantData as any).planExpiryDate) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
@@ -534,7 +540,7 @@ export default function PaymentRequestPage() {
                     <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
                     <p className="text-gray-500">Loading requests...</p>
                   </div>
-                ) : paymentRequests && paymentRequests.length > 0 ? (
+                ) : Array.isArray(paymentRequests) && paymentRequests.length > 0 ? (
                   paymentRequests.map((request: any) => (
                     <div key={request.id} className="border rounded-lg p-4 space-y-2">
                       <div className="flex items-center justify-between">
@@ -571,7 +577,7 @@ export default function PaymentRequestPage() {
         </div>
 
         {/* Available Plans for Upgrade */}
-        {subscriptionPlans && subscriptionPlans.length > 0 && (
+        {Array.isArray(subscriptionPlans) && subscriptionPlans.length > 0 && (
           <Card className="shadow-xl">
             <CardHeader>
               <CardTitle>Available Subscription Plans</CardTitle>
@@ -581,11 +587,11 @@ export default function PaymentRequestPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {subscriptionPlans.map((plan: any) => (
+                {Array.isArray(subscriptionPlans) ? subscriptionPlans.map((plan: any) => (
                   <div 
                     key={plan.id} 
                     className={`border rounded-lg p-6 ${
-                      plan.id === restaurantData?.planId 
+                      plan.id === (restaurantData as any)?.planId 
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' 
                         : 'border-gray-200 dark:border-gray-700'
                     }`}
@@ -597,7 +603,7 @@ export default function PaymentRequestPage() {
                       </div>
                       <p className="text-sm text-gray-500 mb-4">per month</p>
                       
-                      {plan.id === restaurantData?.planId ? (
+                      {plan.id === (restaurantData as any)?.planId ? (
                         <Badge variant="default" className="mb-4">Current Plan</Badge>
                       ) : (
                         <Button variant="outline" className="w-full mb-4">
@@ -615,7 +621,7 @@ export default function PaymentRequestPage() {
                       </div>
                     </div>
                   </div>
-                ))}
+                )) : null}
               </div>
             </CardContent>
           </Card>

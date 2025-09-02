@@ -30,7 +30,7 @@ export default async function handler(req: Request, res: Response) {
         adminNotes: paymentRequests.adminNotes,
         processedAt: paymentRequests.processedAt,
         restaurantName: restaurants.name,
-        restaurantEmail: restaurants.email
+        restaurantEmail: restaurants.ownerEmail
       })
       .from(paymentRequests)
       .innerJoin(restaurants, eq(paymentRequests.restaurantId, restaurants.id))
