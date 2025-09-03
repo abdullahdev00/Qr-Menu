@@ -1846,86 +1846,63 @@ class MenuApp {
             console.log('📋 Hidden empty state completely');
         }
         if (orderHistoryList) {
-            // Force show the list container
-            orderHistoryList.style.display = 'flex !important';
-            orderHistoryList.style.flexDirection = 'column';
-            orderHistoryList.style.gap = 'var(--spacing-md)';
-            orderHistoryList.style.visibility = 'visible';
-            orderHistoryList.style.opacity = '1';
-            orderHistoryList.style.position = 'relative';
-            orderHistoryList.style.height = 'auto';
-            orderHistoryList.style.overflow = 'visible';
+            console.log('🔄 Creating simple order cards...');
             
-            const renderedHTML = this.orderHistory.map(order => this.renderOrderHistoryCard(order)).join('');
-            console.log('📋 Rendered HTML length:', renderedHTML.length);
-            console.log('📋 First 200 chars of HTML:', renderedHTML.substring(0, 200));
-            orderHistoryList.innerHTML = renderedHTML;
-            console.log('✅ Order history UI updated - HTML set to orderHistoryList');
+            // Clear any existing content
+            orderHistoryList.innerHTML = '';
             
-            // Force a reflow to ensure styles are applied
-            orderHistoryList.offsetHeight;
+            // Simple inline styles to ensure visibility
+            orderHistoryList.style.display = 'block';
+            orderHistoryList.style.padding = '10px';
+            orderHistoryList.style.backgroundColor = '#f9f9f9';
+            orderHistoryList.style.minHeight = '200px';
             
-            // Apply styles to ensure visibility
-            const orderItems = orderHistoryList.querySelectorAll('.order-history-item');
-            console.log('📋 Order items rendered:', orderItems.length);
-            orderItems.forEach((item, index) => {
-                // Ensure order items are properly styled
-                item.style.display = 'block';
-                item.style.visibility = 'visible';
-                item.style.opacity = '1';
-                item.style.position = 'relative';
-                item.style.height = 'auto';
-                console.log(`📋 Order item ${index + 1} styled for visibility`);
-            });
+            // Generate simple cards
+            const orderCards = this.orderHistory.map(order => {
+                console.log('📋 Rendering order:', order.orderNumber || order.id);
+                return this.renderOrderHistoryCard(order);
+            }).join('');
             
-            // Additional debug info
-            console.log('🔍 OrderHistoryList final styles:', {
-                display: orderHistoryList.style.display,
-                visibility: orderHistoryList.style.visibility,
-                opacity: orderHistoryList.style.opacity,
-                innerHTML: orderHistoryList.innerHTML.length > 0,
-                childrenCount: orderHistoryList.children.length
-            });
+            // Set the HTML directly
+            orderHistoryList.innerHTML = orderCards;
+            
+            console.log('✅ Simple order cards created');
+            console.log('📋 Cards HTML length:', orderCards.length);
+            console.log('📋 OrderHistoryList children count:', orderHistoryList.children.length);
+            
         } else {
             console.error('❌ orderHistoryList element not found!');
         }
     }
 
     renderOrderHistoryCard(order) {
-        const statusClass = order.status.toLowerCase();
-        const statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
-        const orderDate = new Date(order.createdAt).toLocaleDateString();
-        const orderTime = new Date(order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        const itemsCount = order.items.length;
-        const firstItems = order.items.slice(0, 2).map(item => `${item.name} x${item.quantity}`).join(', ');
-        const moreItems = itemsCount > 2 ? ` +${itemsCount - 2} more` : '';
+        // Create a simple, guaranteed-to-work order card
+        const orderNumber = order.orderNumber || `ORD${order.id.slice(-6)}`;
+        const orderDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Today';
+        const orderTime = order.createdAt ? new Date(order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+        const status = order.status || 'pending';
+        const total = order.total || order.subtotal || 0;
+        const itemsCount = order.items ? order.items.length : 0;
         
+        // Create simple card HTML
         return `
-            <div class="order-history-item" data-order-id="${order.id}" data-testid="order-card-${order.id}">
-                <div class="order-header">
-                    <h4>Order #${order.orderNumber || order.id.slice(-6)}</h4>
-                    <div class="order-date">${orderDate} ${orderTime}</div>
+            <div class="simple-order-card" style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h4 style="margin: 0; color: #333; font-size: 16px; font-weight: bold;">Order #${orderNumber}</h4>
+                    <span style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #666;">${status}</span>
                 </div>
-                <div class="order-status ${statusClass}">${statusText}</div>
-                <div class="order-details">
-                    ${order.tableNumber ? `<p><i class="fas fa-chair"></i> Table ${order.tableNumber}</p>` : ''}
-                    <p><i class="fas fa-clock"></i> ${order.estimatedTime} min</p>
-                    <p><i class="fas fa-utensils"></i> ${itemsCount} items</p>
+                <div style="color: #666; font-size: 14px; margin-bottom: 8px;">
+                    ${orderDate} ${orderTime}
                 </div>
-                <div class="order-items-summary">
-                    ${order.items.slice(0, 2).map(item => `
-                        <span class="item-name">${item.name} x${item.quantity}</span>
-                    `).join('')}
-                    ${order.items.length > 2 ? `<span class="more-items">+${order.items.length - 2} more items</span>` : ''}
+                <div style="color: #333; font-size: 14px; margin-bottom: 8px;">
+                    ${itemsCount} items • ₨${total.toFixed(0)}
                 </div>
-                <div class="order-total">₨${order.total.toFixed(0)}</div>
-                ${['pending', 'preparing', 'ready'].includes(order.status) ? 
-                    `<div class="order-actions">
-                        <button class="order-refresh-btn" onclick="window.menuApp.refreshOrderStatus('${order.id}')" data-testid="button-refresh-order-${order.id}">
-                            <i class="fas fa-sync"></i> Refresh Status
-                        </button>
-                    </div>` : ''
-                }
+                ${order.items && order.items.length > 0 ? `
+                    <div style="color: #666; font-size: 13px;">
+                        ${order.items.slice(0, 2).map(item => `${item.name} x${item.quantity}`).join(', ')}
+                        ${order.items.length > 2 ? ` +${order.items.length - 2} more` : ''}
+                    </div>
+                ` : ''}
             </div>
         `;
     }
