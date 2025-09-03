@@ -382,8 +382,8 @@ html::-webkit-scrollbar {
 
 /* Mobile Search Bar */
 .mobile-search-bar {
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 70px;
     left: 0;
     right: 0;
     background: var(--secondary-dark);
@@ -392,7 +392,8 @@ html::-webkit-scrollbar {
     opacity: 0;
     visibility: hidden;
     transition: var(--transition-normal);
-    z-index: 999;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
 }
 
 .mobile-search-bar.active {
@@ -1819,8 +1820,8 @@ html::-webkit-scrollbar {
 }
 
 .mobile-search-bar {
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 70px;
     left: 0;
     right: 0;
     background: var(--secondary-dark);
@@ -1829,7 +1830,8 @@ html::-webkit-scrollbar {
     opacity: 0;
     visibility: hidden;
     transition: var(--transition-normal);
-    z-index: 999;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
     display: block; /* Always displayed on mobile */
 }
 
