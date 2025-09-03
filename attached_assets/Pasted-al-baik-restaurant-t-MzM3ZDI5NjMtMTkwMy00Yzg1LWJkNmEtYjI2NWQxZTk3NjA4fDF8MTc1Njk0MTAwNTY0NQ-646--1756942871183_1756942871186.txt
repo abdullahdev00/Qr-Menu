@@ -1,0 +1,103 @@
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:646 🔄 Initializing customer website components...
+cart.js:9 Cart initialized with items: Array(0)
+cart.js:10 Initial cart count: 0
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:650 ✅ Cart initialized
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:654 ✅ Menu app initialized
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:659 ✅ Auth and filters initialized
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:664 ✅ Cart button found: <button class=​"cart-toggle" id=​"cartToggle" data-testid=​"button-cart-toggle" aria-label=​"View cart">​…​</button>​flex
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:673 ✅ Order history button found: <button class=​"order-history-toggle" id=​"orderHistoryToggle" data-testid=​"button-order-history-toggle" aria-label=​"Order history" style=​"display:​ flex;​ pointer-events:​ auto;​ opacity:​ 1;​">​…​</button>​flex
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:687 ✅ Customer website initialized successfully
+app.js:331 QR Scan detected - Table: 1, Restaurant: al-baik-restaurant
+app.js:71 🔍 DEBUG - Loading order history from storage...
+app.js:75 🔍 DEBUG - storedHistory raw: [{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"},{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"}]
+app.js:76 🔍 DEBUG - storedCurrentOrders raw: [{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"},{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"}]
+app.js:80 📋 Loaded order history from localStorage: 2 orders
+app.js:81 📋 First order preview: Object
+app.js:89 📋 Loaded current orders from localStorage: 2 orders
+app.js:399 🔍 API response received: Object
+app.js:400 🔍 Restaurant data from API: Object
+app.js:2101 🏪 Updating restaurant name to: Al-Baik Restaurant
+app.js:2107 ✅ Header restaurant name updated
+app.js:2114 ✅ Footer restaurant name updated
+app.js:405 🏪 Restaurant loaded: Al-Baik Restaurant
+app.js:1708 🔄 Updating order history icon - orderHistory length: 2
+app.js:1709 🔍 DEBUG - Current orderHistory array: Array(2)
+app.js:1710 🔍 DEBUG - localStorage orderHistory: [{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"},{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"}]
+app.js:1727 ✅ Order history button event listener added with proper binding
+app.js:1728 ✅ Order history button made visible and clickable
+app.js:1965 🔌 Connected to WebSocket server
+app.js:1657 🔄 Toggle order history clicked
+app.js:1659 📋 Sidebar element found: true
+app.js:1662 📋 Sidebar current classes: order-history-sidebar
+app.js:1667 📋 Opening order history
+app.js:1676 🔽 Opening order history sidebar
+app.js:1679 🔍 FORCE RELOAD: Reloading orderHistory from localStorage...
+app.js:71 🔍 DEBUG - Loading order history from storage...
+app.js:75 🔍 DEBUG - storedHistory raw: [{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"},{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"}]
+app.js:76 🔍 DEBUG - storedCurrentOrders raw: [{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"},{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"}]
+app.js:80 📋 Loaded order history from localStorage: 2 orders
+app.js:81 📋 First order preview: Object
+app.js:89 📋 Loaded current orders from localStorage: 2 orders
+app.js:1681 🔍 After force reload - orderHistory length: 2
+app.js:1685 📋 Adding active class to sidebar
+app.js:1688 📋 Loading order history data
+app.js:1746 🔄 Loading order history...
+app.js:1747 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1750 🔧 CRITICAL FIX: Force reloading from localStorage at function start...
+app.js:1754 ✅ Fresh orderHistory loaded: 2 orders
+app.js:1760 📋 Current orderHistory array: Array(2)
+app.js:1761 📋 LocalStorage orderHistory: [{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"},{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"}]
+app.js:1768 ✅ Loaded order history from localStorage: Array(2)
+app.js:1690 ✅ Order history sidebar opened
+al-baik-restaurant?t=MzM3ZDI5NjMtMTkwMy00Yzg1LWJkNmEtYjI2NWQxZTk3NjA4fDF8MTc1Njk0MTAwNTY0NQ__:676 📋 Order history button clicked directly
+app.js:1657 🔄 Toggle order history clicked
+app.js:1659 📋 Sidebar element found: true
+app.js:1662 📋 Sidebar current classes: order-history-sidebar active
+app.js:1664 📋 Closing order history
+app.js:1657 🔄 Toggle order history clicked
+app.js:1659 📋 Sidebar element found: true
+app.js:1662 📋 Sidebar current classes: order-history-sidebar
+app.js:1667 📋 Opening order history
+app.js:1676 🔽 Opening order history sidebar
+app.js:1679 🔍 FORCE RELOAD: Reloading orderHistory from localStorage...
+app.js:71 🔍 DEBUG - Loading order history from storage...
+app.js:75 🔍 DEBUG - storedHistory raw: [{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"},{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"}]
+app.js:76 🔍 DEBUG - storedCurrentOrders raw: [{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"},{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"}]
+app.js:80 📋 Loaded order history from localStorage: 2 orders
+app.js:81 📋 First order preview: Object
+app.js:89 📋 Loaded current orders from localStorage: 2 orders
+app.js:1681 🔍 After force reload - orderHistory length: 2
+app.js:1685 📋 Adding active class to sidebar
+app.js:1688 📋 Loading order history data
+app.js:1746 🔄 Loading order history...
+app.js:1747 📋 Elements found - orderHistoryList: true orderHistoryEmpty: true
+app.js:1750 🔧 CRITICAL FIX: Force reloading from localStorage at function start...
+app.js:1754 ✅ Fresh orderHistory loaded: 2 orders
+app.js:1760 📋 Current orderHistory array: Array(2)
+app.js:1761 📋 LocalStorage orderHistory: [{"id":"order_1756942462872_c8xtfenkf","orderNumber":"ORD460547","items":[{"id":"cart_1756942457175_yc6tyon32","menuItemId":"c1bdc42a-2436-4e21-ac6e-22cd975d755c","name":"Chicken Karahi","image":"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=300&fit=crop","price":1062.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":25,"addedAt":"2025-09-03T23:34:17.175Z"}],"subtotal":1062.5,"tax":0,"total":1062.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":25,"status":"pending","createdAt":"2025-09-03T23:34:22.872Z"},{"id":"order_1756941281824_zx4p0201n","orderNumber":"ORD277817","items":[{"id":"cart_1756941273028_ikj7fgmuq","menuItemId":"9c85e1f2-c2e3-4a0b-87ad-80024deda8bb","name":"Beef Biryani","image":"https://images.unsplash.com/photo-1563379091339-03246963d529?w=400&h=300&fit=crop","price":1187.5,"size":"medium","quantity":1,"customizations":{},"preparationTime":45,"addedAt":"2025-09-03T23:14:33.028Z"},{"id":"cart_1756941274409_i21vs6ldu","menuItemId":"e40c179b-a129-42de-9d99-5c74978d86cd","name":"Gulab Jamun","image":"https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop","price":375,"size":"medium","quantity":1,"customizations":{},"preparationTime":10,"addedAt":"2025-09-03T23:14:34.409Z"}],"subtotal":1562.5,"tax":0,"total":1562.5,"tableNumber":"1","restaurantId":"al-baik-restaurant","estimatedTime":45,"status":"pending","createdAt":"2025-09-03T23:14:41.824Z"}]
+app.js:1768 ✅ Loaded order history from localStorage: Array(2)
+app.js:1690 ✅ Order history sidebar opened
+app.js:1803 ✅ Merged order history from API and localStorage: Array(2)
+app.js:1819 📊 Final orderHistory length: 2
+app.js:1820 📊 Final orderHistory data: Array(2)
+app.js:1837 📋 Displaying orders: 2
+app.js:1838 📋 First order structure: Object
+app.js:1846 📋 Hidden empty state completely
+app.js:1849 🔄 Creating simple order cards...
+app.js:1862 📋 Rendering order: ORD460547
+app.js:1862 📋 Rendering order: ORD277817
+app.js:1869 ✅ Simple order cards created
+app.js:1870 📋 Cards HTML length: 2180
+app.js:1871 📋 OrderHistoryList children count: 2
+app.js:1803 ✅ Merged order history from API and localStorage: Array(2)
+app.js:1819 📊 Final orderHistory length: 2
+app.js:1820 📊 Final orderHistory data: Array(2)
+app.js:1837 📋 Displaying orders: 2
+app.js:1838 📋 First order structure: Object
+app.js:1846 📋 Hidden empty state completely
+app.js:1849 🔄 Creating simple order cards...
+app.js:1862 📋 Rendering order: ORD460547
+app.js:1862 📋 Rendering order: ORD277817
+app.js:1869 ✅ Simple order cards created
+app.js:1870 📋 Cards HTML length: 2180
+app.js:1871 📋 OrderHistoryList children count: 2

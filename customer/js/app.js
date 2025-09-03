@@ -1740,8 +1740,10 @@ class MenuApp {
     }
 
     async loadOrderHistory() {
-        const orderHistoryList = document.getElementById('orderHistoryList');
-        const orderHistoryEmpty = document.getElementById('orderHistorySidebarEmpty');
+        // CRITICAL FIX: Target the SIDEBAR order history elements specifically
+        const sidebar = document.querySelector('.order-history-sidebar');
+        const orderHistoryList = sidebar ? sidebar.querySelector('.order-history-list') : document.getElementById('orderHistoryList');
+        const orderHistoryEmpty = sidebar ? sidebar.querySelector('.order-history-empty') : document.getElementById('orderHistorySidebarEmpty');
         
         console.log('🔄 Loading order history...');
         console.log('📋 Elements found - orderHistoryList:', !!orderHistoryList, 'orderHistoryEmpty:', !!orderHistoryEmpty);
@@ -1846,32 +1848,42 @@ class MenuApp {
             console.log('📋 Hidden empty state completely');
         }
         if (orderHistoryList) {
-            console.log('🔄 Creating simple order cards...');
+            console.log('🔄 Creating simple order cards for SIDEBAR...');
+            console.log('🔍 TARGET ELEMENT:', orderHistoryList.className, orderHistoryList.parentElement.className);
             
             // Clear any existing content
             orderHistoryList.innerHTML = '';
             
-            // Simple inline styles to ensure visibility
-            orderHistoryList.style.display = 'block';
-            orderHistoryList.style.padding = '10px';
-            orderHistoryList.style.backgroundColor = '#f9f9f9';
-            orderHistoryList.style.minHeight = '200px';
+            // Force visibility with high z-index
+            orderHistoryList.style.display = 'block !important';
+            orderHistoryList.style.visibility = 'visible !important';
+            orderHistoryList.style.opacity = '1 !important';
+            orderHistoryList.style.position = 'relative';
+            orderHistoryList.style.zIndex = '9999';
+            orderHistoryList.style.backgroundColor = '#f0f0f0';
+            orderHistoryList.style.minHeight = '300px';
+            orderHistoryList.style.padding = '20px';
+            orderHistoryList.style.border = '2px solid red'; // Debug border
             
-            // Generate simple cards
+            // Generate simple cards with high z-index
             const orderCards = this.orderHistory.map(order => {
-                console.log('📋 Rendering order:', order.orderNumber || order.id);
-                return this.renderOrderHistoryCard(order);
+                console.log('📋 Rendering order for SIDEBAR:', order.orderNumber || order.id);
+                const cardHTML = this.renderOrderHistoryCard(order);
+                return cardHTML.replace('<div class="simple-order-card"', '<div class="simple-order-card" style="z-index: 9999; position: relative; background: yellow; border: 2px solid blue; margin: 10px 0; padding: 20px;"');
             }).join('');
             
             // Set the HTML directly
             orderHistoryList.innerHTML = orderCards;
             
-            console.log('✅ Simple order cards created');
+            // Force reflow
+            orderHistoryList.offsetHeight;
+            
+            console.log('✅ SIDEBAR order cards created with high z-index');
             console.log('📋 Cards HTML length:', orderCards.length);
             console.log('📋 OrderHistoryList children count:', orderHistoryList.children.length);
             
         } else {
-            console.error('❌ orderHistoryList element not found!');
+            console.error('❌ SIDEBAR orderHistoryList element not found!');
         }
     }
 
