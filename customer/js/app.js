@@ -834,14 +834,20 @@ class MenuApp {
     }
 
     handleCategoryChange(e) {
-        const category = e.target.getAttribute('data-category');
+        // Find the button element (could be clicked on icon or text)
+        const button = e.target.closest('.category-tab');
+        if (!button) return;
+        
+        const category = button.getAttribute('data-category');
         this.currentCategory = category;
+        
+        console.log('📂 Category changed to:', category);
         
         // Update active state
         document.querySelectorAll('.category-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-        e.target.classList.add('active');
+        button.classList.add('active');
         
         this.filterItems();
         this.currentPage = 1;
