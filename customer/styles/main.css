@@ -217,10 +217,13 @@ html::-webkit-scrollbar {
 
 .logo h1 {
     font-family: var(--font-secondary);
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--accent-gold);
     letter-spacing: -0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .header-actions {
@@ -388,20 +391,16 @@ html::-webkit-scrollbar {
     right: 0;
     background: var(--secondary-dark);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    opacity: 0;
-    visibility: hidden;
     transform: translateY(-100%);
-    transition: all 0.3s ease;
-    z-index: 1000;
+    transition: transform 0.3s ease;
+    z-index: 1001;
     box-shadow: var(--shadow-md);
-    height: auto;
-    min-height: 60px;
+    height: 60px;
     width: 100%;
+    display: block !important;
 }
 
 .mobile-search-bar.active {
-    opacity: 1;
-    visibility: visible;
     transform: translateY(0);
 }
 
@@ -1841,8 +1840,6 @@ html::-webkit-scrollbar {
 }
 
 .mobile-search-bar.active {
-    opacity: 1;
-    visibility: visible;
     transform: translateY(0);
 }
 

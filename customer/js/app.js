@@ -326,19 +326,38 @@ class MenuApp {
             
             const tableIndicator = document.createElement('div');
             tableIndicator.className = 'table-indicator';
-            tableIndicator.innerHTML = `<i class="fas fa-table"></i> Table ${this.tableNumber}`;
-            tableIndicator.style.cssText = `
-                background: linear-gradient(135deg, #d4af37, #f7e98e);
-                color: #000;
-                padding: 8px 16px;
-                border-radius: 20px;
-                font-weight: 600;
-                font-size: 14px;
-                margin-right: 10px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            `;
+            
+            // Check if mobile screen
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                tableIndicator.innerHTML = `<i class="fas fa-table"></i> ${this.tableNumber}`;
+                tableIndicator.style.cssText = `
+                    background: linear-gradient(135deg, #d4af37, #f7e98e);
+                    color: #000;
+                    padding: 6px 10px;
+                    border-radius: 15px;
+                    font-weight: 600;
+                    font-size: 12px;
+                    margin-right: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                `;
+            } else {
+                tableIndicator.innerHTML = `<i class="fas fa-table"></i> Table ${this.tableNumber}`;
+                tableIndicator.style.cssText = `
+                    background: linear-gradient(135deg, #d4af37, #f7e98e);
+                    color: #000;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    margin-right: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                `;
+            }
             header.insertBefore(tableIndicator, header.querySelector('.header-actions'));
         }
     }
