@@ -39,6 +39,7 @@ class MenuApp {
         
         // Initialize bound event handlers
         this._boundToggleHandler = null;
+        this.searchToggleInProgress = false;
         
         this.init();
     }
@@ -103,7 +104,15 @@ class MenuApp {
         const cartToggle = document.getElementById('cartToggle');
         const themeToggle = document.getElementById('themeToggle');
         
-        if (searchToggle) searchToggle.addEventListener('click', this.toggleSearch.bind(this));
+        if (searchToggle) {
+            // Remove any existing listeners to prevent double binding
+            searchToggle.removeEventListener('click', this.toggleSearch.bind(this));
+            searchToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleSearch();
+            });
+        }
         if (cartToggle) cartToggle.addEventListener('click', this.toggleCart.bind(this));
         if (themeToggle) themeToggle.addEventListener('click', this.toggleTheme.bind(this));
         
@@ -1015,6 +1024,13 @@ class MenuApp {
     // Removed mobile menu functionality as hamburger menu is removed
 
     toggleSearch() {
+        // Prevent rapid toggling
+        if (this.searchToggleInProgress) {
+            console.log('🔍 Search toggle already in progress, ignoring');
+            return;
+        }
+        this.searchToggleInProgress = true;
+        
         console.log('🔍 toggleSearch called');
         const mobileSearchBar = document.getElementById('mobileSearchBar');
         const searchToggle = document.getElementById('searchToggle');
@@ -1024,13 +1040,23 @@ class MenuApp {
         
         if (!mobileSearchBar) {
             console.error('❌ Mobile search bar not found!');
+            this.searchToggleInProgress = false;
             return;
         }
         
         const wasActive = mobileSearchBar.classList.contains('active');
         console.log('🔍 Was active before toggle:', wasActive);
         
-        const isActive = mobileSearchBar.classList.toggle('active');
+        // Manually handle the toggle to avoid issues
+        let isActive;
+        if (wasActive) {
+            mobileSearchBar.classList.remove('active');
+            isActive = false;
+        } else {
+            mobileSearchBar.classList.add('active');
+            isActive = true;
+        }
+        
         console.log('🔍 Is active after toggle:', isActive);
         
         // Change search icon to close icon when active
@@ -1058,8 +1084,11 @@ class MenuApp {
             }
         }
         
-        if (isActive) {
-            setTimeout(() => {
+        // Allow the CSS animation to complete before allowing next toggle
+        setTimeout(() => {
+            this.searchToggleInProgress = false;
+            
+            if (isActive) {
                 const mobileSearchInput = document.getElementById('mobileSearchInput');
                 if (mobileSearchInput) {
                     console.log('🔍 Focusing search input');
@@ -1067,8 +1096,8 @@ class MenuApp {
                 } else {
                     console.error('❌ Mobile search input not found for focus!');
                 }
-            }, 300);
-        }
+            }
+        }, 350);
         
         // Update filtered items
         this.filterItems();
