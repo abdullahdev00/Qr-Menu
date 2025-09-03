@@ -1741,7 +1741,7 @@ class MenuApp {
 
     async loadOrderHistory() {
         const orderHistoryList = document.getElementById('orderHistoryList');
-        const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
+        const orderHistoryEmpty = document.getElementById('orderHistorySidebarEmpty');
         
         console.log('🔄 Loading order history...');
         console.log('📋 Elements found - orderHistoryList:', !!orderHistoryList, 'orderHistoryEmpty:', !!orderHistoryEmpty);
