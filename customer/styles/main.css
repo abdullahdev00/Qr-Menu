@@ -2591,21 +2591,19 @@ select:focus {
     height: 100%;
     background-color: var(--card-background);
     transform: translateX(100%);
-    transition: transform var(--transition-normal);
+    transition: transform 0.3s ease;
     display: flex;
     flex-direction: column;
     /* Hide scrollbars */
     scrollbar-width: none;
     -ms-overflow-style: none;
+    z-index: 10001;
 }
 
 .cart-content::-webkit-scrollbar {
     display: none;
 }
 
-.cart-sidebar.active .cart-content {
-    transform: translateX(0);
-}
 
 .cart-header {
     display: flex;

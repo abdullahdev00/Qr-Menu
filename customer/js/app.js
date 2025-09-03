@@ -388,6 +388,12 @@ class MenuApp {
             const data = await response.json();
             
             if (data.success && data.items) {
+                // Update restaurant name from API data
+                if (data.restaurant && data.restaurant.name) {
+                    this.updateRestaurantName(data.restaurant.name);
+                    console.log('🏪 Restaurant loaded:', data.restaurant.name);
+                }
+                
                 this.categories = data.categories || [];
                 this.menuItems = data.items.map(item => ({
                     id: item.id,
@@ -2011,6 +2017,18 @@ class MenuApp {
             localStorage.setItem('customerId', customerId);
         }
         return customerId;
+    }
+
+    updateRestaurantName(name) {
+        const headerName = document.getElementById('restaurantName');
+        const footerName = document.getElementById('footerRestaurantName');
+        
+        if (headerName) {
+            headerName.textContent = name;
+        }
+        if (footerName) {
+            footerName.textContent = name;
+        }
     }
 }
 
