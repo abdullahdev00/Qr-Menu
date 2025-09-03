@@ -298,7 +298,17 @@ class ShoppingCart {
     }
 
     toggle() {
-        console.log('🛒 Cart toggle called, isOpen:', this.isOpen);
+        // Check actual DOM state instead of relying on isOpen property
+        const cartSidebar = document.getElementById('cartSidebar');
+        const isActuallyOpen = cartSidebar && cartSidebar.classList.contains('active');
+        
+        console.log('🛒 Cart toggle called');
+        console.log('🛒 isOpen property:', this.isOpen);
+        console.log('🛒 DOM actually active:', isActuallyOpen);
+        
+        // Sync the state with actual DOM
+        this.isOpen = isActuallyOpen;
+        
         if (this.isOpen) {
             console.log('🛒 Closing cart');
             this.close();
@@ -338,6 +348,7 @@ class ShoppingCart {
         const cartSidebar = document.getElementById('cartSidebar');
         if (cartSidebar) {
             cartSidebar.classList.remove('active');
+            console.log('🛒 Cart sidebar closed - active class removed');
         }
         document.body.style.overflow = '';
         this.isOpen = false;
