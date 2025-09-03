@@ -330,7 +330,7 @@ class MenuApp {
             // Check if mobile screen
             const isMobile = window.innerWidth <= 768;
             if (isMobile) {
-                tableIndicator.innerHTML = `<i class="fas fa-table"></i> ${this.tableNumber}`;
+                tableIndicator.innerHTML = `<i class="fas fa-chair"></i> ${this.tableNumber}`;
                 tableIndicator.style.cssText = `
                     background: linear-gradient(135deg, #d4af37, #f7e98e);
                     color: #000;
@@ -344,7 +344,7 @@ class MenuApp {
                     gap: 4px;
                 `;
             } else {
-                tableIndicator.innerHTML = `<i class="fas fa-table"></i> Table ${this.tableNumber}`;
+                tableIndicator.innerHTML = `<i class="fas fa-chair"></i> Table ${this.tableNumber}`;
                 tableIndicator.style.cssText = `
                     background: linear-gradient(135deg, #d4af37, #f7e98e);
                     color: #000;
@@ -1790,7 +1790,7 @@ class MenuApp {
                 </div>
                 <div class="order-status ${statusClass}">${statusText}</div>
                 <div class="order-details">
-                    ${order.tableNumber ? `<p><i class="fas fa-table"></i> Table ${order.tableNumber}</p>` : ''}
+                    ${order.tableNumber ? `<p><i class="fas fa-chair"></i> Table ${order.tableNumber}</p>` : ''}
                     <p><i class="fas fa-clock"></i> ${order.estimatedTime} min</p>
                     <p><i class="fas fa-utensils"></i> ${itemsCount} items</p>
                 </div>

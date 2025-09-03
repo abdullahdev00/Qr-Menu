@@ -359,7 +359,7 @@ class ShoppingCart {
                 </div>
                 <div class="checkout-body">
                     <div class="order-summary">
-                        <h3>Order #${orderSummary.orderNumber}</h3>\n                        ${orderSummary.tableNumber ? `<p style=\"background: linear-gradient(135deg, #d4af37, #f7e98e); color: #000; padding: 6px 12px; border-radius: 15px; margin: 8px 0; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;\"><i class=\"fas fa-table\"></i> Table ${orderSummary.tableNumber}</p>` : ''}
+                        <h3>Order #${orderSummary.orderNumber}</h3>\n                        ${orderSummary.tableNumber ? `<p style=\"background: linear-gradient(135deg, #d4af37, #f7e98e); color: #000; padding: 6px 12px; border-radius: 15px; margin: 8px 0; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;\"><i class=\"fas fa-chair\"></i> Table ${orderSummary.tableNumber}</p>` : ''}
                         <p>Estimated preparation time: ${orderSummary.estimatedTime} minutes</p>
                         
                         <div class="order-items">
@@ -669,7 +669,7 @@ class ShoppingCart {
                                             <span class="order-date">${new Date(order.createdAt).toLocaleDateString()}</span>
                                         </div>
                                         <div class="order-details">
-                                            ${order.tableNumber ? `<p><i class="fas fa-table"></i> Table ${order.tableNumber}</p>` : ''}
+                                            ${order.tableNumber ? `<p><i class="fas fa-chair"></i> Table ${order.tableNumber}</p>` : ''}
                                             <p><i class="fas fa-clock"></i> ${order.estimatedTime} minutes</p>
                                             <p><i class="fas fa-rupee-sign"></i> ₨${order.total.toFixed(0)}</p>
                                         </div>
