@@ -2554,15 +2554,11 @@ select:focus {
     width: 100%;
     height: 100vh;
     z-index: 999999;
-    visibility: hidden;
-    opacity: 0;
-    transition: visibility 0s linear 0.3s, opacity 0.3s ease;
+    display: none;
 }
 
 .cart-sidebar.active {
-    visibility: visible !important;
-    opacity: 1 !important;
-    transition-delay: 0s;
+    display: block !important;
 }
 
 .cart-sidebar.active .cart-content {

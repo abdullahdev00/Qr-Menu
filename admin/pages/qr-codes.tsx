@@ -11,7 +11,7 @@ import { useToast } from '../hooks/use-toast';
 import { 
   QrCode, Download, Eye, Edit, Trash2, Plus, 
   Search, Filter, MoreHorizontal, Settings,
-  Scan, Link, Table as TableIcon, Menu, Store
+  Scan, Link, Table as TableIcon, Menu, Store, Copy, Check
 } from 'lucide-react';
 
 interface QrCodeData {
@@ -37,6 +37,7 @@ export default function QrCodesPage() {
   const [selectedQrCodes, setSelectedQrCodes] = useState<string[]>([]);
   const [isGenerateDialogOpen, setIsGenerateDialogOpen] = useState(false);
   const [previewQrCode, setPreviewQrCode] = useState<string | null>(null);
+  const [copiedQrId, setCopiedQrId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -211,6 +212,35 @@ export default function QrCodesPage() {
       toast({ 
         title: 'Download failed', 
         description: 'Failed to download QR code. Please try again.',
+        variant: 'destructive' 
+      });
+    }
+  };
+
+  const handleCopyUrl = async (qrCode: QrCodeData) => {
+    if (!selectedRestaurantData) return;
+    
+    try {
+      const url = `${window.location.origin}/${selectedRestaurantData.slug}${qrCode.tableNumber ? `?table=${qrCode.tableNumber}` : ''}`;
+      await navigator.clipboard.writeText(url);
+      
+      // Set copied state for animation
+      setCopiedQrId(qrCode.id);
+      
+      // Reset after 2 seconds
+      setTimeout(() => {
+        setCopiedQrId(null);
+      }, 2000);
+      
+      toast({ 
+        title: 'URL copied!', 
+        description: 'Menu URL has been copied to clipboard.',
+      });
+    } catch (error) {
+      console.error('Copy error:', error);
+      toast({ 
+        title: 'Copy failed', 
+        description: 'Failed to copy URL. Please try again.',
         variant: 'destructive' 
       });
     }
@@ -428,6 +458,19 @@ export default function QrCodesPage() {
                               data-testid={`button-download-${qrCode.id}`}
                             >
                               <Download className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCopyUrl(qrCode)}
+                              data-testid={`button-copy-${qrCode.id}`}
+                              title="Copy Menu URL"
+                              className={copiedQrId === qrCode.id ? "bg-green-50 border-green-300 text-green-700" : ""}
+                            >
+                              {copiedQrId === qrCode.id ? 
+                                <Check className="h-3 w-3 text-green-600" /> : 
+                                <Copy className="h-3 w-3" />
+                              }
                             </Button>
                             <Button
                               size="sm"

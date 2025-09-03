@@ -297,20 +297,10 @@ class ShoppingCart {
         console.log('🛒 cartSidebar element found:', !!cartSidebar);
         
         if (cartSidebar) {
-            // Force a reflow to ensure the element is ready
-            cartSidebar.offsetHeight;
-            
             cartSidebar.classList.add('active');
-            cartSidebar.style.display = 'block';
-            cartSidebar.style.visibility = 'visible';
-            cartSidebar.style.opacity = '1';
-            cartSidebar.style.zIndex = '999999';
-            
             document.body.style.overflow = 'hidden';
             this.isOpen = true;
             console.log('🛒 Cart sidebar opened successfully');
-            console.log('🛒 Cart sidebar classes:', cartSidebar.className);
-            console.log('🛒 Cart sidebar style visibility:', cartSidebar.style.visibility);
             
             // Focus on close button for accessibility
             setTimeout(() => {
@@ -319,7 +309,7 @@ class ShoppingCart {
                     closeBtn.focus();
                     console.log('🛒 Close button focused');
                 }
-            }, 300);
+            }, 100);
         } else {
             console.error('❌ cartSidebar element not found!');
         }
@@ -329,10 +319,6 @@ class ShoppingCart {
         const cartSidebar = document.getElementById('cartSidebar');
         if (cartSidebar) {
             cartSidebar.classList.remove('active');
-            cartSidebar.style.display = '';
-            cartSidebar.style.visibility = '';
-            cartSidebar.style.opacity = '';
-            cartSidebar.style.zIndex = '';
         }
         document.body.style.overflow = '';
         this.isOpen = false;

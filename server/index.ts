@@ -50,7 +50,7 @@ async function startServer() {
         handlerPath = `../admin/pages/api/qr-codes/generate.ts`;
       }
       // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, /payment-requests/uuid, /menu-items/uuid, /menu-categories/uuid, /orders/uuid
-      else if (apiPath.match(/^(restaurants|subscription-plans|payment-requests|menu-items|menu-categories|orders|qr-codes)\/[a-f0-9-]+$/)) {
+      else if (apiPath.match(/^(restaurants|subscription-plans|payment-requests|menu-items|menu-categories|orders|qr-codes)\/[a-f0-9-]{8,}$/)) {
         const parts = apiPath.split('/');
         const resource = parts[0];
         dynamicId = parts[1] || null;
