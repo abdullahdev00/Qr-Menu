@@ -30,12 +30,10 @@ import {
 } from "../../shared/schema";
 
 // Create connection with proper error handling and SSL configuration
-const databaseUrl = process.env.DATABASE_URL!.includes('sslmode=')
-  ? process.env.DATABASE_URL!
-  : `${process.env.DATABASE_URL!}?sslmode=require`;
+const databaseUrl = process.env.DATABASE_URL!;
 
 const sql = postgres(databaseUrl, {
-  ssl: { rejectUnauthorized: false },
+  ssl: 'require', // Enable SSL for Replit's managed PostgreSQL
   max: 1,
   idle_timeout: 20,
   max_lifetime: 60 * 30,
