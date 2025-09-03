@@ -28,6 +28,9 @@
     /* Ensure mobile search functionality works on small screens */
     .mobile-search-bar {
         display: block !important;
+        position: fixed !important;
+        top: 60px !important;
+        z-index: 1000 !important;
     }
     
     .search-toggle {
