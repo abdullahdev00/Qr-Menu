@@ -139,3 +139,49 @@ The schema includes comprehensive entities for restaurant management:
 - **connect-pg-simple**: PostgreSQL session storage
 - **Wouter**: Lightweight routing library
 - **React Context**: Theme and authentication state management
+
+## Future Architecture Plan - Google Sheets Integration (September 3, 2025)
+
+### **New Architecture Strategy:**
+**Goal**: Create a store.link style platform where restaurant owners manage their data through web interface while backend uses Google Sheets as storage, with Supabase for admin operations only.
+
+### **Data Architecture:**
+- **Admin Platform (Supabase)**: Subscription plans, admin authentication, billing, analytics, restaurant accounts
+- **Restaurant Data (Google Sheets)**: Menu items, restaurant info, categories, availability, pricing
+- **Web Interface**: Complete restaurant management through web forms (no direct sheet access needed)
+
+### **Required APIs:**
+1. **Google Sheets API**: 
+   - Purpose: Read/write restaurant menu data
+   - Usage: Create sheets, update menu items, sync data
+   - Quota: 100M requests/day (more than sufficient)
+
+2. **Google Drive API**:
+   - Purpose: Sheet creation and management
+   - Usage: Auto-create sheets for new restaurants
+
+3. **Google Apps Script**:
+   - Purpose: Automation and webhooks
+   - Usage: Real-time sync, notifications, data validation
+
+4. **Google OAuth 2.0**:
+   - Purpose: Restaurant owner authentication
+   - Usage: Gmail login for restaurant owners
+
+### **Performance Strategy:**
+- **Caching Layer**: Server-side caching to handle high QR scan volume (1K+ per day per restaurant)
+- **Smart Sync**: Only API calls when menu data changes, not on every customer visit
+- **Apps Script Webhooks**: Push updates to our server when sheets change
+
+### **User Flow:**
+1. Restaurant Owner → Gmail Login → Permission Grant
+2. Auto Sheet Creation → Web Interface for Management  
+3. Menu Updates via Forms → Google Sheets Auto-Sync
+4. Customer QR Scan → Cached Data (Fast Response)
+
+### **Benefits:**
+- Zero database costs for restaurant data
+- Infinite scalability via Google infrastructure
+- Easy data migration and backups
+- Restaurant owners need no technical knowledge
+- Real-time synchronization across all platforms
