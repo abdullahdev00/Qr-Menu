@@ -383,21 +383,7 @@ html::-webkit-scrollbar {
     color: var(--text-primary);
 }
 
-/* Mobile Search Bar */
-.mobile-search-bar {
-    background: var(--secondary-dark);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    height: 0;
-    overflow: hidden;
-    transition: height 0.3s ease;
-    z-index: 1001;
-    box-shadow: var(--shadow-md);
-    width: 100%;
-}
-
-.mobile-search-bar.active {
-    height: 60px;
-}
+/* Mobile Search Bar - Removed duplicate, using unified version below */
 
 .search-container {
     position: relative;
@@ -1829,13 +1815,14 @@ html::-webkit-scrollbar {
     transition: all 0.3s ease;
     z-index: 1000;
     box-shadow: var(--shadow-md);
-    height: auto;
-    min-height: 60px;
-    display: block; /* Always displayed on mobile */
+    height: 60px;
+    display: block;
 }
 
 .mobile-search-bar.active {
-    height: 60px;
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Show navbar search on large screens, hide mobile search icon */

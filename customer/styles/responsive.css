@@ -33,6 +33,17 @@
         z-index: 1000 !important;
     }
     
+    /* Make sure header is visible on mobile */
+    .header {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    .header-container {
+        display: flex !important;
+        visibility: visible !important;
+    }
+    
     .search-toggle {
         display: flex !important;
     }

@@ -1015,17 +1015,29 @@ class MenuApp {
     // Removed mobile menu functionality as hamburger menu is removed
 
     toggleSearch() {
+        console.log('🔍 toggleSearch called');
         const mobileSearchBar = document.getElementById('mobileSearchBar');
         const searchToggle = document.getElementById('searchToggle');
         
-        if (!mobileSearchBar) return;
+        console.log('🔍 mobileSearchBar found:', !!mobileSearchBar);
+        console.log('🔍 searchToggle found:', !!searchToggle);
+        
+        if (!mobileSearchBar) {
+            console.error('❌ Mobile search bar not found!');
+            return;
+        }
+        
+        const wasActive = mobileSearchBar.classList.contains('active');
+        console.log('🔍 Was active before toggle:', wasActive);
         
         const isActive = mobileSearchBar.classList.toggle('active');
+        console.log('🔍 Is active after toggle:', isActive);
         
         // Change search icon to close icon when active
         if (searchToggle) {
             const icon = searchToggle.querySelector('i');
             if (isActive) {
+                console.log('🔍 Setting close icon');
                 icon.className = 'fas fa-times';
                 searchToggle.setAttribute('aria-label', 'Close search');
                 // Show all items when searching (reset category filter)
@@ -1034,6 +1046,7 @@ class MenuApp {
                     tab.classList.toggle('active', tab.getAttribute('data-category') === 'all');
                 });
             } else {
+                console.log('🔍 Setting search icon');
                 icon.className = 'fas fa-search';
                 searchToggle.setAttribute('aria-label', 'Search menu');
                 // Clear search input when closing
@@ -1048,7 +1061,12 @@ class MenuApp {
         if (isActive) {
             setTimeout(() => {
                 const mobileSearchInput = document.getElementById('mobileSearchInput');
-                if (mobileSearchInput) mobileSearchInput.focus();
+                if (mobileSearchInput) {
+                    console.log('🔍 Focusing search input');
+                    mobileSearchInput.focus();
+                } else {
+                    console.error('❌ Mobile search input not found for focus!');
+                }
             }, 300);
         }
         
