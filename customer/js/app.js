@@ -1977,6 +1977,7 @@ class MenuApp {
         this.websocket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
+                console.log('🔌 WebSocket message received:', data);
                 this.handleWebSocketMessage(data);
             } catch (error) {
                 console.error('Error parsing WebSocket message:', error);
@@ -1996,6 +1997,8 @@ class MenuApp {
     }
 
     handleWebSocketMessage(data) {
+        console.log('📦 New order update received:', data);
+        
         switch (data.type) {
             case 'order-status-update':
                 this.updateOrderStatus(data.data.orderId, data.data.status);
@@ -2005,9 +2008,73 @@ class MenuApp {
                     this.loadOrderHistory();
                 }
                 break;
+            case 'order-update':
+                // Handle new order data coming via WebSocket
+                console.log('📦 Handling order update:', data.data);
+                this.handleOrderUpdate(data.data);
+                break;
             default:
                 console.log('Unknown WebSocket message type:', data.type);
         }
+    }
+    
+    handleOrderUpdate(orderData) {
+        console.log('🔄 Processing order update:', orderData);
+        
+        // Convert WebSocket order data to our order history format
+        const orderForHistory = {
+            id: orderData.id,
+            orderNumber: orderData.orderNumber,
+            status: orderData.status,
+            total: parseFloat(orderData.totalAmount),
+            estimatedTime: orderData.estimatedTime || 30,
+            tableNumber: orderData.tableNumber,
+            deliveryType: orderData.deliveryType,
+            createdAt: orderData.createdAt,
+            updatedAt: orderData.updatedAt,
+            items: orderData.items || [], // Will try to get from cart if not provided
+        };
+        
+        // Check if this order already exists in history
+        const existingIndex = this.orderHistory.findIndex(o => o.id === orderData.id);
+        
+        if (existingIndex >= 0) {
+            // Update existing order
+            console.log('📝 Updating existing order in history');
+            this.orderHistory[existingIndex] = { ...this.orderHistory[existingIndex], ...orderForHistory };
+        } else {
+            // Add new order to history
+            console.log('➕ Adding new order to history');
+            this.orderHistory.unshift(orderForHistory);
+        }
+        
+        // Also update current orders if it's an active status
+        if (['pending', 'confirmed', 'preparing', 'ready'].includes(orderData.status)) {
+            const currentIndex = this.currentOrders.findIndex(o => o.id === orderData.id);
+            if (currentIndex >= 0) {
+                this.currentOrders[currentIndex] = { ...this.currentOrders[currentIndex], ...orderForHistory };
+            } else {
+                this.currentOrders.push(orderForHistory);
+            }
+        } else if (['completed', 'cancelled'].includes(orderData.status)) {
+            // Remove from current orders if completed/cancelled
+            this.currentOrders = this.currentOrders.filter(o => o.id !== orderData.id);
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
+        localStorage.setItem('currentOrders', JSON.stringify(this.currentOrders));
+        
+        // Update UI
+        this.updateOrderHistoryIcon();
+        
+        // Refresh order history display if sidebar is open
+        const sidebar = document.getElementById('orderHistorySidebar');
+        if (sidebar && sidebar.classList.contains('active')) {
+            this.loadOrderHistory();
+        }
+        
+        console.log('✅ Order history updated:', this.orderHistory.length, 'orders');
     }
 
     async refreshOrderStatus(orderId) {
