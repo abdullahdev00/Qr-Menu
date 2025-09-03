@@ -3,6 +3,7 @@ class ShoppingCart {
     constructor() {
         this.items = JSON.parse(localStorage.getItem('cart') || '[]');
         this.isOpen = false;
+        this.toggling = false; // Prevent rapid toggling
         this.taxRate = 0.08; // 8% tax rate
         
         console.log('Cart initialized with items:', this.items);
@@ -41,6 +42,8 @@ class ShoppingCart {
         
         if (cartOverlay) {
             cartOverlay.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 // Only close if clicked directly on overlay, not on child elements
                 if (e.target === cartOverlay) {
                     this.close();
@@ -306,6 +309,14 @@ class ShoppingCart {
         console.log('🛒 isOpen property:', this.isOpen);
         console.log('🛒 DOM actually active:', isActuallyOpen);
         
+        // Prevent rapid toggling
+        if (this.toggling) {
+            console.log('🛒 Toggle already in progress, skipping');
+            return;
+        }
+        
+        this.toggling = true;
+        
         // Sync the state with actual DOM
         this.isOpen = isActuallyOpen;
         
@@ -316,6 +327,11 @@ class ShoppingCart {
             console.log('🛒 Opening cart');
             this.open();
         }
+        
+        // Reset toggle flag after a delay
+        setTimeout(() => {
+            this.toggling = false;
+        }, 300);
     }
 
     open() {

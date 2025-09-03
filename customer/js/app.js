@@ -113,7 +113,15 @@ class MenuApp {
                 this.toggleSearch();
             });
         }
-        if (cartToggle) cartToggle.addEventListener('click', this.toggleCart.bind(this));
+        if (cartToggle) {
+            // Remove any existing listeners
+            cartToggle.removeEventListener('click', this.toggleCart.bind(this));
+            cartToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleCart();
+            });
+        }
         if (themeToggle) themeToggle.addEventListener('click', this.toggleTheme.bind(this));
         
         // Order history events
@@ -1145,17 +1153,18 @@ class MenuApp {
     }
 
     toggleCart() {
-        console.log('🛒 toggleCart called');
-        console.log('🛒 window.cart exists:', !!window.cart);
-        console.log('🛒 window.cart.toggle exists:', !!(window.cart && window.cart.toggle));
+        console.log('🛒 toggleCart called from MenuApp');
         
-        if (window.cart && window.cart.toggle) {
-            console.log('🛒 Calling cart.toggle()');
-            window.cart.toggle();
-        } else {
-            console.error('❌ Cart not initialized properly');
-            console.log('🛒 window.cart:', window.cart);
-        }
+        // Add a small delay to avoid event conflicts
+        setTimeout(() => {
+            if (window.cart && window.cart.toggle) {
+                console.log('🛒 Calling cart.toggle()');
+                window.cart.toggle();
+            } else {
+                console.error('❌ Cart not initialized properly');
+                console.log('🛒 window.cart:', window.cart);
+            }
+        }, 10);
     }
 
     applyFilters() {

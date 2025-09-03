@@ -662,15 +662,7 @@
                     const cartButton = document.getElementById('cartToggle');
                     if (cartButton) {
                         console.log('✅ Cart button found:', cartButton);
-                        // Add direct event listener as backup
-                        cartButton.addEventListener('click', function() {
-                            console.log('🛒 Cart button clicked directly');
-                            if (window.cart && window.cart.toggle) {
-                                window.cart.toggle();
-                            } else {
-                                console.error('❌ Cart not available');
-                            }
-                        });
+                        // Remove this duplicate event listener as it's causing conflicts
                     } else {
                         console.error('❌ Cart button not found');
                     }
