@@ -1133,10 +1133,16 @@ class MenuApp {
     }
 
     toggleCart() {
+        console.log('🛒 toggleCart called');
+        console.log('🛒 window.cart exists:', !!window.cart);
+        console.log('🛒 window.cart.toggle exists:', !!(window.cart && window.cart.toggle));
+        
         if (window.cart && window.cart.toggle) {
+            console.log('🛒 Calling cart.toggle()');
             window.cart.toggle();
         } else {
-            console.error('Cart not initialized properly');
+            console.error('❌ Cart not initialized properly');
+            console.log('🛒 window.cart:', window.cart);
         }
     }
 

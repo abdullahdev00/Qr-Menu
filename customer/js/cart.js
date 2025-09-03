@@ -281,23 +281,38 @@ class ShoppingCart {
     }
 
     toggle() {
+        console.log('🛒 Cart toggle called, isOpen:', this.isOpen);
         if (this.isOpen) {
+            console.log('🛒 Closing cart');
             this.close();
         } else {
+            console.log('🛒 Opening cart');
             this.open();
         }
     }
 
     open() {
+        console.log('🛒 Opening cart sidebar');
         const cartSidebar = document.getElementById('cartSidebar');
-        cartSidebar.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        this.isOpen = true;
+        console.log('🛒 cartSidebar element found:', !!cartSidebar);
         
-        // Focus on close button for accessibility
-        setTimeout(() => {
-            document.getElementById('cartClose').focus();
-        }, 300);
+        if (cartSidebar) {
+            cartSidebar.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            this.isOpen = true;
+            console.log('🛒 Cart sidebar opened successfully');
+            
+            // Focus on close button for accessibility
+            setTimeout(() => {
+                const closeBtn = document.getElementById('cartClose');
+                if (closeBtn) {
+                    closeBtn.focus();
+                    console.log('🛒 Close button focused');
+                }
+            }, 300);
+        } else {
+            console.error('❌ cartSidebar element not found!');
+        }
     }
 
     close() {
