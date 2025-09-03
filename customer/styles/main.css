@@ -385,25 +385,18 @@ html::-webkit-scrollbar {
 
 /* Mobile Search Bar */
 .mobile-search-bar {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
     background: var(--secondary-dark);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transform: translateY(-100%);
-    transition: transform 0.3s ease;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease;
     z-index: 1001;
     box-shadow: var(--shadow-md);
-    height: 60px;
-    width: 100vw;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    width: 100%;
 }
 
 .mobile-search-bar.active {
-    transform: translateY(0);
+    height: 60px;
 }
 
 .search-container {
@@ -1842,7 +1835,7 @@ html::-webkit-scrollbar {
 }
 
 .mobile-search-bar.active {
-    transform: translateY(0);
+    height: 60px;
 }
 
 /* Show navbar search on large screens, hide mobile search icon */

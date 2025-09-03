@@ -1015,33 +1015,47 @@ class MenuApp {
     // Removed mobile menu functionality as hamburger menu is removed
 
     toggleSearch() {
-        console.log('🔍 MOBILE SEARCH: Toggle search clicked!');
         const mobileSearchBar = document.getElementById('mobileSearchBar');
-        console.log('🔍 MOBILE SEARCH: Mobile search bar element found:', !!mobileSearchBar);
-        console.log('🔍 MOBILE SEARCH: Current screen width:', window.innerWidth);
+        const searchToggle = document.getElementById('searchToggle');
         
-        if (mobileSearchBar) {
-            console.log('🔍 MOBILE SEARCH: Current classes:', mobileSearchBar.className);
-            console.log('🔍 MOBILE SEARCH: Current styles:', window.getComputedStyle(mobileSearchBar).display);
-            console.log('🔍 MOBILE SEARCH: Current transform:', window.getComputedStyle(mobileSearchBar).transform);
-        }
-        
-        if (!mobileSearchBar) {
-            console.error('Mobile search bar element not found!', 'app.js:887');
-            return;
-        }
+        if (!mobileSearchBar) return;
         
         const isActive = mobileSearchBar.classList.toggle('active');
-        console.log('Search bar is now active:', isActive, 'app.js:892');
-        console.log('🔍 MOBILE SEARCH: After toggle classes:', mobileSearchBar.className);
+        
+        // Change search icon to close icon when active
+        if (searchToggle) {
+            const icon = searchToggle.querySelector('i');
+            if (isActive) {
+                icon.className = 'fas fa-times';
+                searchToggle.setAttribute('aria-label', 'Close search');
+                // Show all items when searching (reset category filter)
+                this.currentCategory = 'all';
+                document.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.classList.toggle('active', tab.getAttribute('data-category') === 'all');
+                });
+            } else {
+                icon.className = 'fas fa-search';
+                searchToggle.setAttribute('aria-label', 'Search menu');
+                // Clear search input when closing
+                const mobileSearchInput = document.getElementById('mobileSearchInput');
+                if (mobileSearchInput) {
+                    mobileSearchInput.value = '';
+                    this.searchQuery = '';
+                }
+            }
+        }
         
         if (isActive) {
             setTimeout(() => {
                 const mobileSearchInput = document.getElementById('mobileSearchInput');
-                console.log('Mobile search input found:', !!mobileSearchInput, 'app.js:896');
                 if (mobileSearchInput) mobileSearchInput.focus();
             }, 300);
         }
+        
+        // Update filtered items
+        this.filterItems();
+        this.currentPage = 1;
+        this.renderMenuItems();
     }
 
     closeSearch() {
