@@ -1008,6 +1008,12 @@ class MenuApp {
         console.log('🔍 MOBILE SEARCH: Mobile search bar element found:', !!mobileSearchBar);
         console.log('🔍 MOBILE SEARCH: Current screen width:', window.innerWidth);
         
+        if (mobileSearchBar) {
+            console.log('🔍 MOBILE SEARCH: Current classes:', mobileSearchBar.className);
+            console.log('🔍 MOBILE SEARCH: Current styles:', window.getComputedStyle(mobileSearchBar).display);
+            console.log('🔍 MOBILE SEARCH: Current transform:', window.getComputedStyle(mobileSearchBar).transform);
+        }
+        
         if (!mobileSearchBar) {
             console.error('Mobile search bar element not found!', 'app.js:887');
             return;
@@ -1015,6 +1021,7 @@ class MenuApp {
         
         const isActive = mobileSearchBar.classList.toggle('active');
         console.log('Search bar is now active:', isActive, 'app.js:892');
+        console.log('🔍 MOBILE SEARCH: After toggle classes:', mobileSearchBar.className);
         
         if (isActive) {
             setTimeout(() => {
