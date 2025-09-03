@@ -2553,19 +2553,16 @@ select:focus {
     right: 0;
     width: 100%;
     height: 100vh;
-    z-index: 10000;
+    z-index: 999999;
     visibility: hidden;
     opacity: 0;
-    transition: all var(--transition-normal);
-}
-
-.cart-sidebar .cart-content {
-    transform: translateX(100%);
+    transition: visibility 0s linear 0.3s, opacity 0.3s ease;
 }
 
 .cart-sidebar.active {
-    visibility: visible;
-    opacity: 1;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition-delay: 0s;
 }
 
 .cart-sidebar.active .cart-content {
@@ -2598,6 +2595,7 @@ select:focus {
     scrollbar-width: none;
     -ms-overflow-style: none;
     z-index: 10001;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
 }
 
 .cart-content::-webkit-scrollbar {
