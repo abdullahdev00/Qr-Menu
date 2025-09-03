@@ -1780,8 +1780,11 @@ class MenuApp {
         // Try to fetch fresh data from API as well
         try {
             const customerId = this.getCustomerIdFromStorage();
-            if (customerId) {
-                const response = await fetch(`/api/customer/orders?customerId=${customerId}`);
+            const restaurantId = this.getCurrentRestaurantId();
+            
+            // Fetch customer orders from database
+            if (customerId && restaurantId) {
+                const response = await fetch(`/api/orders?customerId=${customerId}&restaurantId=${restaurantId}`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.orders && data.orders.length > 0) {
@@ -1854,22 +1857,20 @@ class MenuApp {
             // Clear any existing content
             orderHistoryList.innerHTML = '';
             
-            // Force visibility with high z-index
+            // Professional styling for order history list
             orderHistoryList.style.display = 'block !important';
             orderHistoryList.style.visibility = 'visible !important';
             orderHistoryList.style.opacity = '1 !important';
             orderHistoryList.style.position = 'relative';
-            orderHistoryList.style.zIndex = '9999';
-            orderHistoryList.style.backgroundColor = '#f0f0f0';
-            orderHistoryList.style.minHeight = '300px';
-            orderHistoryList.style.padding = '20px';
-            orderHistoryList.style.border = '2px solid red'; // Debug border
+            orderHistoryList.style.zIndex = '100';
+            orderHistoryList.style.backgroundColor = 'transparent';
+            orderHistoryList.style.minHeight = '200px';
+            orderHistoryList.style.padding = '16px';
             
-            // Generate simple cards with high z-index
+            // Generate professional order cards
             const orderCards = this.orderHistory.map(order => {
                 console.log('📋 Rendering order for SIDEBAR:', order.orderNumber || order.id);
-                const cardHTML = this.renderOrderHistoryCard(order);
-                return cardHTML.replace('<div class="simple-order-card"', '<div class="simple-order-card" style="z-index: 9999; position: relative; background: yellow; border: 2px solid blue; margin: 10px 0; padding: 20px;"');
+                return this.renderOrderHistoryCard(order);
             }).join('');
             
             // Set the HTML directly
@@ -1888,7 +1889,7 @@ class MenuApp {
     }
 
     renderOrderHistoryCard(order) {
-        // Create a simple, guaranteed-to-work order card
+        // Create professional order card
         const orderNumber = order.orderNumber || `ORD${order.id.slice(-6)}`;
         const orderDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Today';
         const orderTime = order.createdAt ? new Date(order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
@@ -1896,23 +1897,110 @@ class MenuApp {
         const total = order.total || order.subtotal || 0;
         const itemsCount = order.items ? order.items.length : 0;
         
-        // Create simple card HTML
+        // Status styling
+        const getStatusStyle = (status) => {
+            const statusMap = {
+                'pending': { bg: '#fef3c7', color: '#d97706', text: 'Pending' },
+                'confirmed': { bg: '#dbeafe', color: '#2563eb', text: 'Confirmed' },
+                'preparing': { bg: '#fed7aa', color: '#ea580c', text: 'Preparing' },
+                'ready': { bg: '#bbf7d0', color: '#059669', text: 'Ready' },
+                'completed': { bg: '#d1fae5', color: '#10b981', text: 'Completed' },
+                'cancelled': { bg: '#fecaca', color: '#dc2626', text: 'Cancelled' }
+            };
+            return statusMap[status] || statusMap['pending'];
+        };
+        
+        const statusStyle = getStatusStyle(status);
+        
         return `
-            <div class="simple-order-card" style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <h4 style="margin: 0; color: #333; font-size: 16px; font-weight: bold;">Order #${orderNumber}</h4>
-                    <span style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #666;">${status}</span>
+            <div class="order-card" style="
+                background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+                border: 1px solid #4b5563;
+                border-radius: 12px;
+                padding: 16px;
+                margin-bottom: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.3)'">
+                
+                <!-- Order Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h4 style="margin: 0; color: #f9fafb; font-size: 16px; font-weight: 600; display: flex; align-items: center;">
+                        <i class="fas fa-receipt" style="margin-right: 8px; color: #fbbf24;"></i>
+                        Order #${orderNumber}
+                    </h4>
+                    <span style="
+                        background: ${statusStyle.bg};
+                        color: ${statusStyle.color};
+                        padding: 6px 12px;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    ">${statusStyle.text}</span>
                 </div>
-                <div style="color: #666; font-size: 14px; margin-bottom: 8px;">
-                    ${orderDate} ${orderTime}
+                
+                <!-- Order Details -->
+                <div style="color: #d1d5db; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center;">
+                    <i class="fas fa-calendar-alt" style="margin-right: 8px; color: #fbbf24; width: 14px;"></i>
+                    ${orderDate} at ${orderTime}
                 </div>
-                <div style="color: #333; font-size: 14px; margin-bottom: 8px;">
-                    ${itemsCount} items • ₨${total.toFixed(0)}
+                
+                <!-- Items & Total -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="color: #e5e7eb; font-size: 14px; display: flex; align-items: center;">
+                        <i class="fas fa-utensils" style="margin-right: 8px; color: #fbbf24; width: 14px;"></i>
+                        ${itemsCount} item${itemsCount > 1 ? 's' : ''}
+                    </div>
+                    <div style="color: #10b981; font-size: 16px; font-weight: 700;">
+                        ₨${total.toFixed(0)}
+                    </div>
                 </div>
+                
+                <!-- Items Summary -->
                 ${order.items && order.items.length > 0 ? `
-                    <div style="color: #666; font-size: 13px;">
-                        ${order.items.slice(0, 2).map(item => `${item.name} x${item.quantity}`).join(', ')}
-                        ${order.items.length > 2 ? ` +${order.items.length - 2} more` : ''}
+                    <div style="
+                        background: rgba(75, 85, 99, 0.5);
+                        border-radius: 8px;
+                        padding: 12px;
+                        margin-top: 8px;
+                        border-left: 3px solid #fbbf24;
+                    ">
+                        <div style="color: #f3f4f6; font-size: 13px; line-height: 1.4;">
+                            ${order.items.slice(0, 2).map(item => `
+                                <div style="margin-bottom: 4px;">• ${item.name} × ${item.quantity}</div>
+                            `).join('')}
+                            ${order.items.length > 2 ? `
+                                <div style="color: #9ca3af; font-style: italic;">
+                                    +${order.items.length - 2} more item${order.items.length - 2 > 1 ? 's' : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <!-- Action Button for Active Orders -->
+                ${['pending', 'confirmed', 'preparing'].includes(status) ? `
+                    <div style="margin-top: 12px; text-align: center;">
+                        <button onclick="window.menuApp.refreshOrderStatus('${order.id}')" style="
+                            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                            color: #1f2937;
+                            border: none;
+                            padding: 8px 16px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        " onmouseover="this.style.background='linear-gradient(135deg, #f59e0b, #d97706)'" onmouseout="this.style.background='linear-gradient(135deg, #fbbf24, #f59e0b)'">
+                            <i class="fas fa-sync-alt" style="margin-right: 6px;"></i>
+                            Track Order
+                        </button>
                     </div>
                 ` : ''}
             </div>
@@ -2086,17 +2174,31 @@ class MenuApp {
     }
 
     async refreshOrderStatus(orderId) {
+        console.log('🔄 Refreshing status for order:', orderId);
         try {
-            const response = await fetch(`/api/customer/orders/${orderId}/status`);
+            // Fetch latest order status from database
+            const response = await fetch(`/api/orders/${orderId}`);
             if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    this.updateOrderStatus(orderId, data.status);
-                    this.loadOrderHistory(); // Refresh the display
+                const updatedOrder = await response.json();
+                console.log('✅ Updated order status:', updatedOrder.status);
+                
+                // Update local storage
+                const orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+                const orderIndex = orderHistory.findIndex(o => o.id === orderId);
+                if (orderIndex !== -1) {
+                    orderHistory[orderIndex] = { ...orderHistory[orderIndex], ...updatedOrder };
+                    localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
                 }
+                
+                // Refresh the UI
+                this.loadOrderHistory();
+                
+                // Show status update notification
+                this.showNotification(`Order status updated to: ${updatedOrder.status}`, 'success');
             }
         } catch (error) {
             console.error('Error refreshing order status:', error);
+            this.showNotification('Failed to refresh order status', 'error');
         }
     }
 
@@ -2107,6 +2209,38 @@ class MenuApp {
             localStorage.setItem('customerId', customerId);
         }
         return customerId;
+    }
+
+    getCurrentRestaurantId() {
+        // Extract restaurant ID from current URL or stored data
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('restaurantId') || this.currentRestaurant?.id;
+    }
+
+    showNotification(message, type = 'info') {
+        // Create a simple notification
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 3000);
     }
 
     updateRestaurantName(name) {
