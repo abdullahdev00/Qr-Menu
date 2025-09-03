@@ -388,10 +388,16 @@ class MenuApp {
             const data = await response.json();
             
             if (data.success && data.items) {
+                console.log('🔍 API response received:', data);
+                console.log('🔍 Restaurant data from API:', data.restaurant);
+                
                 // Update restaurant name from API data
                 if (data.restaurant && data.restaurant.name) {
                     this.updateRestaurantName(data.restaurant.name);
                     console.log('🏪 Restaurant loaded:', data.restaurant.name);
+                } else {
+                    console.log('❌ No restaurant data found in API response');
+                    console.log('🔍 Available keys in API response:', Object.keys(data));
                 }
                 
                 this.categories = data.categories || [];
@@ -2020,14 +2026,22 @@ class MenuApp {
     }
 
     updateRestaurantName(name) {
+        console.log('🏪 Updating restaurant name to:', name);
         const headerName = document.getElementById('restaurantName');
         const footerName = document.getElementById('footerRestaurantName');
         
         if (headerName) {
             headerName.textContent = name;
+            console.log('✅ Header restaurant name updated');
+        } else {
+            console.log('❌ Header restaurant name element not found');
         }
+        
         if (footerName) {
             footerName.textContent = name;
+            console.log('✅ Footer restaurant name updated');
+        } else {
+            console.log('❌ Footer restaurant name element not found');
         }
     }
 }

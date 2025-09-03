@@ -7,11 +7,17 @@ export default async function handler(req: any, res: any) {
       
       // Get restaurant either by ID or slug
       let targetRestaurantId = restaurantId;
+      let restaurantInfo = null;
+      
       if (!targetRestaurantId && restaurantSlug) {
         const restaurants = await storage.getRestaurants();
+        console.log('Available restaurants:', restaurants.map(r => ({id: r.id, name: r.name, slug: r.slug})));
+        console.log('Looking for slug:', restaurantSlug);
         const restaurant = restaurants.find(r => r.slug === restaurantSlug);
+        console.log('Found restaurant:', restaurant ? {id: restaurant.id, name: restaurant.name, slug: restaurant.slug} : 'null');
         if (restaurant) {
           targetRestaurantId = restaurant.id;
+          restaurantInfo = restaurant;
         }
       }
       
@@ -20,7 +26,13 @@ export default async function handler(req: any, res: any) {
         const restaurants = await storage.getRestaurants();
         if (restaurants.length > 0) {
           targetRestaurantId = restaurants[0].id;
+          restaurantInfo = restaurants[0];
         }
+      }
+      
+      // If we still don't have restaurant info, fetch it
+      if (!restaurantInfo && targetRestaurantId) {
+        restaurantInfo = await storage.getRestaurant(targetRestaurantId);
       }
       
       const menuItems = await storage.getMenuItems(targetRestaurantId);
@@ -54,7 +66,17 @@ export default async function handler(req: any, res: any) {
           id: cat.id,
           name: cat.name,
           description: cat.description
-        }))
+        })),
+        restaurant: restaurantInfo ? {
+          id: restaurantInfo.id,
+          name: restaurantInfo.name,
+          slug: restaurantInfo.slug,
+          ownerName: restaurantInfo.ownerName,
+          address: restaurantInfo.address,
+          city: restaurantInfo.city,
+          avgRating: restaurantInfo.avgRating,
+          totalReviews: restaurantInfo.totalReviews
+        } : null
       });
     } catch (error) {
       console.error('Error fetching menu:', error);
