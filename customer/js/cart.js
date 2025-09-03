@@ -788,10 +788,8 @@ class ShoppingCart {
     }
 }
 
-// Initialize cart when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.cart = new ShoppingCart();
-});
+// ShoppingCart is initialized from index.html to control initialization order
+// This prevents double initialization
 
 // Add cart-specific CSS
 const cartStyle = document.createElement('style');

@@ -1579,7 +1579,5 @@ class AuthenticationManager {
     }
 }
 
-// Initialize authentication manager when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.auth = new AuthenticationManager();
-});
+// AuthenticationManager is initialized from index.html to control initialization order
+// This prevents double initialization

@@ -429,10 +429,8 @@ class FilterManager {
     }
 }
 
-// Initialize filter manager when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.filterManager = new FilterManager();
-});
+// FilterManager is initialized from index.html to control initialization order
+// This prevents double initialization
 
 // Add filter-specific CSS
 const filterStyle = document.createElement('style');

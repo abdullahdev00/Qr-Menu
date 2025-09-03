@@ -2008,10 +2008,8 @@ class MenuApp {
     }
 }
 
-// Initialize the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.menuApp = new MenuApp();
-});
+// MenuApp is initialized from index.html to control initialization order
+// This prevents double initialization
 
 // Add CSS animations for toast
 const style = document.createElement('style');
