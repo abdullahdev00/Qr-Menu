@@ -239,7 +239,7 @@ class ShoppingCart {
 
         removeBtn.addEventListener('click', () => {
             this.removeItem(item.id);
-            this.showToast(`${item.name} removed from cart`);
+            // Notification removed as requested
         });
 
         return itemDiv;
@@ -313,7 +313,7 @@ class ShoppingCart {
         
         if (this.items.length === 0) {
             console.error('Cart appears empty but checkout was called');
-            this.showToast('Your cart is empty');
+            // Notification removed as requested
             return;
         }
 
@@ -458,7 +458,7 @@ class ShoppingCart {
                 console.log('Order confirmed:', orderSummary);
                 console.log('Order data sent:', orderData);
                 console.log('API Response:', responseData);
-                this.showToast('Order placed successfully!');
+                // Notification removed as requested
                 
                 // Save order to history - with additional debug info
                 console.log('📝 About to save order to history');

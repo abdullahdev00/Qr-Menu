@@ -396,8 +396,10 @@ html::-webkit-scrollbar {
     z-index: 1001;
     box-shadow: var(--shadow-md);
     height: 60px;
-    width: 100%;
+    width: 100vw;
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .mobile-search-bar.active {

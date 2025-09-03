@@ -694,9 +694,6 @@ class MenuApp {
                 ${imageHTML}
                 ${item.isSpecial ? '<div class="item-badge special">Chef\'s Special</div>' : ''}
                 ${!item.availability ? '<div class="item-badge">Out of Stock</div>' : ''}
-                <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-id="${item.id}" data-testid="button-favorite-${item.id}">
-                    <i class="fas fa-heart"></i>
-                </button>
             </div>
             <div class="item-content">
                 <div class="item-header">
@@ -720,11 +717,7 @@ class MenuApp {
             }
         });
 
-        const favoriteBtn = itemDiv.querySelector('.favorite-btn');
-        favoriteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.toggleFavorite(item.id);
-        });
+        // Favorite functionality removed as requested
 
         const addToCartBtn = itemDiv.querySelector('.add-to-cart');
         if (item.availability) {
@@ -802,7 +795,7 @@ class MenuApp {
         // This will be handled by cart.js
         if (window.cart) {
             window.cart.addItem(item);
-            this.showToast(`${item.name} added to cart`);
+            // Notification removed as requested
         }
     }
 
@@ -1112,19 +1105,7 @@ class MenuApp {
         const favoriteBtn = modalBody.querySelector('.favorite-modal-btn');
         const addToCartBtn = modalBody.querySelector('.add-to-cart-modal');
         
-        if (favoriteBtn) {
-            favoriteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.toggleFavorite(item.id);
-                // Update button text and state
-                const isNowFavorite = this.favorites.includes(item.id);
-                favoriteBtn.classList.toggle('active', isNowFavorite);
-                favoriteBtn.innerHTML = `
-                    <i class="fas fa-heart"></i>
-                    ${isNowFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-                `;
-            });
-        }
+        // Favorite functionality removed as requested
         
         if (addToCartBtn && item.availability) {
             addToCartBtn.addEventListener('click', (e) => {
@@ -1173,11 +1154,6 @@ class MenuApp {
                     </div>
                     
                     <div class="modal-actions">
-                        <button class="btn-secondary favorite-modal-btn ${this.favorites.includes(item.id) ? 'active' : ''}" 
-                                data-id="${item.id}" data-testid="button-modal-favorite">
-                            <i class="fas fa-heart"></i>
-                            ${this.favorites.includes(item.id) ? 'Remove from Favorites' : 'Add to Favorites'}
-                        </button>
                         <button class="btn-primary add-to-cart-modal" 
                                 data-id="${item.id}" data-testid="button-modal-add-to-cart"
                                 ${!item.availability ? 'disabled' : ''}>
@@ -1284,6 +1260,34 @@ class MenuApp {
             });
         });
 
+        // Auto-slide functionality for modal carousel
+        let autoSlideInterval = null;
+        
+        const startAutoSlide = () => {
+            if (images.length > 1) {
+                autoSlideInterval = setInterval(() => {
+                    const newIndex = (currentIndex + 1) % images.length;
+                    updateCarousel(newIndex);
+                }, 3000); // Change image every 3 seconds
+            }
+        };
+        
+        const stopAutoSlide = () => {
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = null;
+            }
+        };
+        
+        // Start auto-slide if this is a modal carousel
+        if (carouselId.includes('modal-')) {
+            startAutoSlide();
+            
+            // Stop auto-slide when user interacts
+            carousel.addEventListener('mouseenter', stopAutoSlide);
+            carousel.addEventListener('mouseleave', startAutoSlide);
+        }
+
         // Touch/Swipe support for mobile
         let startX = 0;
         let startY = 0;
@@ -1291,6 +1295,7 @@ class MenuApp {
         carousel.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
+            stopAutoSlide(); // Stop auto-slide on touch
         });
 
         carousel.addEventListener('touchend', (e) => {
