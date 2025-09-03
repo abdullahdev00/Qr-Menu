@@ -1846,9 +1846,16 @@ class MenuApp {
             console.log('📋 Hidden empty state completely');
         }
         if (orderHistoryList) {
-            orderHistoryList.style.display = 'flex';
+            // Force show the list container
+            orderHistoryList.style.display = 'flex !important';
             orderHistoryList.style.flexDirection = 'column';
             orderHistoryList.style.gap = 'var(--spacing-md)';
+            orderHistoryList.style.visibility = 'visible';
+            orderHistoryList.style.opacity = '1';
+            orderHistoryList.style.position = 'relative';
+            orderHistoryList.style.height = 'auto';
+            orderHistoryList.style.overflow = 'visible';
+            
             const renderedHTML = this.orderHistory.map(order => this.renderOrderHistoryCard(order)).join('');
             console.log('📋 Rendered HTML length:', renderedHTML.length);
             console.log('📋 First 200 chars of HTML:', renderedHTML.substring(0, 200));
@@ -1861,11 +1868,23 @@ class MenuApp {
             // Apply styles to ensure visibility
             const orderItems = orderHistoryList.querySelectorAll('.order-history-item');
             console.log('📋 Order items rendered:', orderItems.length);
-            orderItems.forEach((item) => {
+            orderItems.forEach((item, index) => {
                 // Ensure order items are properly styled
                 item.style.display = 'block';
                 item.style.visibility = 'visible';
                 item.style.opacity = '1';
+                item.style.position = 'relative';
+                item.style.height = 'auto';
+                console.log(`📋 Order item ${index + 1} styled for visibility`);
+            });
+            
+            // Additional debug info
+            console.log('🔍 OrderHistoryList final styles:', {
+                display: orderHistoryList.style.display,
+                visibility: orderHistoryList.style.visibility,
+                opacity: orderHistoryList.style.opacity,
+                innerHTML: orderHistoryList.innerHTML.length > 0,
+                childrenCount: orderHistoryList.children.length
             });
         } else {
             console.error('❌ orderHistoryList element not found!');
