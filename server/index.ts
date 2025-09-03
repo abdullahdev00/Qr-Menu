@@ -56,6 +56,19 @@ async function startServer() {
         dynamicId = parts[1] || null;
         handlerPath = `../admin/pages/api/${resource}/[id].ts`;
       }
+      // Handle table-specific routes for restaurants
+      else if (apiPath.match(/^restaurants\/[a-f0-9-]{8,}\/tables(\/[a-f0-9-]{8,})?$/)) {
+        const parts = apiPath.split('/');
+        const restaurantId = parts[1];
+        const tableId = parts[3] || null;
+        if (tableId) {
+          dynamicId = tableId;
+          handlerPath = `../admin/pages/api/restaurants/[id]/tables/[tableId].ts`;
+        } else {
+          dynamicId = restaurantId;
+          handlerPath = `../admin/pages/api/restaurants/[id]/tables.ts`;
+        }
+      }
       
       // Try to import the handler
       let handler;
