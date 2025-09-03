@@ -28,8 +28,25 @@ class ShoppingCart {
 
     bindEvents() {
         // Cart sidebar events
-        document.getElementById('cartClose').addEventListener('click', this.close.bind(this));
-        document.getElementById('cartOverlay').addEventListener('click', this.close.bind(this));
+        const cartClose = document.getElementById('cartClose');
+        const cartOverlay = document.getElementById('cartOverlay');
+        
+        if (cartClose) {
+            cartClose.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.close();
+            });
+        }
+        
+        if (cartOverlay) {
+            cartOverlay.addEventListener('click', (e) => {
+                // Only close if clicked directly on overlay, not on child elements
+                if (e.target === cartOverlay) {
+                    this.close();
+                }
+            });
+        }
         
         // Checkout button
         const checkoutBtn = document.getElementById('checkoutBtn');
@@ -301,6 +318,8 @@ class ShoppingCart {
             document.body.style.overflow = 'hidden';
             this.isOpen = true;
             console.log('🛒 Cart sidebar opened successfully');
+            console.log('🛒 Cart sidebar has active class:', cartSidebar.classList.contains('active'));
+            console.log('🛒 Cart sidebar isOpen state:', this.isOpen);
             
             // Focus on close button for accessibility
             setTimeout(() => {
