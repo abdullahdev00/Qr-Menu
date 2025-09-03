@@ -2559,9 +2559,17 @@ select:focus {
     transition: all var(--transition-normal);
 }
 
+.cart-sidebar .cart-content {
+    transform: translateX(100%);
+}
+
 .cart-sidebar.active {
     visibility: visible;
     opacity: 1;
+}
+
+.cart-sidebar.active .cart-content {
+    transform: translateX(0) !important;
 }
 
 .cart-overlay {
