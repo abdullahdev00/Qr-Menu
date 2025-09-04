@@ -11,6 +11,7 @@ export default async function handler(req: Request, res: Response) {
 
   try {
     console.log('🔍 Admin fetching all payment requests...');
+    
     // Fetch all payment requests with restaurant information
     const requests = await db
       .select({
@@ -30,18 +31,21 @@ export default async function handler(req: Request, res: Response) {
         receiptFileSize: paymentRequests.receiptFileSize,
         adminNotes: paymentRequests.adminNotes,
         processedAt: paymentRequests.processedAt,
+        processedBy: paymentRequests.processedBy,
+        rejectionReason: paymentRequests.rejectionReason,
+        submittedAt: paymentRequests.submittedAt,
+        updatedAt: paymentRequests.updatedAt,
         restaurantName: restaurants.name,
         restaurantEmail: restaurants.ownerEmail
       })
       .from(paymentRequests)
-      .innerJoin(restaurants, eq(paymentRequests.restaurantId, restaurants.id))
+      .leftJoin(restaurants, eq(paymentRequests.restaurantId, restaurants.id))
       .orderBy(desc(paymentRequests.createdAt));
 
     console.log(`✅ Found ${requests.length} payment requests for admin panel`);
     res.json(requests);
   } catch (error) {
-    console.error("Error fetching payment requests for admin:", error);
+    console.error("❌ Error fetching payment requests for admin:", error);
     res.status(500).json({ error: "Failed to fetch payment requests" });
   }
 }
-
