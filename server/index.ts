@@ -49,15 +49,15 @@ async function startServer() {
       if (apiPath === 'qr-codes/generate') {
         handlerPath = `../admin/pages/api/qr-codes/generate.ts`;
       }
-      // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, /payment-requests/uuid, /menu-items/uuid, /menu-categories/uuid, /orders/uuid
-      else if (apiPath.match(/^(restaurants|subscription-plans|payment-requests|menu-items|menu-categories|orders|qr-codes)\/[a-f0-9-]{8,}$/)) {
+      // Handle dynamic routes like /restaurants/uuid, /subscription-plans/uuid, /payment-requests/uuid, /menu-items/uuid, /menu-categories/uuid, /orders/uuid or custom IDs
+      else if (apiPath.match(/^(restaurants|subscription-plans|payment-requests|menu-items|menu-categories|orders|qr-codes)\/[a-zA-Z0-9_-]+$/)) {
         const parts = apiPath.split('/');
         const resource = parts[0];
         dynamicId = parts[1] || null;
         handlerPath = `../admin/pages/api/${resource}/[id].ts`;
       }
       // Handle table-specific routes for restaurants
-      else if (apiPath.match(/^restaurants\/[a-f0-9-]{8,}\/tables(\/[a-f0-9-]{8,})?$/)) {
+      else if (apiPath.match(/^restaurants\/[a-zA-Z0-9_-]+\/tables(\/[a-zA-Z0-9_-]+)?$/)) {
         const parts = apiPath.split('/');
         const restaurantId = parts[1];
         const tableId = parts[3] || null;

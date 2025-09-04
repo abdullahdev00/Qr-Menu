@@ -1914,93 +1914,123 @@ class MenuApp {
         
         return `
             <div class="order-card" style="
-                background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-                border: 1px solid #4b5563;
-                border-radius: 12px;
-                padding: 16px;
-                margin-bottom: 12px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-                transition: all 0.3s ease;
+                background: var(--card-background, rgba(15, 15, 15, 0.95));
+                border: 1px solid var(--border-color, rgba(212, 175, 55, 0.3));
+                border-radius: 16px;
+                padding: 20px;
+                margin-bottom: 16px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(12px);
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
                 position: relative;
                 overflow: hidden;
-            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.3)'">
+            " onmouseover="this.style.transform='translateY(-6px) scale(1.02)'; this.style.boxShadow='0 20px 60px rgba(0,0,0,0.5)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.4)'">
+                
+                <!-- Decorative Gold Border -->
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 3px;
+                    background: linear-gradient(90deg, #d4af37, #fbbf24, #f59e0b);
+                    border-radius: 16px 16px 0 0;
+                "></div>
                 
                 <!-- Order Header -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h4 style="margin: 0; color: #f9fafb; font-size: 16px; font-weight: 600; display: flex; align-items: center;">
-                        <i class="fas fa-receipt" style="margin-right: 8px; color: #fbbf24;"></i>
-                        Order #${orderNumber}
-                    </h4>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div>
+                        <h4 style="margin: 0 0 6px 0; color: var(--text-primary, #ffffff); font-size: 18px; font-weight: 700; display: flex; align-items: center;">
+                            <i class="fas fa-receipt" style="margin-right: 10px; color: #d4af37; font-size: 16px;"></i>
+                            Order #${orderNumber}
+                        </h4>
+                        <p style="margin: 0; color: var(--text-secondary, #9ca3af); font-size: 13px; display: flex; align-items: center;">
+                            <i class="fas fa-clock" style="margin-right: 6px; color: #d4af37; font-size: 11px;"></i>
+                            ${orderDate} • ${orderTime}
+                        </p>
+                    </div>
                     <span style="
                         background: ${statusStyle.bg};
                         color: ${statusStyle.color};
-                        padding: 6px 12px;
-                        border-radius: 20px;
-                        font-size: 12px;
-                        font-weight: 600;
+                        padding: 8px 16px;
+                        border-radius: 24px;
+                        font-size: 11px;
+                        font-weight: 700;
                         text-transform: uppercase;
-                        letter-spacing: 0.5px;
+                        letter-spacing: 1px;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
                     ">${statusStyle.text}</span>
                 </div>
                 
-                <!-- Order Details -->
-                <div style="color: #d1d5db; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center;">
-                    <i class="fas fa-calendar-alt" style="margin-right: 8px; color: #fbbf24; width: 14px;"></i>
-                    ${orderDate} at ${orderTime}
-                </div>
-                
-                <!-- Items & Total -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <div style="color: #e5e7eb; font-size: 14px; display: flex; align-items: center;">
-                        <i class="fas fa-utensils" style="margin-right: 8px; color: #fbbf24; width: 14px;"></i>
-                        ${itemsCount} item${itemsCount > 1 ? 's' : ''}
+                <!-- Order Metrics Grid -->
+                <div style="
+                    display: grid; 
+                    grid-template-columns: 1fr 1fr; 
+                    gap: 16px; 
+                    margin-bottom: 16px;
+                    padding: 16px;
+                    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(15, 15, 15, 0.5));
+                    border-radius: 12px;
+                    border: 1px solid rgba(212, 175, 55, 0.2);
+                ">
+                    <div style="text-align: center;">
+                        <div style="color: var(--text-secondary, #9ca3af); font-size: 11px; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.8px;">Items</div>
+                        <div style="color: var(--text-primary, #ffffff); font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-utensils" style="margin-right: 8px; color: #d4af37; font-size: 14px;"></i>
+                            ${itemsCount}
+                        </div>
                     </div>
-                    <div style="color: #10b981; font-size: 16px; font-weight: 700;">
-                        ₨${total.toFixed(0)}
+                    <div style="text-align: center;">
+                        <div style="color: var(--text-secondary, #9ca3af); font-size: 11px; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.8px;">Total</div>
+                        <div style="color: #10b981; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-coins" style="margin-right: 6px; font-size: 14px;"></i>
+                            ₨${total.toFixed(0)}
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Items Summary -->
                 ${order.items && order.items.length > 0 ? `
                     <div style="
-                        background: rgba(75, 85, 99, 0.5);
-                        border-radius: 8px;
-                        padding: 12px;
-                        margin-top: 8px;
-                        border-left: 3px solid #fbbf24;
+                        background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(251, 191, 36, 0.03));
+                        border: 1px solid rgba(212, 175, 55, 0.25);
+                        border-radius: 12px;
+                        padding: 16px;
                     ">
-                        <div style="color: #f3f4f6; font-size: 13px; line-height: 1.4;">
-                            ${order.items.slice(0, 2).map(item => `
-                                <div style="margin-bottom: 4px;">• ${item.name} × ${item.quantity}</div>
+                        <div style="color: var(--text-secondary, #9ca3af); font-size: 11px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center;">
+                            <i class="fas fa-list" style="margin-right: 8px; color: #d4af37;"></i>
+                            Order Items
+                        </div>
+                        <div style="color: var(--text-primary, #ffffff); font-size: 14px; line-height: 1.6;">
+                            ${order.items.slice(0, 3).map(item => `
+                                <div style="
+                                    display: flex; 
+                                    justify-content: space-between; 
+                                    align-items: center; 
+                                    margin-bottom: 8px; 
+                                    padding: 8px 0;
+                                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                                ">
+                                    <span style="font-weight: 500; color: var(--text-primary, #ffffff);">${item.name}</span>
+                                    <span style="color: #d4af37; font-weight: 700; font-size: 13px;">×${item.quantity}</span>
+                                </div>
                             `).join('')}
-                            ${order.items.length > 2 ? `
-                                <div style="color: #9ca3af; font-style: italic;">
-                                    +${order.items.length - 2} more item${order.items.length - 2 > 1 ? 's' : ''}
+                            ${order.items.length > 3 ? `
+                                <div style="
+                                    color: var(--text-secondary, #9ca3af); 
+                                    font-style: italic; 
+                                    text-align: center; 
+                                    margin-top: 12px; 
+                                    padding-top: 12px;
+                                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                                    font-size: 12px;
+                                ">
+                                    <i class="fas fa-plus" style="margin-right: 6px;"></i>
+                                    ${order.items.length - 3} more item${order.items.length - 3 > 1 ? 's' : ''}
                                 </div>
                             ` : ''}
                         </div>
-                    </div>
-                ` : ''}
-                
-                <!-- Action Button for Active Orders -->
-                ${['pending', 'confirmed', 'preparing'].includes(status) ? `
-                    <div style="margin-top: 12px; text-align: center;">
-                        <button onclick="window.menuApp.refreshOrderStatus('${order.id}')" style="
-                            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-                            color: #1f2937;
-                            border: none;
-                            padding: 8px 16px;
-                            border-radius: 20px;
-                            font-size: 12px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            transition: all 0.3s ease;
-                            text-transform: uppercase;
-                            letter-spacing: 0.5px;
-                        " onmouseover="this.style.background='linear-gradient(135deg, #f59e0b, #d97706)'" onmouseout="this.style.background='linear-gradient(135deg, #fbbf24, #f59e0b)'">
-                            <i class="fas fa-sync-alt" style="margin-right: 6px;"></i>
-                            Track Order
-                        </button>
                     </div>
                 ` : ''}
             </div>
