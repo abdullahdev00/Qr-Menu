@@ -142,8 +142,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <nav className="space-y-1 flex-1 overflow-y-hidden pb-32">
             {navigation.map((item, index) => {
               const isActive = location === item.href || 
-                (location === "/" && item.href === "/dashboard") ||
-                (location === "/" && user?.role === 'restaurant' && item.href.endsWith('/dashboard'));
+                (location === "/" && item.href === "/dashboard" && user?.role !== 'restaurant') ||
+                (location === "/" && user?.role === 'restaurant' && user?.restaurantSlug && item.href.includes(`${user.restaurantSlug}/dashboard`));
               const gradients = [
                 'from-blue-500 to-blue-600',
                 'from-emerald-500 to-emerald-600', 

@@ -5,6 +5,9 @@ export interface AuthUser {
   name: string;
   email: string;
   role: string;
+  restaurantId?: string;
+  restaurantName?: string;
+  restaurantSlug?: string;
 }
 
 export async function login(email: string, password: string): Promise<AuthUser> {

@@ -103,7 +103,24 @@ function App() {
                 <MainLayout>
                   <Switch>
                     <Route path="/">
-                      <Redirect to="/dashboard" />
+                      {(() => {
+                        const user = localStorage.getItem('user');
+                        console.log('🔧 Root route user check:', user);
+                        if (user) {
+                          try {
+                            const userData = JSON.parse(user);
+                            console.log('🔧 User data:', userData);
+                            if (userData.role === 'restaurant' && userData.restaurantSlug) {
+                              console.log('🔧 Redirecting restaurant user to:', `/${userData.restaurantSlug}/dashboard`);
+                              return <Redirect to={`/${userData.restaurantSlug}/dashboard`} />;
+                            }
+                          } catch (error) {
+                            console.error('Error parsing user data:', error);
+                          }
+                        }
+                        console.log('🔧 Redirecting to admin dashboard');
+                        return <Redirect to="/dashboard" />;
+                      })()}
                     </Route>
                     {/* Admin Routes - These should always show admin pages */}
                     <Route path="/dashboard" component={DashboardPage} />
