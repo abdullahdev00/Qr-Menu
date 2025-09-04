@@ -4,8 +4,10 @@ import { eq } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
   const { id } = req.query;
+  console.log(`🎯 QR Code API Handler - Method: ${req.method}, ID: ${id}`);
   
   if (!id) {
+    console.log('❌ QR Code ID is missing');
     return res.status(400).json({ error: 'QR Code ID is required' });
   }
   

@@ -40,6 +40,7 @@ async function startServer() {
   // API Routes - Dynamic import handling
   app.use('/api', async (req, res, next) => {
     const apiPath = req.path.slice(1); // Remove leading slash
+    console.log(`🔄 API Request: ${req.method} /api/${apiPath}`);
     
     try {
       let handlerPath = `../admin/pages/api/${apiPath}/index.ts`;
