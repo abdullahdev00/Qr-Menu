@@ -94,6 +94,7 @@ function App() {
                     <Route path="/">
                       <Redirect to="/dashboard" />
                     </Route>
+                    {/* Admin Routes - These should always show admin pages */}
                     <Route path="/dashboard" component={DashboardPage} />
                     <Route path="/restaurant-dashboard" component={RestaurantDashboardPage} />
                     <Route path="/restaurants" component={RestaurantsPage} />
@@ -105,6 +106,8 @@ function App() {
                     <Route path="/analytics" component={AnalyticsPage} />
                     <Route path="/support" component={SupportPage} />
                     <Route path="/test-button" component={TestButtonPage} />
+                    <Route path="/customer-auth-test" component={CustomerAuthTestPage} />
+                    {/* Vendor Routes with dynamic slugs */}
                     <Route path="/:slug/dashboard" component={VendorDashboardPage} />
                     <Route path="/:slug/menu-management" component={MenuManagementPage} />
                     <Route path="/:slug/qr-codes" component={VendorQRCodesPage} />
@@ -113,6 +116,7 @@ function App() {
                     <Route path="/:slug/orders" component={OrdersPage} />
                     <Route path="/:slug/payment-request" component={VendorPaymentRequestPage} />
                     <Route path="/:slug/settings" component={VendorSettingsPage} />
+                    {/* Static vendor routes as fallback */}
                     <Route path="/vendor/dashboard" component={VendorDashboardPage} />
                     <Route path="/vendor/menu-management" component={MenuManagementPage} />
                     <Route path="/vendor/qr-codes" component={VendorQRCodesPage} />
@@ -121,7 +125,6 @@ function App() {
                     <Route path="/vendor/design" component={VendorDesignPage} />
                     <Route path="/vendor/analytics" component={VendorAnalyticsPage} />
                     <Route path="/vendor/orders" component={OrdersPage} />
-                    <Route path="/customer-auth-test" component={CustomerAuthTestPage} />
                   </Switch>
                 </MainLayout>
               </Route>

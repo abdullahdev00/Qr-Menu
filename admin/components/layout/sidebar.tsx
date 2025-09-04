@@ -55,10 +55,32 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   
   // Extract restaurant slug from current location if it's a restaurant route
   const restaurantSlug = location.match(/^\/([^\/]+)\//)?.[1];
-  const isRestaurantRoute = user?.role === 'restaurant' && restaurantSlug && restaurantSlug !== 'dashboard' && restaurantSlug !== 'restaurants';
+  const isRestaurantRoute = user?.role === 'restaurant' && restaurantSlug && 
+    restaurantSlug !== 'dashboard' && 
+    restaurantSlug !== 'restaurants' && 
+    restaurantSlug !== 'admin' && 
+    restaurantSlug !== 'qr-codes' && 
+    restaurantSlug !== 'payments' && 
+    restaurantSlug !== 'subscriptions' &&
+    restaurantSlug !== 'menu-templates' &&
+    restaurantSlug !== 'analytics' &&
+    restaurantSlug !== 'support';
   
-  // Get navigation based on user role
-  const navigation = user?.role === 'restaurant' ? getRestaurantNavigation(isRestaurantRoute ? restaurantSlug : undefined) : adminNavigation;
+  // For admin routes (/dashboard, /restaurants, etc.) always show admin navigation
+  const isAdminRoute = location.startsWith('/dashboard') || 
+    location.startsWith('/restaurants') || 
+    location.startsWith('/qr-codes') ||
+    location.startsWith('/payments') ||
+    location.startsWith('/subscriptions') ||
+    location.startsWith('/menu-templates') ||
+    location.startsWith('/analytics') ||
+    location.startsWith('/support') ||
+    location === '/';
+  
+  // Get navigation based on route type and user role
+  const navigation = (user?.role === 'restaurant' && !isAdminRoute) ? 
+    getRestaurantNavigation(isRestaurantRoute ? restaurantSlug : undefined) : 
+    adminNavigation;
 
   const handleLogout = () => {
     logout();
