@@ -56,6 +56,7 @@ async function startServer() {
         const resource = parts[0];
         dynamicId = parts[1] || null;
         handlerPath = `../admin/pages/api/${resource}/[id].ts`;
+        console.log(`🎯 Dynamic route detected: ${resource}/${dynamicId} -> ${handlerPath}`);
       }
       // Handle table-specific routes for restaurants
       else if (apiPath.match(/^restaurants\/[a-zA-Z0-9_-]+\/tables(\/[a-zA-Z0-9_-]+)?$/)) {
@@ -73,14 +74,29 @@ async function startServer() {
       
       // Try to import the handler
       let handler;
+      console.log(`🔍 Trying to import handler from: ${handlerPath}`);
       try {
         const module = await import(handlerPath);
         handler = module.default;
+        console.log(`✅ Handler imported successfully from: ${handlerPath}`);
       } catch (indexError) {
+        console.log(`❌ Failed to import from ${handlerPath}, trying direct path...`);
         // Try direct .ts file if index.ts doesn't exist
         const directPath = `../admin/pages/api/${apiPath}.ts`;
-        const module = await import(directPath);
-        handler = module.default;
+        console.log(`🔍 Trying direct path: ${directPath}`);
+        try {
+          const module = await import(directPath);
+          handler = module.default;
+          console.log(`✅ Handler imported successfully from direct path: ${directPath}`);
+        } catch (directError) {
+          console.log(`❌ Both paths failed. Index error:`, indexError.message);
+          console.log(`❌ Direct error:`, directError.message);
+          return res.status(404).json({ 
+            error: 'API endpoint not found',
+            path: apiPath,
+            message: 'The requested API endpoint does not exist'
+          });
+        }
       }
       
       // Create Next.js-like req/res objects
@@ -104,7 +120,13 @@ async function startServer() {
       await handler(mockReq, mockRes);
     } catch (error) {
       console.error(`Error in API ${req.path}:`, error);
-      next(); // Continue to next middleware if handler not found
+      if (!res.headersSent) {
+        res.status(500).json({
+          error: 'Internal server error',
+          message: 'An error occurred while processing your request',
+          path: req.path
+        });
+      }
     }
   });
 
