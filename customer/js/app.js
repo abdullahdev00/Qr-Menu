@@ -1777,48 +1777,58 @@ class MenuApp {
             this.orderHistory = [];
         }
         
-        // Try to fetch fresh data from API as well
+        // Fetch fresh status data from API for status sync
         try {
             const customerId = this.getCustomerIdFromStorage();
             const restaurantId = this.getCurrentRestaurantId();
             
-            // Fetch customer orders from database
+            // Fetch customer orders from database for status updates only
             if (customerId && restaurantId) {
                 const response = await fetch(`/api/orders?customerId=${customerId}&restaurantId=${restaurantId}`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.orders && data.orders.length > 0) {
-                        // Merge API data with localStorage data instead of overriding
-                        const localStorageOrders = this.orderHistory;
-                        const apiOrders = data.orders;
+                        console.log('🔄 Syncing order statuses from database...');
                         
-                        // Combine and deduplicate orders based on order ID
-                        const allOrders = [...localStorageOrders];
-                        apiOrders.forEach(apiOrder => {
-                            const existsInLocal = allOrders.find(localOrder => 
-                                localOrder.id === apiOrder.id || localOrder.orderNumber === apiOrder.orderNumber
+                        // Update only statuses from database, keep all other local data
+                        data.orders.forEach(dbOrder => {
+                            const localIndex = this.orderHistory.findIndex(localOrder => 
+                                localOrder.id === dbOrder.id || localOrder.orderNumber === dbOrder.orderNumber
                             );
-                            if (!existsInLocal) {
-                                allOrders.unshift(apiOrder);
+                            
+                            if (localIndex >= 0) {
+                                // Update only status and timestamp from database
+                                this.orderHistory[localIndex].status = dbOrder.status;
+                                this.orderHistory[localIndex].updatedAt = dbOrder.updatedAt;
+                                console.log(`📝 Updated order ${dbOrder.orderNumber} status to: ${dbOrder.status}`);
+                            } else {
+                                // Add new order from database if not in local storage
+                                const newOrder = {
+                                    id: dbOrder.id,
+                                    orderNumber: dbOrder.orderNumber,
+                                    status: dbOrder.status,
+                                    total: parseFloat(dbOrder.totalAmount || 0),
+                                    estimatedTime: dbOrder.estimatedTime || 30,
+                                    tableNumber: dbOrder.tableNumber,
+                                    deliveryType: dbOrder.deliveryType,
+                                    createdAt: dbOrder.createdAt,
+                                    updatedAt: dbOrder.updatedAt,
+                                    items: dbOrder.items || [],
+                                };
+                                this.orderHistory.unshift(newOrder);
+                                console.log(`➕ Added new order from database: ${dbOrder.orderNumber}`);
                             }
                         });
                         
-                        this.orderHistory = allOrders;
+                        // Save updated order history
                         localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
-                        console.log('✅ Merged order history from API and localStorage:', this.orderHistory);
-                    } else {
-                        console.log('📋 No orders from API, keeping localStorage data');
+                        console.log('✅ Order statuses synced from database');
                     }
-                } else {
-                    console.log('📋 API request failed, keeping localStorage data');
                 }
-            } else {
-                console.log('📋 No customer ID, keeping localStorage data');
             }
         } catch (error) {
-            console.error('Error fetching from API:', error);
-            console.log('📋 API error, keeping localStorage data');
-            // Continue with localStorage data
+            console.error('Error syncing order statuses:', error);
+            // Continue with local data if API fails
         }
         
         console.log('📊 Final orderHistory length:', this.orderHistory.length);
@@ -2148,63 +2158,78 @@ class MenuApp {
     handleOrderUpdate(orderData) {
         console.log('🔄 Processing order update:', orderData);
         
-        // Convert WebSocket order data to our order history format
-        const orderForHistory = {
-            id: orderData.id,
-            orderNumber: orderData.orderNumber,
-            status: orderData.status,
-            total: parseFloat(orderData.totalAmount),
-            estimatedTime: orderData.estimatedTime || 30,
-            tableNumber: orderData.tableNumber,
-            deliveryType: orderData.deliveryType,
-            createdAt: orderData.createdAt,
-            updatedAt: orderData.updatedAt,
-            items: orderData.items || [], // Will try to get from cart if not provided
-        };
-        
-        // Check if this order already exists in history
-        const existingIndex = this.orderHistory.findIndex(o => o.id === orderData.id);
+        // Find existing order in history by ID or orderNumber
+        const existingIndex = this.orderHistory.findIndex(o => 
+            o.id === orderData.id || o.orderNumber === orderData.orderNumber
+        );
         
         if (existingIndex >= 0) {
-            // Update existing order
-            console.log('📝 Updating existing order in history');
-            this.orderHistory[existingIndex] = { ...this.orderHistory[existingIndex], ...orderForHistory };
+            // Update ONLY the status from database, keep everything else from local storage
+            console.log('📝 Updating order status from database:', orderData.status);
+            this.orderHistory[existingIndex].status = orderData.status;
+            this.orderHistory[existingIndex].updatedAt = orderData.updatedAt;
+            
+            // Update estimatedTime if provided
+            if (orderData.estimatedTime) {
+                this.orderHistory[existingIndex].estimatedTime = orderData.estimatedTime;
+            }
         } else {
-            // Add new order to history
+            // Only create new order if it doesn't exist
             console.log('➕ Adding new order to history');
+            const orderForHistory = {
+                id: orderData.id,
+                orderNumber: orderData.orderNumber,
+                status: orderData.status,
+                total: parseFloat(orderData.totalAmount || 0),
+                estimatedTime: orderData.estimatedTime || 30,
+                tableNumber: orderData.tableNumber,
+                deliveryType: orderData.deliveryType,
+                createdAt: orderData.createdAt,
+                updatedAt: orderData.updatedAt,
+                items: orderData.items || [],
+            };
             this.orderHistory.unshift(orderForHistory);
         }
         
-        // Also update current orders if it's an active status
+        // Update current orders array
+        const currentIndex = this.currentOrders.findIndex(o => 
+            o.id === orderData.id || o.orderNumber === orderData.orderNumber
+        );
+        
         if (['pending', 'confirmed', 'preparing', 'ready'].includes(orderData.status)) {
-            const currentIndex = this.currentOrders.findIndex(o => o.id === orderData.id);
             if (currentIndex >= 0) {
-                this.currentOrders[currentIndex] = { ...this.currentOrders[currentIndex], ...orderForHistory };
-            } else {
-                this.currentOrders.push(orderForHistory);
+                this.currentOrders[currentIndex].status = orderData.status;
+                this.currentOrders[currentIndex].updatedAt = orderData.updatedAt;
+            } else if (existingIndex >= 0) {
+                // Add to current orders if it exists in history
+                this.currentOrders.push(this.orderHistory[existingIndex]);
             }
         } else if (['completed', 'cancelled'].includes(orderData.status)) {
             // Remove from current orders if completed/cancelled
-            this.currentOrders = this.currentOrders.filter(o => o.id !== orderData.id);
+            if (currentIndex >= 0) {
+                this.currentOrders.splice(currentIndex, 1);
+            }
         }
         
-        // Save to localStorage
+        // Save to localStorage immediately
         localStorage.setItem('orderHistory', JSON.stringify(this.orderHistory));
         localStorage.setItem('currentOrders', JSON.stringify(this.currentOrders));
         
-        // Update UI
+        // Force UI updates
         this.updateOrderHistoryIcon();
         
         // Refresh order history display if sidebar is open
         const sidebar = document.getElementById('orderHistorySidebar');
         if (sidebar && sidebar.classList.contains('active')) {
+            console.log('🔄 Refreshing sidebar display after status update');
             this.loadOrderHistory();
         }
         
         // Show notification for status updates
-        this.showNotification(`Order #${orderData.orderNumber} status updated to: ${orderData.status}`, 'success');
+        this.showNotification(`Order #${orderData.orderNumber} updated to: ${orderData.status}`, 'success');
         
-        console.log('✅ Order history updated:', this.orderHistory.length, 'orders');
+        console.log('✅ Order status updated successfully - Status:', orderData.status);
+        console.log('📊 Current orderHistory length:', this.orderHistory.length);
     }
 
     async refreshOrderStatus(orderId) {
