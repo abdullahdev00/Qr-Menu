@@ -10,6 +10,7 @@ export default async function handler(req: Request, res: Response) {
   }
 
   try {
+    console.log('🔍 Admin fetching all payment requests...');
     // Fetch all payment requests with restaurant information
     const requests = await db
       .select({
@@ -36,6 +37,7 @@ export default async function handler(req: Request, res: Response) {
       .innerJoin(restaurants, eq(paymentRequests.restaurantId, restaurants.id))
       .orderBy(desc(paymentRequests.createdAt));
 
+    console.log(`✅ Found ${requests.length} payment requests for admin panel`);
     res.json(requests);
   } catch (error) {
     console.error("Error fetching payment requests for admin:", error);
