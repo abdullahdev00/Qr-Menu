@@ -89,8 +89,8 @@ async function startServer() {
           handler = module.default;
           console.log(`✅ Handler imported successfully from direct path: ${directPath}`);
         } catch (directError) {
-          console.log(`❌ Both paths failed. Index error:`, indexError.message);
-          console.log(`❌ Direct error:`, directError.message);
+          console.log(`❌ Both paths failed. Index error:`, (indexError as Error).message);
+          console.log(`❌ Direct error:`, (directError as Error).message);
           return res.status(404).json({ 
             error: 'API endpoint not found',
             path: apiPath,
