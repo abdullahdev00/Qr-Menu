@@ -2105,9 +2105,10 @@ class MenuApp {
                 }
                 break;
             case 'order-update':
+            case 'status-update':
                 // Handle new order data coming via WebSocket
-                console.log('📦 Handling order update:', data.data);
-                this.handleOrderUpdate(data.data);
+                console.log('📦 Handling order update:', data.data || data);
+                this.handleOrderUpdate(data.data || data);
                 break;
             default:
                 console.log('Unknown WebSocket message type:', data.type);
@@ -2169,6 +2170,9 @@ class MenuApp {
         if (sidebar && sidebar.classList.contains('active')) {
             this.loadOrderHistory();
         }
+        
+        // Show notification for status updates
+        this.showNotification(`Order #${orderData.orderNumber} status updated to: ${orderData.status}`, 'success');
         
         console.log('✅ Order history updated:', this.orderHistory.length, 'orders');
     }
