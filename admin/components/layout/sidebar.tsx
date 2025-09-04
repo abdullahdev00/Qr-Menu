@@ -66,19 +66,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     restaurantSlug !== 'analytics' &&
     restaurantSlug !== 'support';
   
-  // For admin routes (/dashboard, /restaurants, etc.) always show admin navigation
-  const isAdminRoute = location.startsWith('/dashboard') || 
+  // Determine if current route is an admin-only route (not restaurant route)
+  const isAdminOnlyRoute = (location.startsWith('/dashboard') && !location.includes('/')) || 
     location.startsWith('/restaurants') || 
-    location.startsWith('/qr-codes') ||
-    location.startsWith('/payments') ||
+    (location.startsWith('/qr-codes') && !location.includes('/')) ||
+    (location.startsWith('/payments') && !location.includes('/')) ||
     location.startsWith('/subscriptions') ||
     location.startsWith('/menu-templates') ||
-    location.startsWith('/analytics') ||
+    (location.startsWith('/analytics') && !location.includes('/')) ||
     location.startsWith('/support') ||
     location === '/';
   
-  // Get navigation based on route type and user role
-  const navigation = (user?.role === 'restaurant' && !isAdminRoute) ? 
+  // Get navigation based on user role
+  // Restaurant users should NEVER see admin navigation
+  const navigation = (user?.role === 'restaurant') ? 
     getRestaurantNavigation(isRestaurantRoute ? restaurantSlug : undefined) : 
     adminNavigation;
 

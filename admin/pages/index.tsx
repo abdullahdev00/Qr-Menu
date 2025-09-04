@@ -9,6 +9,20 @@ export default function Home() {
     return <Redirect to="/login" />
   }
   
-  // If authenticated, redirect to dashboard
-  return <Redirect to="/dashboard" />
+  // Parse user data to check role
+  try {
+    const userData = JSON.parse(user)
+    
+    // If restaurant user, redirect to their specific dashboard
+    if (userData.role === 'restaurant' && userData.restaurantSlug) {
+      return <Redirect to={`/${userData.restaurantSlug}/dashboard`} />
+    }
+    
+    // If admin user, redirect to admin dashboard  
+    return <Redirect to="/dashboard" />
+  } catch (error) {
+    // If parsing fails, remove invalid user data and redirect to login
+    localStorage.removeItem('user')
+    return <Redirect to="/login" />
+  }
 }

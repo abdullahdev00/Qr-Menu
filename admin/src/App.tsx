@@ -52,7 +52,18 @@ function App() {
     // Check localStorage for authentication
     const user = localStorage.getItem('user');
     if (user) {
-      setIsAuthenticated(true);
+      try {
+        const userData = JSON.parse(user);
+        // Only authenticate if user data is valid
+        if (userData.id && userData.role) {
+          setIsAuthenticated(true);
+        } else {
+          localStorage.removeItem('user');
+        }
+      } catch (error) {
+        // Invalid user data, remove it
+        localStorage.removeItem('user');
+      }
     }
     setIsLoading(false);
   }, []);
