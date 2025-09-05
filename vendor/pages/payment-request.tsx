@@ -17,13 +17,13 @@ export default function PaymentRequestPage() {
         <Card className="max-w-2xl mx-auto">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-center">
-              Payment Ki Malomaat
+              Payment Ki Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="text-center bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
               <p className="text-lg text-gray-800 dark:text-gray-200 mb-6">
-                Hum bohat jald is page ko online kar denge. Fi al-waqt aap is WhatsApp number par payment receipt send kar dein.
+                Hum bohat jald is page ko online kar denge. Abhi ke liye aap is WhatsApp number par apna payment receipt send kar dein.
               </p>
               
               <div className="space-y-4">
@@ -38,7 +38,7 @@ export default function PaymentRequestPage() {
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                   <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center justify-center gap-2">
                     <Building className="w-5 h-5" />
-                    Payment Banking Tafseelatات
+                    Payment Banking Details
                   </h3>
                   <div className="space-y-2 text-center">
                     <p className="text-gray-700 dark:text-gray-300">
@@ -55,7 +55,7 @@ export default function PaymentRequestPage() {
               </div>
 
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-                Payment receipt ke saath apna restaurant name aur order details bhi send karein.
+                Payment receipt ke saath apna restaurant name aur order details bhi send kar dein.
               </p>
             </div>
           </CardContent>
