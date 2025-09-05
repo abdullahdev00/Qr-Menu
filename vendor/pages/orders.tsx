@@ -220,6 +220,17 @@ export default function OrdersPage() {
   })
 
   // Update order status mutation
+  // Status flow helper function
+  const getNextStatus = (currentStatus: string): string => {
+    const statusFlow = {
+      'pending': 'confirmed',
+      'confirmed': 'preparing', 
+      'preparing': 'ready',
+      'ready': 'completed'
+    }
+    return statusFlow[currentStatus as keyof typeof statusFlow] || currentStatus
+  }
+
   const updateOrderMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
       const response = await fetch(`/api/orders/${orderId}`, {
@@ -238,6 +249,21 @@ export default function OrdersPage() {
       })
     }
   })
+
+  // Handle double click on order card
+  const handleOrderDoubleClick = (order: OrderWithItems) => {
+    if (order.status === 'completed' || order.status === 'cancelled') return
+    const nextStatus = getNextStatus(order.status)
+    updateOrderMutation.mutate({ orderId: order.id, status: nextStatus })
+  }
+
+  // Handle status badge click
+  const handleStatusBadgeClick = (order: OrderWithItems, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent card double click
+    if (order.status === 'completed' || order.status === 'cancelled') return
+    const nextStatus = getNextStatus(order.status)
+    updateOrderMutation.mutate({ orderId: order.id, status: nextStatus })
+  }
 
   if (!user) {
     return (
@@ -274,7 +300,11 @@ export default function OrdersPage() {
     const StatusIcon = statusInfo.icon
 
     return (
-      <Card className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+      <Card 
+        className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 border-gray-200/50 dark:border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+        onDoubleClick={() => handleOrderDoubleClick(order)}
+        title="Double click to update status"
+      >
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -296,7 +326,11 @@ export default function OrdersPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge className={`${statusInfo.color} border-0 shadow-sm`}>
+              <Badge 
+                className={`${statusInfo.color} border-0 shadow-sm cursor-pointer hover:opacity-80 transition-opacity`}
+                onClick={(e) => handleStatusBadgeClick(order, e)}
+                title={`Click to update to ${getNextStatus(order.status)}`}
+              >
                 {statusInfo.label}
               </Badge>
               <DropdownMenu>
@@ -312,15 +346,11 @@ export default function OrdersPage() {
                   </DropdownMenuItem>
                   {order.status !== 'completed' && order.status !== 'cancelled' && (
                     <DropdownMenuItem onClick={() => {
-                      let nextStatus = 'confirmed'
-                      if (order.status === 'confirmed') nextStatus = 'preparing'
-                      else if (order.status === 'preparing') nextStatus = 'ready'
-                      else if (order.status === 'ready') nextStatus = 'completed'
-                      
+                      const nextStatus = getNextStatus(order.status)
                       updateOrderMutation.mutate({ orderId: order.id, status: nextStatus })
                     }}>
                       <Edit className="w-4 h-4 mr-2" />
-                      Update Status
+                      Update to {getNextStatus(order.status)}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -586,7 +616,13 @@ export default function OrdersPage() {
               </TableHeader>
               <TableBody>
                 {filteredOrders.map((order) => (
-                  <TableRow key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer" onClick={() => setSelectedOrder(order)}>
+                  <TableRow 
+                  key={order.id} 
+                  className="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer" 
+                  onClick={() => setSelectedOrder(order)}
+                  onDoubleClick={() => handleOrderDoubleClick(order)}
+                  title="Double click to update status"
+                >
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 bg-gradient-to-br ${statusConfig[order.status as keyof typeof statusConfig].gradient} rounded-lg flex items-center justify-center`}>
@@ -599,6 +635,15 @@ export default function OrdersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
+                      {order.tableNumber ? (
+                        <Badge variant="outline" className="font-medium">
+                          🪑 Table {order.tableNumber}
+                        </Badge>
+                      ) : (
+                        <span className="text-gray-400 text-sm">No table</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <div>
                         <div className="font-medium">{order.customerName || 'Walk-in Customer'}</div>
                         {order.customerPhone && (
@@ -607,7 +652,11 @@ export default function OrdersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={statusConfig[order.status as keyof typeof statusConfig].color}>
+                      <Badge 
+                        className={`${statusConfig[order.status as keyof typeof statusConfig].color} cursor-pointer hover:opacity-80 transition-opacity`}
+                        onClick={(e) => handleStatusBadgeClick(order, e)}
+                        title={`Click to update to ${getNextStatus(order.status)}`}
+                      >
                         {statusConfig[order.status as keyof typeof statusConfig].label}
                       </Badge>
                     </TableCell>
@@ -659,14 +708,22 @@ export default function OrdersPage() {
                             </button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => console.log('Update status', order.id)}>
-                              Update Status
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => console.log('Print receipt', order.id)}>
-                              Print Receipt
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => console.log('Contact customer', order.id)}>
-                              Contact Customer
+                            {order.status !== 'completed' && order.status !== 'cancelled' && (
+                              <DropdownMenuItem onClick={(e) => {
+                                e.stopPropagation()
+                                const nextStatus = getNextStatus(order.status)
+                                updateOrderMutation.mutate({ orderId: order.id, status: nextStatus })
+                              }}>
+                                <Edit className="w-4 h-4 mr-2" />
+                                Update to {getNextStatus(order.status)}
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem onClick={(e) => {
+                              e.stopPropagation()
+                              setSelectedOrder(order)
+                            }}>
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Details
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
