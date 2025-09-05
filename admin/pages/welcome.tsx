@@ -19,9 +19,20 @@ import {
   Zap,
   Globe,
   Heart,
-  Award
+  Award,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Building
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { useToast } from '../hooks/use-toast';
 
 interface FeatureProps {
   icon: React.ComponentType<any>;
@@ -77,6 +88,21 @@ const WelcomePage: React.FC = () => {
   const [, setLocation] = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const { toast } = useToast();
+  
+  // Registration form state
+  const [formData, setFormData] = useState({
+    restaurantName: '',
+    ownerName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    cuisine: '',
+    description: ''
+  });
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -129,6 +155,43 @@ const WelcomePage: React.FC = () => {
     { number: "₨2M+", label: "Revenue Generated", delay: 0.2 },
     { number: "98%", label: "Customer Satisfaction", delay: 0.3 }
   ];
+
+  // Handle form submission
+  const handleRegistration = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Basic validation
+    if (!formData.restaurantName || !formData.ownerName || !formData.email || !formData.phone) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      setShowRegistration(false)
+      setShowSuccess(true)
+      
+      // Reset form
+      setFormData({
+        restaurantName: '',
+        ownerName: '',
+        email: '',
+        phone: '',
+        address: '',
+        city: '',
+        cuisine: '',
+        description: ''
+      })
+    }, 1000)
+  }
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 overflow-hidden">
@@ -185,7 +248,7 @@ const WelcomePage: React.FC = () => {
                   Sign In
                 </Button>
                 <Button
-                  onClick={() => setLocation('/login')}
+                  onClick={() => setShowRegistration(true)}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Join Now
@@ -232,7 +295,7 @@ const WelcomePage: React.FC = () => {
                     Sign In
                   </Button>
                   <Button
-                    onClick={() => setLocation('/login')}
+                    onClick={() => setShowRegistration(true)}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                   >
                     Join Now
@@ -282,7 +345,7 @@ const WelcomePage: React.FC = () => {
             >
               <Button
                 size="lg"
-                onClick={() => setLocation('/login')}
+                onClick={() => setShowRegistration(true)}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 group"
               >
                 Start Free Trial
@@ -380,7 +443,7 @@ const WelcomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 size="lg"
-                onClick={() => setLocation('/login')}
+                onClick={() => setShowRegistration(true)}
                 className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 group"
               >
                 Get Started Now
@@ -453,6 +516,195 @@ const WelcomePage: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Registration Modal */}
+      <Dialog open={showRegistration} onOpenChange={setShowRegistration}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center">
+              Join QR Menu Pro
+            </DialogTitle>
+            <p className="text-center text-gray-600 dark:text-gray-300">
+              Apni restaurant ki details fill karein aur shuru karein
+            </p>
+          </DialogHeader>
+          
+          <form onSubmit={handleRegistration} className="space-y-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="restaurantName">Restaurant Name *</Label>
+                <Input
+                  id="restaurantName"
+                  value={formData.restaurantName}
+                  onChange={(e) => handleInputChange('restaurantName', e.target.value)}
+                  placeholder="Enter restaurant name"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="ownerName">Owner Name *</Label>
+                <Input
+                  id="ownerName"
+                  value={formData.ownerName}
+                  onChange={(e) => handleInputChange('ownerName', e.target.value)}
+                  placeholder="Enter owner name"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number *</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="03xxxxxxxxx"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Select value={formData.city} onValueChange={(value) => handleInputChange('city', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Karachi">Karachi</SelectItem>
+                    <SelectItem value="Lahore">Lahore</SelectItem>
+                    <SelectItem value="Islamabad">Islamabad</SelectItem>
+                    <SelectItem value="Rawalpindi">Rawalpindi</SelectItem>
+                    <SelectItem value="Faisalabad">Faisalabad</SelectItem>
+                    <SelectItem value="Multan">Multan</SelectItem>
+                    <SelectItem value="Peshawar">Peshawar</SelectItem>
+                    <SelectItem value="Quetta">Quetta</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="cuisine">Cuisine Type</Label>
+                <Select value={formData.cuisine} onValueChange={(value) => handleInputChange('cuisine', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select cuisine" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pakistani">Pakistani</SelectItem>
+                    <SelectItem value="Chinese">Chinese</SelectItem>
+                    <SelectItem value="Italian">Italian</SelectItem>
+                    <SelectItem value="Fast Food">Fast Food</SelectItem>
+                    <SelectItem value="Continental">Continental</SelectItem>
+                    <SelectItem value="Desi">Desi</SelectItem>
+                    <SelectItem value="BBQ">BBQ</SelectItem>
+                    <SelectItem value="Mixed">Mixed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="address">Restaurant Address</Label>
+              <Textarea
+                id="address"
+                value={formData.address}
+                onChange={(e) => handleInputChange('address', e.target.value)}
+                placeholder="Enter complete address"
+                rows={2}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="description">Restaurant Description (Optional)</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Briefly describe your restaurant"
+                rows={3}
+              />
+            </div>
+            
+            <div className="flex gap-4 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowRegistration(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                Submit Application
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
+        <DialogContent className="max-w-md">
+          <div className="text-center space-y-4 py-6">
+            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+            
+            <div className="space-y-3">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Application Submitted Successfully!
+              </h3>
+              
+              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                <p className="font-medium">
+                  🎉 Thank you for joining QR Menu Pro!
+                </p>
+                
+                <p>
+                  <strong>English:</strong> Your application has been received. Our team will verify your details and contact you within 24-48 hours via phone call or WhatsApp message.
+                </p>
+                
+                <p>
+                  <strong>Roman Urdu:</strong> Aap ka application mil gaya hai. Humari team 24-48 hours mein aap ki details verify kar ke phone call ya WhatsApp message kar degi.
+                </p>
+              </div>
+              
+              <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg">
+                <p className="text-xs text-blue-700 dark:text-blue-300">
+                  📞 Contact: 03054288892 (WhatsApp available)
+                </p>
+              </div>
+            </div>
+            
+            <Button 
+              onClick={() => setShowSuccess(false)}
+              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+            >
+              Got it, Thanks!
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
