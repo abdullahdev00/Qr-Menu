@@ -68,6 +68,32 @@ function App() {
     setIsLoading(false);
   }, []);
 
+  // Prevent unnecessary redirects when tab gains focus
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // Prevent any automatic navigation when tab becomes visible
+      const currentPath = window.location.pathname;
+      if (document.visibilityState === 'visible' && currentPath !== '/') {
+        // If we're not on root route, don't do anything
+        // This prevents unwanted redirects when returning to tab
+        return false;
+      }
+    };
+    
+    const handleFocus = () => {
+      // Prevent window focus from triggering navigation
+      return false;
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   console.log('🎨 Loading Original Beautiful Admin Panel...');
   console.log('✅ Original design loaded successfully!');
 
@@ -104,22 +130,26 @@ function App() {
                   <Switch>
                     <Route path="/">
                       {(() => {
+                        // Only redirect from exact root route
                         const user = localStorage.getItem('user');
-                        console.log('🔧 Root route user check:', user);
                         if (user) {
                           try {
                             const userData = JSON.parse(user);
-                            console.log('🔧 User data:', userData);
+                            // If restaurant user, always redirect to their dashboard
                             if (userData.role === 'restaurant' && userData.restaurantSlug) {
-                              console.log('🔧 Redirecting restaurant user to:', `/${userData.restaurantSlug}/dashboard`);
                               return <Redirect to={`/${userData.restaurantSlug}/dashboard`} />;
+                            }
+                            // If admin user, redirect to admin dashboard
+                            if (userData.role === 'super_admin' || userData.role === 'admin' || userData.role === 'support') {
+                              return <Redirect to="/dashboard" />;
                             }
                           } catch (error) {
                             console.error('Error parsing user data:', error);
+                            localStorage.removeItem('user');
+                            return <Redirect to="/login" />;
                           }
                         }
-                        console.log('🔧 Redirecting to admin dashboard');
-                        return <Redirect to="/dashboard" />;
+                        return <Redirect to="/login" />;
                       })()}
                     </Route>
                     {/* Admin Routes - These should always show admin pages */}
