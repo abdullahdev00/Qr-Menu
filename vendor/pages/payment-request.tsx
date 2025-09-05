@@ -10,20 +10,20 @@ export default function PaymentRequestPage() {
             Payment Request Page
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
-            Coming Soon
+            Jald Aa Raha Hai
           </p>
         </div>
 
         <Card className="max-w-2xl mx-auto">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-center">
-              Payment Information
+              Payment Ki Malomaat
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="text-center bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
               <p className="text-lg text-gray-800 dark:text-gray-200 mb-6">
-                ہم بہت جلد اس page کو online کر دیں گے۔ فی الوقت آپ اس WhatsApp number پر payment receipt send کر دیں۔
+                Hum bohat jald is page ko online kar denge. Fi al-waqt aap is WhatsApp number par payment receipt send kar dein.
               </p>
               
               <div className="space-y-4">
@@ -38,7 +38,7 @@ export default function PaymentRequestPage() {
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                   <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3 flex items-center justify-center gap-2">
                     <Building className="w-5 h-5" />
-                    Payment Banking Details
+                    Payment Banking Tafseelatات
                   </h3>
                   <div className="space-y-2 text-center">
                     <p className="text-gray-700 dark:text-gray-300">
@@ -55,7 +55,7 @@ export default function PaymentRequestPage() {
               </div>
 
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-                Payment receipt کے ساتھ اپنا restaurant name اور order details بھی send کریں۔
+                Payment receipt ke saath apna restaurant name aur order details bhi send karein.
               </p>
             </div>
           </CardContent>
