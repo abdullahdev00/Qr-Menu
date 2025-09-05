@@ -42,7 +42,7 @@ const getRestaurantNavigation = (slug?: string) => {
     { name: "Menu Management", href: `/${baseSlug}/menu-management`, icon: Utensils },
     { name: "QR Codes", href: `/${baseSlug}/qr-codes`, icon: QrCode },
     { name: "Design", href: `/${baseSlug}/design`, icon: Palette },
-    { name: "Payment Request", href: `/${baseSlug}/payment-request`, icon: Wallet, badge: "PKR", badgeColor: "bg-green-500" },
+    { name: "Wallet", href: `/${baseSlug}/payment-request`, icon: Wallet, badge: "PKR", badgeColor: "bg-green-500" },
     { name: "Analytics", href: `/${baseSlug}/analytics`, icon: PieChart },
     { name: "Orders", href: `/${baseSlug}/orders`, icon: Store, badge: "5" },
     { name: "Settings", href: `/${baseSlug}/settings`, icon: Settings },
