@@ -49,6 +49,9 @@ class MenuApp {
         this.bindEvents();
         this.initializeLayout();
         
+        // Load restaurant branding first
+        await this.loadRestaurantBranding();
+        
         // Handle QR scan first (now async)
         this.tableNumber = await this.getTableFromURL();
         this.isQRScan = !!this.tableNumber;
@@ -334,6 +337,80 @@ class MenuApp {
         }
         
         return null;
+    }
+
+    async loadRestaurantBranding() {
+        try {
+            // Get restaurant slug from URL
+            const slug = this.getRestaurantFromURL();
+            
+            if (!slug) {
+                console.log('🎨 No restaurant slug found, using default branding');
+                return;
+            }
+            
+            // Fetch restaurant branding from API
+            const response = await fetch(`/api/customer/restaurant-branding?slug=${slug}`);
+            const data = await response.json();
+            
+            if (data.success && data.branding) {
+                console.log('🎨 Loading custom branding for restaurant:', data.restaurant.name);
+                console.log('🎨 Branding data:', data.branding);
+                this.applyRestaurantBranding(data.branding);
+            } else {
+                console.log('🎨 No custom branding found, using default colors');
+            }
+        } catch (error) {
+            console.error('🎨 Error loading restaurant branding:', error);
+            console.log('🎨 Falling back to default branding');
+        }
+    }
+
+    applyRestaurantBranding(branding) {
+        try {
+            const root = document.documentElement;
+            
+            // Map restaurant branding to CSS custom properties
+            const brandingMap = {
+                // Background colors
+                '--primary-dark': branding.primaryBg || '#0a0a0a',
+                '--secondary-dark': branding.secondaryBg || '#1a1a1a', 
+                '--card-background': branding.cardBg || '#2a2a2a',
+                
+                // Accent colors
+                '--accent-gold': branding.primaryAccent || '#ffa500',
+                '--accent-amber': branding.secondaryAccent || '#ffd700',
+                
+                // Text colors
+                '--text-primary': branding.primaryText || '#ffffff',
+                '--text-secondary': branding.secondaryText || '#cccccc',
+                
+                // System colors
+                '--success-green': branding.successGreen || '#00c851',
+                '--warning-red': branding.warningRed || '#ff4444',
+            };
+            
+            // Apply CSS custom properties
+            Object.entries(brandingMap).forEach(([property, value]) => {
+                root.style.setProperty(property, value);
+            });
+            
+            // Apply font settings if available
+            if (branding.primaryFont) {
+                root.style.setProperty('--font-primary', branding.primaryFont);
+            }
+            if (branding.secondaryFont) {
+                root.style.setProperty('--font-secondary', branding.secondaryFont);
+            }
+            
+            console.log('🎨 Restaurant branding applied successfully!');
+            
+            // Add a custom attribute to indicate custom branding is active
+            document.body.setAttribute('data-custom-branding', 'true');
+            
+        } catch (error) {
+            console.error('🎨 Error applying restaurant branding:', error);
+        }
     }
 
     handleQRScan() {
