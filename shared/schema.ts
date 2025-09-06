@@ -30,6 +30,8 @@ export const restaurants = pgTable("restaurants", {
   qrScansCount: integer("qr_scans_count").notNull().default(0), // Track QR code scans
   avgRating: decimal("avg_rating", { precision: 3, scale: 2 }).default("0.00"), // Average rating out of 5
   totalReviews: integer("total_reviews").notNull().default(0), // Total number of reviews
+  // Branding and Color Customization
+  brandColors: jsonb("brand_colors"), // Store restaurant's custom color scheme
   createdAt: timestamp("created_at").defaultNow(),
 });
 
