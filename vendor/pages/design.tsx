@@ -190,6 +190,7 @@ export default function DesignPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   
   // Get restaurant slug from URL
   const getRestaurantSlug = () => {
@@ -290,8 +291,35 @@ export default function DesignPage() {
     }
   ];
 
-  const applyTheme = (theme: any) => {
-    setDesignState(prev => ({ ...prev, ...theme }));
+  const applyTheme = async (theme: any, themeName: string) => {
+    // Update local state
+    const newDesignState = { ...designState, ...theme };
+    setDesignState(newDesignState);
+    
+    // Auto-save to database
+    if (restaurantId) {
+      try {
+        setIsSaving(true);
+        const response = await fetch(`/api/restaurants/${restaurantId}/branding`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newDesignState),
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          setShowSuccessPopup(true);
+          setTimeout(() => setShowSuccessPopup(false), 3000);
+        }
+      } catch (error) {
+        console.error('Auto-save error:', error);
+      } finally {
+        setIsSaving(false);
+      }
+    }
   };
 
   // Load restaurant branding on component mount
@@ -349,13 +377,16 @@ export default function DesignPage() {
       const result = await response.json();
       
       if (result.success) {
-        alert('Design settings saved successfully! ڈیزائن سیٹنگز محفوظ ہو گئیں!');
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
       } else {
-        alert('Failed to save design settings');
+        setShowSuccessPopup(false);
+        // Could add error popup here
       }
     } catch (error) {
       console.error('Save error:', error);
-      alert('Error saving design settings');
+      setShowSuccessPopup(false);
+      // Could add error popup here
     } finally {
       setIsSaving(false);
     }
@@ -461,7 +492,7 @@ export default function DesignPage() {
                   isActive={activeTheme === preset.name}
                   onClick={() => {
                     setActiveTheme(preset.name);
-                    applyTheme(preset.theme);
+                    applyTheme(preset.theme, preset.name);
                   }}
                 />
               ))}
@@ -833,6 +864,18 @@ export default function DesignPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Design settings saved successfully!</span>
           </div>
         </div>
       )}

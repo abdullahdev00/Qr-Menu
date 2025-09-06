@@ -370,28 +370,37 @@ class MenuApp {
         try {
             const root = document.documentElement;
             
-            // Map restaurant branding to CSS custom properties
+            // Map restaurant branding to CSS custom properties for both dark and light modes
             const brandingMap = {
-                // Background colors
+                // Dark mode colors (current theme)
                 '--primary-dark': branding.primaryBg || '#0a0a0a',
                 '--secondary-dark': branding.secondaryBg || '#1a1a1a', 
                 '--card-background': branding.cardBg || '#2a2a2a',
-                
-                // Accent colors
                 '--accent-gold': branding.primaryAccent || '#ffa500',
                 '--accent-amber': branding.secondaryAccent || '#ffd700',
-                
-                // Text colors
                 '--text-primary': branding.primaryText || '#ffffff',
                 '--text-secondary': branding.secondaryText || '#cccccc',
-                
-                // System colors
                 '--success-green': branding.successGreen || '#00c851',
                 '--warning-red': branding.warningRed || '#ff4444',
             };
             
-            // Apply CSS custom properties
+            // Also create light mode versions for theme switching
+            const lightModeMap = {
+                // Light mode conversions - invert dark colors, keep accents
+                '--primary-light': branding.primaryBg === '#0a0a0a' ? '#ffffff' : branding.primaryBg || '#ffffff',
+                '--secondary-light': branding.secondaryBg === '#1a1a1a' ? '#f8f9fa' : branding.secondaryBg || '#f8f9fa',
+                '--card-light': branding.cardBg === '#2a2a2a' ? '#ffffff' : branding.cardBg || '#ffffff',
+                '--text-primary-light': branding.primaryText === '#ffffff' ? '#212529' : branding.primaryText || '#212529',
+                '--text-secondary-light': branding.secondaryText === '#cccccc' ? '#6c757d' : branding.secondaryText || '#6c757d',
+            };
+            
+            // Apply CSS custom properties for both themes
             Object.entries(brandingMap).forEach(([property, value]) => {
+                root.style.setProperty(property, value);
+            });
+            
+            // Apply light mode properties  
+            Object.entries(lightModeMap).forEach(([property, value]) => {
                 root.style.setProperty(property, value);
             });
             
