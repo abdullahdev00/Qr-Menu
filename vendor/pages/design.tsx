@@ -187,6 +187,15 @@ export default function DesignPage() {
   const [activeTheme, setActiveTheme] = useState('custom');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [restaurantId, setRestaurantId] = useState<string | null>(null);
+  
+  // Get restaurant slug from URL
+  const getRestaurantSlug = () => {
+    const pathParts = window.location.pathname.split('/');
+    return pathParts[1]; // /restaurant-slug/design -> restaurant-slug
+  };
   
   // Design state
   const [designState, setDesignState] = useState({
@@ -285,9 +294,71 @@ export default function DesignPage() {
     setDesignState(prev => ({ ...prev, ...theme }));
   };
 
-  const handleSave = () => {
-    // Save design settings logic
-    alert('Design settings saved successfully! اپ ڈیزائن سیٹنگز محفوظ ہو گئیں!');
+  // Load restaurant branding on component mount
+  useEffect(() => {
+    const loadRestaurantBranding = async () => {
+      try {
+        setIsLoading(true);
+        const slug = getRestaurantSlug();
+        
+        // First get restaurant ID by slug
+        const restaurantsResponse = await fetch('/api/restaurants');
+        const restaurantsData = await restaurantsResponse.json();
+        const restaurant = restaurantsData.find((r: any) => r.slug === slug);
+        
+        if (!restaurant) {
+          console.error('Restaurant not found');
+          return;
+        }
+        
+        setRestaurantId(restaurant.id);
+        
+        // Then load branding settings
+        const brandingResponse = await fetch(`/api/restaurants/${restaurant.id}/branding`);
+        const brandingData = await brandingResponse.json();
+        
+        if (brandingData.success) {
+          setDesignState(brandingData.branding);
+        }
+      } catch (error) {
+        console.error('Failed to load restaurant branding:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadRestaurantBranding();
+  }, []);
+  
+  const handleSave = async () => {
+    if (!restaurantId) {
+      alert('Restaurant ID not found');
+      return;
+    }
+    
+    try {
+      setIsSaving(true);
+      const response = await fetch(`/api/restaurants/${restaurantId}/branding`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(designState),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert('Design settings saved successfully! ڈیزائن سیٹنگز محفوظ ہو گئیں!');
+      } else {
+        alert('Failed to save design settings');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Error saving design settings');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReset = () => {
@@ -337,10 +408,13 @@ export default function DesignPage() {
           </button>
           <button
             onClick={handleSave}
-            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            disabled={isSaving || isLoading}
+            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="w-4 h-4" />
-            <span className="hidden sm:inline">Save Changes</span>
+            <span className="hidden sm:inline">
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </span>
           </button>
         </div>
       </div>
