@@ -52,18 +52,37 @@ class MenuApp {
         // Handle QR scan first (now async)
         this.tableNumber = await this.getTableFromURL();
         this.isQRScan = !!this.tableNumber;
+        
+        // Check if QR scan failed (inactive QR code)
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedTable = urlParams.get('t');
+        if (encodedTable && !this.tableNumber) {
+            // QR code was present but inactive - stop loading process
+            console.log('🚫 QR code inactive - stopping menu loading');
+            return;
+        }
+        
         this.handleQRScan();
         
         // Load order history from localStorage at startup
         this.loadOrderHistoryFromStorage();
         
-        this.generateSkeletonCards();
-        await this.loadMenuItems();
-        this.renderMenuItems();
-        this.updateFavoriteButtons();
-        this.updateCategoryTabs();
-        this.updateOrderHistoryIcon();
-        this.initializeWebSocket();
+        // Show skeleton loading state
+        this.showSkeletonLoading();
+        
+        try {
+            await this.loadMenuItems();
+            this.renderMenuItems();
+            this.updateFavoriteButtons();
+            this.updateCategoryTabs();
+            this.updateOrderHistoryIcon();
+            this.initializeWebSocket();
+        } catch (error) {
+            console.error('Failed to initialize app:', error);
+            this.showError('Failed to load menu. Please refresh the page.');
+        } finally {
+            this.hideSkeletonLoading();
+        }
     }
     
     loadOrderHistoryFromStorage() {
@@ -433,22 +452,14 @@ class MenuApp {
                 this.filteredItems = [...this.menuItems];
                 this.sortItems();
             } else {
-                // Fallback to sample data if API fails
-                this.menuItems = this.generateSampleMenuItems();
-                this.filteredItems = [...this.menuItems];
-                this.sortItems();
+                throw new Error('API returned no data');
             }
             
             // Hide loading state
             document.getElementById('loadingState').style.display = 'none';
         } catch (error) {
             console.error('Error loading menu items:', error);
-            // Fallback to sample data
-            this.menuItems = this.generateSampleMenuItems();
-            this.filteredItems = [...this.menuItems];
-            this.sortItems();
-            document.getElementById('loadingState').style.display = 'none';
-            this.showError('Failed to load menu items. Showing sample data.');
+            throw error; // Re-throw to be handled by init()
         }
     }
 
@@ -609,12 +620,59 @@ class MenuApp {
         ];
     }
 
+    showSkeletonLoading() {
+        // Show skeleton for restaurant name
+        const restaurantName = document.querySelector('.restaurant-name');
+        if (restaurantName) {
+            restaurantName.innerHTML = '<div class="skeleton-line restaurant-name-skeleton"></div>';
+        }
+        
+        // Show skeleton for categories
+        const categoryTabs = document.querySelector('.category-tabs');
+        if (categoryTabs) {
+            categoryTabs.innerHTML = `
+                <div class="skeleton-line category-skeleton"></div>
+                <div class="skeleton-line category-skeleton"></div>
+                <div class="skeleton-line category-skeleton"></div>
+                <div class="skeleton-line category-skeleton"></div>
+            `;
+        }
+        
+        // Show skeleton cards
+        this.generateSkeletonCards();
+        
+        // Hide menu grid during loading
+        const menuGrid = document.getElementById('menuGrid');
+        if (menuGrid) {
+            menuGrid.style.display = 'none';
+        }
+    }
+    
+    hideSkeletonLoading() {
+        const skeletonContainer = document.querySelector('.skeleton-cards');
+        if (skeletonContainer) {
+            skeletonContainer.style.display = 'none';
+        }
+        
+        const menuGrid = document.getElementById('menuGrid');
+        if (menuGrid) {
+            menuGrid.style.display = 'grid';
+        }
+        
+        // Hide loading state
+        const loadingState = document.getElementById('loadingState');
+        if (loadingState) {
+            loadingState.style.display = 'none';
+        }
+    }
+
     generateSkeletonCards() {
         const skeletonContainer = document.querySelector('.skeleton-cards');
         if (!skeletonContainer) return;
         
         // Clear existing skeletons
         skeletonContainer.innerHTML = '';
+        skeletonContainer.style.display = 'grid';
         
         // Apply exact same layout classes as menu-grid
         skeletonContainer.className = `skeleton-cards menu-grid ${this.currentLayout}`;

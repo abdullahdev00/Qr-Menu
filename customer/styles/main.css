@@ -1030,6 +1030,27 @@ html::-webkit-scrollbar {
     border-radius: var(--radius-md);
 }
 
+/* Restaurant Name Skeleton */
+.skeleton-line.restaurant-name-skeleton {
+    width: 70%;
+    height: 32px;
+    margin: 0 auto var(--spacing-md) auto;
+    border-radius: var(--radius-lg);
+}
+
+/* Category Skeleton Styles */
+.category-skeleton {
+    width: 80px;
+    height: 36px;
+    background: linear-gradient(90deg, var(--secondary-dark) 25%, rgba(255, 255, 255, 0.1) 50%, var(--secondary-dark) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: var(--radius-lg);
+    margin-bottom: 0;
+    display: inline-block;
+    margin-right: var(--spacing-sm);
+}
+
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.8; }
