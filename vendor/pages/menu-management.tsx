@@ -35,7 +35,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../admin/components/ui/form'
 import { queryClient } from '../../admin/lib/queryClient'
 import { insertMenuItemSchema, insertMenuCategorySchema, type InsertMenuItem, type InsertMenuCategory, type MenuCategory } from '../../shared/schema'
-import { MenuItemSkeleton, StatsSkeleton } from '../../admin/components/ui/loading-skeleton'
+import { MenuItemSkeleton, StatsSkeleton, CategoriesListSkeleton } from '../../admin/components/ui/loading-skeleton'
 
 interface RestaurantUser {
   id: string
@@ -1746,7 +1746,7 @@ export default function MenuManagement() {
   });
 
   // Get categories for filtering - combining with database categories
-  const { data: dbCategories = [], refetch: refetchCategories } = useQuery({
+  const { data: dbCategories = [], isLoading: isLoadingCategories, refetch: refetchCategories } = useQuery({
     queryKey: ['/api/menu-categories', user?.restaurantId],
     queryFn: async (): Promise<MenuCategory[]> => {
       if (!user?.restaurantId) return [];
@@ -1884,7 +1884,9 @@ export default function MenuManagement() {
           <AddCategoryDialog refetchCategories={refetchCategories} />
         </div>
 
-        {dbCategories.length === 0 ? (
+        {isLoadingCategories ? (
+          <CategoriesListSkeleton items={6} />
+        ) : dbCategories.length === 0 ? (
           <div className="text-center py-8">
             <Tags className="w-12 h-12 mx-auto text-gray-400 mb-3" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No categories yet</h3>

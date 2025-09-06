@@ -211,3 +211,34 @@ export function OrdersListSkeleton({ items = 6 }: { items?: number }) {
     </div>
   )
 }
+
+// Category card skeleton
+export function CategorySkeleton() {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600 shadow-sm">
+      <div className="flex items-center justify-between mb-2">
+        <Skeleton className="h-5 w-24" />
+        <div className="flex gap-1">
+          <Skeleton className="h-7 w-7 rounded-md" />
+          <Skeleton className="h-7 w-7 rounded-md" />
+        </div>
+      </div>
+      <Skeleton className="h-4 w-full mb-2" />
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-3 w-12" />
+      </div>
+    </div>
+  )
+}
+
+// Categories list skeleton
+export function CategoriesListSkeleton({ items = 6 }: { items?: number }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Array.from({ length: items }).map((_, i) => (
+        <CategorySkeleton key={i} />
+      ))}
+    </div>
+  )
+}
