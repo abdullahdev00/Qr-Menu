@@ -1,5 +1,5 @@
 import { db } from '../../../lib/storage';
-import { qrCodes, updateQrCodeSchema } from '../../../shared/schema';
+import { qrCodes, updateQrCodeSchema } from '../../../../shared/schema';
 import { eq } from 'drizzle-orm';
 
 export default async function handler(req: any, res: any) {
