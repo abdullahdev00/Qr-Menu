@@ -274,6 +274,8 @@ export default function QRCodesPage() {
 
   const handleToggleActive = async (qrId: string, isActive: boolean) => {
     try {
+      console.log(`🔄 Toggling QR code ${qrId} from ${isActive} to ${!isActive}`);
+      
       const response = await fetch(`/api/qr-codes/${qrId}`, {
         method: 'PATCH',
         headers: {
@@ -284,7 +286,14 @@ export default function QRCodesPage() {
         }),
       });
 
+      console.log(`📡 Toggle response status: ${response.status}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log(`📡 Toggle response data:`, data);
       
       if (data.success) {
         refetch(); // Refresh the QR codes list
