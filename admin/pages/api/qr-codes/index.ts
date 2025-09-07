@@ -1,4 +1,4 @@
-import { db } from '../../lib/storage';
+import { db } from '../../../lib/storage';
 import { restaurants, restaurantTables, qrCodes, insertQrCodeSchema, encodeTableParam } from '../../../../shared/schema';
 import { eq, desc, and } from 'drizzle-orm';
 

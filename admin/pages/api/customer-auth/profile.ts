@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { db } from '../../lib/storage';
+import { db } from '../../../lib/storage';
 import { customerUsers, updateCustomerUserSchema } from '../../../../shared/schema.js';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
