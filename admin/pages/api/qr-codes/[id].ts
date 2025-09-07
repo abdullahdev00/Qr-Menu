@@ -1,4 +1,4 @@
-import { db } from '../../../server/db';
+import { db } from '../../lib/storage';
 import { qrCodes, updateQrCodeSchema } from '../../../shared/schema';
 import { eq } from 'drizzle-orm';
 

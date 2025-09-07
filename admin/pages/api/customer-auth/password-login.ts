@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
-import { db } from '../../../server/db.js';
-import { customerUsers } from '@shared/schema';
+import { db } from '../../lib/storage';
+import { customerUsers } from '../../../shared/schema';
 import bcrypt from 'bcryptjs';
 
 const passwordLoginSchema = z.object({

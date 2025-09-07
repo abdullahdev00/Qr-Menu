@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { db } from '../../../../server/db.js';
+import { db } from '../../lib/storage';
 import { otpVerifications, customerUsers } from '../../../../shared/schema.js';
 import { eq, and, gte } from 'drizzle-orm';
 import { z } from 'zod';
