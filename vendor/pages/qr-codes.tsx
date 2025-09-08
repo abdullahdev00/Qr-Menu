@@ -12,7 +12,8 @@ import {
   Plus,
   Edit3,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Check
 } from 'lucide-react'
 // Import custom QR image
 const customQrImageUrl = '/attached_assets/custom-qr-template.jpeg'
@@ -83,8 +84,23 @@ export default function QRCodesPage() {
 
   const qrCodes = qrCodesData || [];
 
-  const handleCopyUrl = (url: string) => {
+  const handleCopyUrl = (url: string, qrCodeId: string) => {
     navigator.clipboard.writeText(url)
+    
+    // Set button as copied
+    setCopiedButtons(prev => ({
+      ...prev,
+      [qrCodeId]: true
+    }))
+    
+    // Reset back to original after 2 seconds
+    setTimeout(() => {
+      setCopiedButtons(prev => ({
+        ...prev,
+        [qrCodeId]: false
+      }))
+    }, 2000)
+    
     toast({
       title: "URL Copied!",
       description: "Menu URL has been copied to clipboard",
@@ -178,6 +194,7 @@ export default function QRCodesPage() {
   const [qrPreviewData, setQrPreviewData] = useState<{[key: string]: string}>({})
   const [showGeneratedQR, setShowGeneratedQR] = useState<string | null>(null)
   const [generatedQRData, setGeneratedQRData] = useState<{blob: Blob, name: string} | null>(null)
+  const [copiedButtons, setCopiedButtons] = useState<{[key: string]: boolean}>({})
 
   // Generate QR code preview image
   const getQRCodeImage = (qrCode: any) => {
@@ -732,10 +749,20 @@ export default function QRCodesPage() {
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => handleCopyUrl(qrCode.url)}
+                  onClick={() => handleCopyUrl(qrCode.url, qrCode.id)}
+                  className={copiedButtons[qrCode.id] ? "bg-green-50 text-green-600 border-green-200" : ""}
                 >
-                  <Copy className="w-4 h-4 mr-1" />
-                  Copy URL
+                  {copiedButtons[qrCode.id] ? (
+                    <>
+                      <Check className="w-4 h-4 mr-1" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 mr-1" />
+                      Copy URL
+                    </>
+                  )}
                 </Button>
                 
                 
