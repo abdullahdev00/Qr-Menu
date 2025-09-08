@@ -81,9 +81,9 @@ export default function AIChatWidget() {
       console.log("🤖 Processing message:", currentMessage);
       
       // Check if webhook URL is available and valid
-      if (!webhookUrl || webhookUrl.trim() === '' || webhookUrl.includes('ngrok-free.app')) {
-        console.log("🔄 Using local AI responses (no external webhook configured)");
-        throw new Error('Using local responses');
+      if (!webhookUrl || webhookUrl.trim() === '') {
+        console.log("🔄 No webhook configured, using fallback message");
+        throw new Error('No webhook configured');
       }
       
       // Call external webhook for AI response
@@ -131,42 +131,26 @@ export default function AIChatWidget() {
     } catch (error) {
       console.error("❌ AI Chat Error:", error);
       
-      // Provide helpful local responses instead of external webhook
-      const localResponses = {
-        "hello": "Salam! Main aapka restaurant support assistant hun. Restaurant management, menu setup, orders ya payments ke bare mein koi bhi sawal puch sakte hain.",
-        "hi": "Hello! Main aapki madad kar sakta hun. Menu management, QR codes, orders handling - koi bhi query ho toh batayiye.",
-        "menu": "Menu management ke liye sidebar se 'Menu Management' section mein jaye. Wahan aap categories, items add kar sakte hain aur prices set kar sakte hain.",
-        "qr": "QR codes generate karne ke liye 'QR Codes' section mein jaye. Har table ke liye unique QR code mil jayega jo customers apne phone se scan kar sakte hain.",
-        "orders": "Orders dekhne ke liye 'Orders' section check kariye. Real-time notifications bhi milte rahenge jab bhi naya order aye.",
-        "payment": "Payment setup ke liye 'Payments' section mein jaye. Pakistani payment methods like JazzCash, EasyPaisa aur bank transfer support kiya jata hai.",
-        "restaurant": "Restaurant profile setup karne ke liye 'Restaurants' section mein jaye. Wahan restaurant ki details, location, timing sab set kar sakte hain.",
-        "help": "Main aapki in cheezon mein madad kar sakta hun:\n• Menu items aur categories setup\n• QR codes generation\n• Orders management\n• Payment integration\n• Restaurant profile setup\n\nKoi specific sawal ho toh puchiye!",
-        "support": "Support ke liye aap ye kar sakte hain:\n• Dashboard se direct help section check kariye\n• Live chat support available hai\n• Email support: support@qrmenu.com\n• Phone: +92-XXX-XXXXXXX",
-        "default": "Main aapki restaurant management mein madad kar sakta hun. Menu setup, QR codes, orders, payments - koi bhi sawal ho toh puchiye! 'help' type kar ke complete guide mil sakti hai."
-      };
+      // Check if this is a webhook configuration issue or connection issue
+      const isConfigIssue = !webhookUrl || webhookUrl.trim() === '';
       
-      const userQuery = currentMessage.toLowerCase();
-      let responseText = localResponses.default;
+      let responseText = "";
       
-      // Smart keyword matching for local responses
-      if (userQuery.includes('hello') || userQuery.includes('salam') || userQuery.includes('assalam')) {
-        responseText = localResponses.hello;
-      } else if (userQuery.includes('hi') || userQuery.includes('hey')) {
-        responseText = localResponses.hi;
-      } else if (userQuery.includes('menu') || userQuery.includes('item') || userQuery.includes('food')) {
-        responseText = localResponses.menu;
-      } else if (userQuery.includes('qr') || userQuery.includes('code') || userQuery.includes('scan')) {
-        responseText = localResponses.qr;
-      } else if (userQuery.includes('order') || userQuery.includes('customer')) {
-        responseText = localResponses.orders;
-      } else if (userQuery.includes('payment') || userQuery.includes('pay') || userQuery.includes('jazzcash') || userQuery.includes('easypaisa')) {
-        responseText = localResponses.payment;
-      } else if (userQuery.includes('restaurant') || userQuery.includes('profile') || userQuery.includes('setup')) {
-        responseText = localResponses.restaurant;
-      } else if (userQuery.includes('help') || userQuery.includes('guide') || userQuery.includes('madad')) {
-        responseText = localResponses.help;
-      } else if (userQuery.includes('support') || userQuery.includes('contact')) {
-        responseText = localResponses.support;
+      if (isConfigIssue) {
+        // No webhook configured - provide setup message
+        responseText = "Maaf kariye, abhi AI assistant ka n8n connection setup nahi hua hai. \n\n" +
+                     "Complete AI support ke liye:\n" +
+                     "📱 WhatsApp pe contact kariye: +92-XXX-XXXXXXX\n" +
+                     "📧 Email kariye: support@qrmenu.com\n\n" +
+                     "Admin setup kar dega n8n webhook URL settings mein.";
+      } else {
+        // Connection failed - provide error message
+        responseText = "Sorry! Abhi AI assistant se rabta nahi ho pa raha, koi technical error hai. \n\n" +
+                     "Is waqt aap ye kar sakte hain:\n" +
+                     "📱 WhatsApp pe contact kariye: +92-XXX-XXXXXXX\n" +
+                     "📧 Email support: support@qrmenu.com\n" +
+                     "⏰ Thodi der baad phir try kariye\n\n" +
+                     "Hum jaldi hi issue fix kar denge!";
       }
       
       const errorMessage: Message = {
