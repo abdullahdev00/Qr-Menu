@@ -29,7 +29,7 @@ const adminNavigation = [
   { name: "Payment Requests", href: "/payments", icon: CreditCard, badge: "5", badgeColor: "bg-orange-500" },
   { name: "Subscriptions", href: "/subscriptions", icon: CreditCard },
   { name: "Menu Templates", href: "/menu-templates", icon: Utensils },
-  { name: "Support", href: "/support", icon: Headphones, badge: "3", badgeColor: "bg-warning" },
+  { name: "Support", href: "ai-chat", icon: Headphones, badge: "AI", badgeColor: "bg-purple-500" },
   { name: "Analytics", href: "/analytics", icon: PieChart },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
@@ -45,6 +45,7 @@ const getRestaurantNavigation = (slug?: string) => {
     { name: "Wallet", href: `/${baseSlug}/payment-request`, icon: Wallet, badge: "PKR", badgeColor: "bg-green-500" },
     { name: "Analytics", href: `/${baseSlug}/analytics`, icon: PieChart },
     { name: "Orders", href: `/${baseSlug}/orders`, icon: Store, badge: "5" },
+    { name: "Support", href: "ai-chat", icon: Headphones, badge: "AI", badgeColor: "bg-purple-500" },
     { name: "Settings", href: `/${baseSlug}/settings`, icon: Settings },
   ];
 };
@@ -89,6 +90,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const handleNavigation = (href: string) => {
+    // Handle special case for AI chat widget
+    if (href === "ai-chat") {
+      // Trigger AI chat widget to open
+      const chatTrigger = document.querySelector('[data-testid="ai-chat-toggle-button"]') as HTMLElement;
+      if (chatTrigger) {
+        chatTrigger.click();
+      }
+      onClose();
+      return;
+    }
+    
     setLocation(href);
     onClose();
   };
