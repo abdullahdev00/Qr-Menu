@@ -23,6 +23,7 @@ import SubscriptionsPage from '../pages/subscriptions';
 import AnalyticsPage from '../pages/analytics';
 import SupportPage from '../pages/support';
 import TestButtonPage from '../pages/test-button';
+import KitchenDashboard from '../pages/kitchen';
 import MenuManagementPage from '../../vendor/pages/menu-management';
 import OrdersPage from '../../vendor/pages/orders';
 import VendorAnalyticsPage from '../../vendor/pages/analytics';
@@ -165,6 +166,7 @@ function App() {
                     <Route path="/support" component={SupportPage} />
                     <Route path="/test-button" component={TestButtonPage} />
                     <Route path="/customer-auth-test" component={CustomerAuthTestPage} />
+                    <Route path="/kitchen" component={KitchenDashboard} />
                     {/* Vendor Routes with dynamic slugs */}
                     <Route path="/:slug/dashboard" component={VendorDashboardPage} />
                     <Route path="/:slug/menu-management" component={MenuManagementPage} />
@@ -174,6 +176,7 @@ function App() {
                     <Route path="/:slug/orders" component={OrdersPage} />
                     <Route path="/:slug/payment-request" component={VendorPaymentRequestPage} />
                     <Route path="/:slug/settings" component={VendorSettingsPage} />
+                    <Route path="/:slug/kitchen" component={KitchenDashboard} />
                     {/* Static vendor routes as fallback */}
                     <Route path="/vendor/dashboard" component={VendorDashboardPage} />
                     <Route path="/vendor/menu-management" component={MenuManagementPage} />
