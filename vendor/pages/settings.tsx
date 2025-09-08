@@ -22,10 +22,18 @@ import {
   Save,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  Users,
+  Plus,
+  Trash2,
+  Edit,
+  Truck
 } from 'lucide-react'
 import { Link } from 'wouter'
 import { useToast } from '../../admin/hooks/use-toast'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../admin/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../admin/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../admin/components/ui/table'
 
 interface User {
   id: string
@@ -33,12 +41,35 @@ interface User {
   email: string
   role: string
   restaurantName?: string
+  restaurantId?: string
+}
+
+interface StaffMember {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  role: 'chef' | 'delivery_boy'
+  isActive: boolean
+  createdAt: string
 }
 
 export default function VendorSettings() {
   const [location, setLocation] = useLocation()
   const [user, setUser] = useState<User | null>(null)
   const { toast } = useToast()
+
+  // Staff Management State
+  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([])
+  const [isAddStaffDialogOpen, setIsAddStaffDialogOpen] = useState(false)
+  const [staffFormData, setStaffFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    role: '' as 'chef' | 'delivery_boy' | ''
+  })
+  const [isLoadingStaff, setIsLoadingStaff] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -68,6 +99,8 @@ export default function VendorSettings() {
           ownerName: userData.name || '',
           email: userData.email || ''
         }))
+        // Load staff members
+        loadStaffMembers(userData.restaurantId)
       } else {
         setLocation('/dashboard')
       }
@@ -75,6 +108,108 @@ export default function VendorSettings() {
       setLocation('/login')
     }
   }, [])
+
+  // Load Staff Members
+  const loadStaffMembers = async (restaurantId: string) => {
+    if (!restaurantId) return
+    
+    setIsLoadingStaff(true)
+    try {
+      const response = await fetch(`/api/staff?restaurantId=${restaurantId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setStaffMembers(data)
+      }
+    } catch (error) {
+      console.error('Error loading staff:', error)
+    } finally {
+      setIsLoadingStaff(false)
+    }
+  }
+
+  // Add Staff Member
+  const handleAddStaff = async () => {
+    if (!user?.restaurantId || !staffFormData.name || !staffFormData.email || !staffFormData.password || !staffFormData.role) {
+      toast({
+        title: "Error",
+        description: "Please fill all required fields",
+        variant: "destructive"
+      })
+      return
+    }
+
+    setIsLoadingStaff(true)
+    try {
+      const response = await fetch('/api/staff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...staffFormData,
+          restaurantId: user.restaurantId
+        })
+      })
+
+      if (response.ok) {
+        const newStaff = await response.json()
+        setStaffMembers(prev => [...prev, newStaff])
+        setStaffFormData({ name: '', email: '', phone: '', password: '', role: '' as any })
+        setIsAddStaffDialogOpen(false)
+        toast({
+          title: "Staff Added",
+          description: `${staffFormData.role === 'chef' ? 'Chef' : 'Delivery staff'} has been added successfully`,
+        })
+      } else {
+        const error = await response.json()
+        toast({
+          title: "Error",
+          description: error.message || "Failed to add staff member",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoadingStaff(false)
+    }
+  }
+
+  // Remove Staff Member
+  const handleRemoveStaff = async (staffId: string) => {
+    if (!confirm('Are you sure you want to remove this staff member?')) return
+
+    setIsLoadingStaff(true)
+    try {
+      const response = await fetch(`/api/staff/${staffId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setStaffMembers(prev => prev.filter(s => s.id !== staffId))
+        toast({
+          title: "Staff Removed",
+          description: "Staff member has been removed successfully",
+        })
+      } else {
+        toast({
+          title: "Error", 
+          description: "Failed to remove staff member",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoadingStaff(false)
+    }
+  }
 
   const handleSave = () => {
     toast({
@@ -168,6 +303,177 @@ export default function VendorSettings() {
                   placeholder="Enter city"
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Staff Management Section */}
+          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-purple-50/50 dark:from-gray-900 dark:to-purple-950/30">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-5 h-5 text-purple-600" />
+                  <span>Staff Management</span>
+                </div>
+                <Dialog open={isAddStaffDialogOpen} onOpenChange={setIsAddStaffDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Staff
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Staff Member</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="staffName">Name *</Label>
+                        <Input
+                          id="staffName"
+                          value={staffFormData.name}
+                          onChange={(e) => setStaffFormData(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="Enter staff name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="staffEmail">Email *</Label>
+                        <Input
+                          id="staffEmail"
+                          type="email"
+                          value={staffFormData.email}
+                          onChange={(e) => setStaffFormData(prev => ({ ...prev, email: e.target.value }))}
+                          placeholder="Enter email address"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="staffPhone">Phone</Label>
+                        <Input
+                          id="staffPhone"
+                          value={staffFormData.phone}
+                          onChange={(e) => setStaffFormData(prev => ({ ...prev, phone: e.target.value }))}
+                          placeholder="Enter phone number"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="staffPassword">Password *</Label>
+                        <Input
+                          id="staffPassword"
+                          type="password"
+                          value={staffFormData.password}
+                          onChange={(e) => setStaffFormData(prev => ({ ...prev, password: e.target.value }))}
+                          placeholder="Enter password"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="staffRole">Role *</Label>
+                        <Select
+                          value={staffFormData.role}
+                          onValueChange={(value: 'chef' | 'delivery_boy') => 
+                            setStaffFormData(prev => ({ ...prev, role: value }))
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="chef">
+                              <div className="flex items-center space-x-2">
+                                <ChefHat className="w-4 h-4" />
+                                <span>Kitchen Chef</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="delivery_boy">
+                              <div className="flex items-center space-x-2">
+                                <Truck className="w-4 h-4" />
+                                <span>Delivery Staff</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setIsAddStaffDialogOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleAddStaff}
+                          disabled={isLoadingStaff}
+                        >
+                          {isLoadingStaff ? 'Adding...' : 'Add Staff'}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingStaff && staffMembers.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-500">Loading staff members...</p>
+                </div>
+              ) : staffMembers.length === 0 ? (
+                <div className="text-center py-6">
+                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500 mb-2">No staff members added yet</p>
+                  <p className="text-sm text-gray-400">Add your kitchen chef and delivery staff to get started</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {staffMembers.map((staff) => (
+                      <TableRow key={staff.id}>
+                        <TableCell className="font-medium">{staff.name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            {staff.role === 'chef' ? (
+                              <ChefHat className="w-4 h-4 text-orange-500" />
+                            ) : (
+                              <Truck className="w-4 h-4 text-blue-500" />
+                            )}
+                            <span className="capitalize">
+                              {staff.role === 'chef' ? 'Kitchen Chef' : 'Delivery Staff'}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <div>{staff.email}</div>
+                            {staff.phone && <div className="text-gray-500">{staff.phone}</div>}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={staff.isActive ? "default" : "secondary"}>
+                            {staff.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRemoveStaff(staff.id)}
+                            disabled={isLoadingStaff}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </div>
