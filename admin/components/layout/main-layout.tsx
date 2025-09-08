@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Sidebar from "./sidebar";
 import Header from "./header";
+import AIChatWidget from "../ui/ai-chat-widget";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
           {children}
         </div>
       </main>
+      
+      {/* AI Chat Widget - Available throughout the app */}
+      <AIChatWidget />
     </div>
   );
 }
