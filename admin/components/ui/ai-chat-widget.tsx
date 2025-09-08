@@ -87,24 +87,22 @@ export default function AIChatWidget() {
         throw new Error('No webhook configured');
       }
       
-      // Call external webhook for AI response
-      const payload = {
+      // Call external webhook for AI response using GET method with query parameters
+      const params = new URLSearchParams({
         message: currentMessage,
         timestamp: new Date().toISOString(),
         userType: "restaurant_owner",
         platform: "qr_menu_admin_panel"
-      };
+      });
       
-      console.log("🌐 Webhook URL:", webhookUrl);
-      console.log("📦 Payload:", payload);
+      const fullWebhookUrl = `${webhookUrl}?${params.toString()}`;
+      console.log("🌐 Webhook URL:", fullWebhookUrl);
 
-      const response = await fetch(webhookUrl, {
-        method: "POST",
+      const response = await fetch(fullWebhookUrl, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
           "Accept": "application/json",
         },
-        body: JSON.stringify(payload),
       });
 
       console.log("📡 Response status:", response.status);
