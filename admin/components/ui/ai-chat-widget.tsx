@@ -54,7 +54,7 @@ export default function AIChatWidget() {
       console.log("🤖 Sending message to AI webhook:", currentMessage);
       
       // Call n8n webhook for AI response
-      const webhookUrl = "https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook/Qrmenuresturantsupportbot";
+      const webhookUrl = "https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook-test/Qrmenuresturantsupportbot";
       const payload = {
         message: currentMessage,
         timestamp: new Date().toISOString(),
