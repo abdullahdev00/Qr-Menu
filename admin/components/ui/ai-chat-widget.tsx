@@ -18,7 +18,13 @@ export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState(() => {
-    return localStorage.getItem('ai-webhook-url') || '';
+    // Clear old ngrok URLs from localStorage
+    const stored = localStorage.getItem('ai-webhook-url');
+    if (stored && stored.includes('ngrok-free.app')) {
+      localStorage.removeItem('ai-webhook-url');
+      return '';
+    }
+    return stored || '';
   });
   const [tempWebhookUrl, setTempWebhookUrl] = useState(webhookUrl);
   const [messages, setMessages] = useState<Message[]>([
@@ -72,9 +78,15 @@ export default function AIChatWidget() {
     setIsTyping(true);
 
     try {
-      console.log("🤖 Sending message to AI webhook:", currentMessage);
+      console.log("🤖 Processing message:", currentMessage);
       
-      // Call n8n webhook for AI response - use configured URL
+      // Check if webhook URL is available and valid
+      if (!webhookUrl || webhookUrl.trim() === '' || webhookUrl.includes('ngrok-free.app')) {
+        console.log("🔄 Using local AI responses (no external webhook configured)");
+        throw new Error('Using local responses');
+      }
+      
+      // Call external webhook for AI response
       const payload = {
         message: currentMessage,
         timestamp: new Date().toISOString(),
@@ -84,11 +96,6 @@ export default function AIChatWidget() {
       
       console.log("🌐 Webhook URL:", webhookUrl);
       console.log("📦 Payload:", payload);
-      
-      // Check if webhook URL is available
-      if (!webhookUrl || webhookUrl.includes('ngrok-free.app')) {
-        throw new Error('External webhook service not available');
-      }
 
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -127,27 +134,39 @@ export default function AIChatWidget() {
       // Provide helpful local responses instead of external webhook
       const localResponses = {
         "hello": "Salam! Main aapka restaurant support assistant hun. Restaurant management, menu setup, orders ya payments ke bare mein koi bhi sawal puch sakte hain.",
+        "hi": "Hello! Main aapki madad kar sakta hun. Menu management, QR codes, orders handling - koi bhi query ho toh batayiye.",
         "menu": "Menu management ke liye sidebar se 'Menu Management' section mein jaye. Wahan aap categories, items add kar sakte hain aur prices set kar sakte hain.",
-        "qr": "QR codes generate karne ke liye 'QR Codes' section mein jaye. Har table ke liye unique QR code mil jayega.",
-        "orders": "Orders dekhne ke liye 'Orders' section check kariye. Real-time notifications bhi milte rahenge.",
-        "payment": "Payment setup ke liye 'Payments' section mein jaye. Pakistani payment methods like JazzCash, EasyPaisa support kiya jata hai.",
-        "default": "Main aapki restaurant management mein madad kar sakta hun. Menu setup, QR codes, orders, payments - koi bhi sawal ho toh puchiye!"
+        "qr": "QR codes generate karne ke liye 'QR Codes' section mein jaye. Har table ke liye unique QR code mil jayega jo customers apne phone se scan kar sakte hain.",
+        "orders": "Orders dekhne ke liye 'Orders' section check kariye. Real-time notifications bhi milte rahenge jab bhi naya order aye.",
+        "payment": "Payment setup ke liye 'Payments' section mein jaye. Pakistani payment methods like JazzCash, EasyPaisa aur bank transfer support kiya jata hai.",
+        "restaurant": "Restaurant profile setup karne ke liye 'Restaurants' section mein jaye. Wahan restaurant ki details, location, timing sab set kar sakte hain.",
+        "help": "Main aapki in cheezon mein madad kar sakta hun:\n• Menu items aur categories setup\n• QR codes generation\n• Orders management\n• Payment integration\n• Restaurant profile setup\n\nKoi specific sawal ho toh puchiye!",
+        "support": "Support ke liye aap ye kar sakte hain:\n• Dashboard se direct help section check kariye\n• Live chat support available hai\n• Email support: support@qrmenu.com\n• Phone: +92-XXX-XXXXXXX",
+        "default": "Main aapki restaurant management mein madad kar sakta hun. Menu setup, QR codes, orders, payments - koi bhi sawal ho toh puchiye! 'help' type kar ke complete guide mil sakti hai."
       };
       
       const userQuery = currentMessage.toLowerCase();
       let responseText = localResponses.default;
       
-      // Simple keyword matching for local responses
-      if (userQuery.includes('hello') || userQuery.includes('hi') || userQuery.includes('salam')) {
+      // Smart keyword matching for local responses
+      if (userQuery.includes('hello') || userQuery.includes('salam') || userQuery.includes('assalam')) {
         responseText = localResponses.hello;
-      } else if (userQuery.includes('menu')) {
+      } else if (userQuery.includes('hi') || userQuery.includes('hey')) {
+        responseText = localResponses.hi;
+      } else if (userQuery.includes('menu') || userQuery.includes('item') || userQuery.includes('food')) {
         responseText = localResponses.menu;
-      } else if (userQuery.includes('qr')) {
+      } else if (userQuery.includes('qr') || userQuery.includes('code') || userQuery.includes('scan')) {
         responseText = localResponses.qr;
-      } else if (userQuery.includes('order')) {
+      } else if (userQuery.includes('order') || userQuery.includes('customer')) {
         responseText = localResponses.orders;
-      } else if (userQuery.includes('payment') || userQuery.includes('pay')) {
+      } else if (userQuery.includes('payment') || userQuery.includes('pay') || userQuery.includes('jazzcash') || userQuery.includes('easypaisa')) {
         responseText = localResponses.payment;
+      } else if (userQuery.includes('restaurant') || userQuery.includes('profile') || userQuery.includes('setup')) {
+        responseText = localResponses.restaurant;
+      } else if (userQuery.includes('help') || userQuery.includes('guide') || userQuery.includes('madad')) {
+        responseText = localResponses.help;
+      } else if (userQuery.includes('support') || userQuery.includes('contact')) {
+        responseText = localResponses.support;
       }
       
       const errorMessage: Message = {
