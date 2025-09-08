@@ -8,15 +8,15 @@ import { Label } from '../components/ui/label'
 import { FormError } from '../components/ui/form-error'
 import { useToast } from '../lib/use-toast'
 import { validators } from '../lib/validation'
-import { Shield, Store, Mail, Phone, Lock } from 'lucide-react'
+import { Shield, Store, Mail, Phone, Lock, ChefHat, Truck } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [loginType, setLoginType] = useState<'admin' | 'restaurant'>('admin')
-  const [restaurantAuthType, setRestaurantAuthType] = useState<'email' | 'phone'>('email')
+  const [loginType, setLoginType] = useState<'admin' | 'restaurant' | 'chef' | 'delivery'>('admin')
+  const [authType, setAuthType] = useState<'email' | 'phone'>('email')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [, setLocation] = useLocation()
   const { toast } = useToast()
@@ -24,7 +24,7 @@ export default function Login() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    if (loginType === 'admin' || restaurantAuthType === 'email') {
+    if (loginType === 'admin' || authType === 'email') {
       const emailError = validators.email(email)
       if (emailError) newErrors.email = emailError
     } else {
@@ -49,14 +49,18 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      const endpoint = loginType === 'admin' ? '/api/auth/login' : '/api/auth/restaurant-login'
-      
-      // For restaurant login, use either email or phone
-      const loginData = loginType === 'admin' ? 
-        { email, password } : 
-        restaurantAuthType === 'email' ? 
-          { email, password } : 
-          { phone, password }
+      let endpoint = '/api/auth/login'
+      let loginData: any = { email, password }
+
+      if (loginType === 'restaurant') {
+        endpoint = '/api/auth/restaurant-login'
+        loginData = authType === 'email' ? { email, password } : { phone, password }
+      } else if (loginType === 'chef' || loginType === 'delivery') {
+        endpoint = '/api/auth/staff-login'
+        loginData = authType === 'email' ? 
+          { email, password, role: loginType === 'chef' ? 'chef' : 'delivery_boy' } : 
+          { phone, password, role: loginType === 'chef' ? 'chef' : 'delivery_boy' }
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -77,6 +81,10 @@ export default function Login() {
         if (data.user.role === 'restaurant') {
           const slug = data.user.restaurantSlug || 'vendor';
           window.location.href = `/${slug}/dashboard`
+        } else if (data.user.role === 'chef') {
+          window.location.href = '/kitchen/dashboard'
+        } else if (data.user.role === 'delivery_boy') {
+          window.location.href = '/delivery/dashboard'
         } else {
           window.location.href = '/dashboard'
         }
@@ -98,15 +106,15 @@ export default function Login() {
     }
   }
 
-  const setDefaultCredentials = (type: 'admin' | 'restaurant') => {
+  const setDefaultCredentials = (type: 'admin' | 'restaurant' | 'chef' | 'delivery') => {
     setLoginType(type)
     setErrors({})
     if (type === 'admin') {
       setEmail('admin@demo.com')
       setPassword('password123')
       setPhone('')
-    } else {
-      if (restaurantAuthType === 'email') {
+    } else if (type === 'restaurant') {
+      if (authType === 'email') {
         setEmail('ahmed@albaik.com')
         setPhone('')
       } else {
@@ -114,6 +122,24 @@ export default function Login() {
         setEmail('')
       }
       setPassword('restaurant123')
+    } else if (type === 'chef') {
+      if (authType === 'email') {
+        setEmail('chef@demo.com')
+        setPhone('')
+      } else {
+        setPhone('03009876543')
+        setEmail('')
+      }
+      setPassword('chef123')
+    } else if (type === 'delivery') {
+      if (authType === 'email') {
+        setEmail('delivery@demo.com')
+        setPhone('')
+      } else {
+        setPhone('03005432190')
+        setEmail('')
+      }
+      setPassword('delivery123')
     }
   }
 
@@ -126,58 +152,85 @@ export default function Login() {
           <Card className="border-0 shadow-xl">
             <CardHeader className="space-y-4">
               {/* Login Type Selector */}
-              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+              <div className="grid grid-cols-2 gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                 <button
                   onClick={() => setLoginType('admin')}
-                  className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 justify-center ${
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all justify-center ${
                     loginType === 'admin'
                       ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                   }`}
                   data-testid="button-admin-tab"
                 >
-                  <Shield className="w-4 h-4 mr-2" />
+                  <Shield className="w-4 h-4 mr-1" />
                   Admin
                 </button>
                 <button
                   onClick={() => setLoginType('restaurant')}
-                  className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 justify-center ${
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all justify-center ${
                     loginType === 'restaurant'
                       ? 'bg-white dark:bg-gray-600 text-emerald-600 dark:text-emerald-400 shadow-sm'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                   }`}
                   data-testid="button-restaurant-tab"
                 >
-                  <Store className="w-4 h-4 mr-2" />
+                  <Store className="w-4 h-4 mr-1" />
                   Restaurant
+                </button>
+                <button
+                  onClick={() => setLoginType('chef')}
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all justify-center ${
+                    loginType === 'chef'
+                      ? 'bg-white dark:bg-gray-600 text-orange-600 dark:text-orange-400 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                  }`}
+                  data-testid="button-chef-tab"
+                >
+                  <ChefHat className="w-4 h-4 mr-1" />
+                  Chef
+                </button>
+                <button
+                  onClick={() => setLoginType('delivery')}
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all justify-center ${
+                    loginType === 'delivery'
+                      ? 'bg-white dark:bg-gray-600 text-purple-600 dark:text-purple-400 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                  }`}
+                  data-testid="button-delivery-tab"
+                >
+                  <Truck className="w-4 h-4 mr-1" />
+                  Delivery
                 </button>
               </div>
               
               <div className="text-center">
                 <CardTitle className="text-2xl">
-                  {loginType === 'admin' ? 'Admin Login' : 'Restaurant Login'}
+                  {loginType === 'admin' && 'Admin Login'}
+                  {loginType === 'restaurant' && 'Restaurant Login'}
+                  {loginType === 'chef' && 'Kitchen Chef Login'}
+                  {loginType === 'delivery' && 'Delivery Staff Login'}
                 </CardTitle>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  {loginType === 'admin' 
-                    ? 'Access the admin panel to manage restaurants' 
-                    : 'Access your restaurant dashboard'
-                  }
+                  {loginType === 'admin' && 'Access the admin panel to manage restaurants'}
+                  {loginType === 'restaurant' && 'Access your restaurant dashboard'}
+                  {loginType === 'chef' && 'Access kitchen orders and management'}
+                  {loginType === 'delivery' && 'Access delivery orders and routes'}
                 </p>
               </div>
             </CardHeader>
             <CardContent>
-              {/* Restaurant Auth Type Selector */}
-              {loginType === 'restaurant' && (
+              {/* Auth Type Selector for Restaurant, Chef, and Delivery */}
+              {(loginType === 'restaurant' || loginType === 'chef' || loginType === 'delivery') && (
                 <div className="mb-6">
                   <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                     <button
                       type="button"
                       onClick={() => {
-                        setRestaurantAuthType('email')
-                        setDefaultCredentials('restaurant')
+                        setAuthType('email')
+                        setDefaultCredentials(loginType)
                       }}
                       className={`flex items-center justify-center flex-1 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                        restaurantAuthType === 'email'
+                        authType === 'email'
                           ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
                           : 'text-gray-600 dark:text-gray-400'
                       }`}
@@ -189,11 +242,11 @@ export default function Login() {
                     <button
                       type="button"
                       onClick={() => {
-                        setRestaurantAuthType('phone')
-                        setDefaultCredentials('restaurant')
+                        setAuthType('phone')
+                        setDefaultCredentials(loginType)
                       }}
                       className={`flex items-center justify-center flex-1 px-3 py-2 rounded-md text-sm font-medium transition-all ${
-                        restaurantAuthType === 'phone'
+                        authType === 'phone'
                           ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
                           : 'text-gray-600 dark:text-gray-400'
                       }`}
@@ -207,7 +260,7 @@ export default function Login() {
               )}
               <form onSubmit={handleLogin} className="space-y-4">
                 {/* Email/Phone Input */}
-                {loginType === 'admin' || restaurantAuthType === 'email' ? (
+                {loginType === 'admin' || authType === 'email' ? (
                   <div>
                     <Label htmlFor="email">Email Address *</Label>
                     <div className="relative">
@@ -294,7 +347,7 @@ export default function Login() {
                   <div className="text-xs text-gray-500 dark:text-gray-500">
                     {loginType === 'admin' ? (
                       <>Email: admin@demo.com | Password: password123</>
-                    ) : restaurantAuthType === 'email' ? (
+                    ) : authType === 'email' ? (
                       <>Email: ahmed@albaik.com | Password: restaurant123</>
                     ) : (
                       <>Phone: 03001234567 | Password: restaurant123</>
