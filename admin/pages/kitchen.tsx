@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { ProtectedRoute } from '../components/auth/protected-route'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
@@ -22,7 +23,7 @@ interface OrderWithItems extends Order {
   restaurant?: { name: string }
 }
 
-export default function KitchenDashboard() {
+function KitchenDashboardComponent() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
   
@@ -261,5 +262,13 @@ export default function KitchenDashboard() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function KitchenDashboard() {
+  return (
+    <ProtectedRoute allowedRoles={['chef', 'super_admin', 'admin']} requireRestaurant={true}>
+      <KitchenDashboardComponent />
+    </ProtectedRoute>
   );
 }

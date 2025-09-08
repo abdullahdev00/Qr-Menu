@@ -25,6 +25,7 @@ import SupportPage from '../pages/support';
 import TestButtonPage from '../pages/test-button';
 import KitchenDashboard from '../pages/kitchen';
 import DeliveryDashboard from '../pages/delivery';
+import StaffLoginPage from '../pages/staff-login';
 import MenuManagementPage from '../../vendor/pages/menu-management';
 import OrdersPage from '../../vendor/pages/orders';
 import VendorAnalyticsPage from '../../vendor/pages/analytics';
@@ -119,6 +120,7 @@ function App() {
               <Route path="/" component={WelcomePage} />
               <Route path="/welcome" component={WelcomePage} />
               <Route path="/login" component={LoginPage} />
+              <Route path="/staff-login" component={StaffLoginPage} />
               <Route path="/customer-auth-test" component={CustomerAuthTestPage} />
               <Route>
                 <Redirect to="/" />
