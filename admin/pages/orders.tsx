@@ -94,11 +94,23 @@ const statusConfig = {
     icon: Package,
     gradient: 'from-green-500 to-emerald-500'
   },
+  out_for_delivery: { 
+    label: 'Out for Delivery', 
+    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+    icon: Truck,
+    gradient: 'from-blue-500 to-cyan-500'
+  },
   delivered: { 
     label: 'Delivered', 
     color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400',
-    icon: Truck,
+    icon: CheckCircle,
     gradient: 'from-teal-500 to-cyan-500'
+  },
+  served: { 
+    label: 'Served', 
+    color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
+    icon: Utensils,
+    gradient: 'from-indigo-500 to-purple-500'
   },
   completed: { 
     label: 'Completed', 
@@ -197,6 +209,8 @@ export default function AdminOrdersPage() {
   const stats = {
     total: orders.length,
     pending: orders.filter(o => o.status === 'pending').length,
+    ready: orders.filter(o => o.status === 'ready').length,
+    served: orders.filter(o => o.status === 'served').length,
     completed: orders.filter(o => o.status === 'completed').length,
     cancelled: orders.filter(o => o.status === 'cancelled').length
   }
@@ -243,12 +257,32 @@ export default function AdminOrdersPage() {
                     <Eye className="w-4 h-4 mr-2" />
                     View Details
                   </DropdownMenuItem>
-                  {order.status !== 'completed' && order.status !== 'cancelled' && (
+                  {order.status !== 'completed' && order.status !== 'cancelled' && order.status !== 'delivered' && (
                     <DropdownMenuItem onClick={() => {
                       let nextStatus = 'confirmed'
-                      if (order.status === 'confirmed') nextStatus = 'preparing'
+                      
+                      if (order.status === 'pending') nextStatus = 'confirmed'
+                      else if (order.status === 'confirmed') nextStatus = 'preparing'
                       else if (order.status === 'preparing') nextStatus = 'ready'
-                      else if (order.status === 'ready') nextStatus = 'completed'
+                      else if (order.status === 'ready') {
+                        // Different workflows based on delivery type
+                        if (order.deliveryType === 'dine_in') {
+                          nextStatus = 'served'
+                        } else if (order.deliveryType === 'delivery') {
+                          nextStatus = 'out_for_delivery'
+                        } else if (order.deliveryType === 'takeaway') {
+                          nextStatus = 'completed'
+                        }
+                      }
+                      else if (order.status === 'served' && order.deliveryType === 'dine_in') {
+                        nextStatus = 'completed'
+                      }
+                      else if (order.status === 'out_for_delivery' && order.deliveryType === 'delivery') {
+                        nextStatus = 'delivered'
+                      }
+                      else if (order.status === 'delivered' && order.deliveryType === 'delivery') {
+                        nextStatus = 'completed'
+                      }
                       
                       updateOrderMutation.mutate({ orderId: order.id, status: nextStatus })
                     }}>
