@@ -32,8 +32,6 @@ export default function QRCodesPage() {
   const [selectedSize, setSelectedSize] = useState('medium')
   const [selectedStyle, setSelectedStyle] = useState('square')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [editingTable, setEditingTable] = useState<string | null>(null)
-  const [editTableNumber, setEditTableNumber] = useState('')
   const [showSettingsDialog, setShowSettingsDialog] = useState(false)
   const [selectedQrCode, setSelectedQrCode] = useState<any>(null)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -221,44 +219,7 @@ export default function QRCodesPage() {
     return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDEwIDEwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUiIHk9IjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxLjIiIGZpbGw9IiM2YjcyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIwLjQiPkxvYWRpbmc8L3RleHQ+PC9zdmc+';
   }
 
-  const handleUpdateTableNumber = async (qrId: string, newTableNumber: number) => {
-    try {
-      const response = await fetch(`/api/qr-codes/${qrId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tableNumber: newTableNumber,
-        }),
-      });
 
-      const data = await response.json();
-      
-      if (data.success) {
-        refetch(); // Refresh the QR codes list
-        setEditingTable(null);
-        toast({
-          title: "Table Number Updated!",
-          description: `QR code updated for Table ${newTableNumber}`,
-        });
-      } else {
-        throw new Error(data.error || 'Failed to update table number');
-      }
-    } catch (error) {
-      console.error('Update error:', error);
-      toast({
-        title: "Update Failed",
-        description: "Failed to update table number. Please try again.",
-        variant: "destructive"
-      });
-    }
-  }
-
-  const startEditingTable = (qrCode: any) => {
-    setEditingTable(qrCode.id)
-    setEditTableNumber(qrCode.tableNumber?.toString() || '')
-  }
 
   const handleDeleteQR = async (qrId: string) => {
     try {
@@ -647,44 +608,7 @@ export default function QRCodesPage() {
                 {qrCode.type === 'table' && (
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-sm">Table Number:</span>
-                    {editingTable === qrCode.id ? (
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          value={editTableNumber}
-                          onChange={(e) => setEditTableNumber(e.target.value)}
-                          className="w-20 h-6 text-xs"
-                          min="1"
-                        />
-                        <Button 
-                          size="sm" 
-                          onClick={() => handleUpdateTableNumber(qrCode.id, parseInt(editTableNumber))}
-                          className="h-6 px-2 text-xs"
-                        >
-                          Save
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => setEditingTable(null)}
-                          className="h-6 px-2 text-xs"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">Table {qrCode.tableNumber}</Badge>
-                        <Button 
-                          size="sm" 
-                          variant="ghost"
-                          onClick={() => startEditingTable(qrCode)}
-                          className="h-6 w-6 p-0"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    )}
+                    <Badge variant="outline">Table {qrCode.tableNumber}</Badge>
                   </div>
                 )}
               </CardDescription>
