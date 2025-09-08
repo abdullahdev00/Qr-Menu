@@ -3,7 +3,8 @@ import { Button } from "./button";
 import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import { Input } from "./input";
 import { ScrollArea } from "./scroll-area";
-import { MessageCircle, Send, X, Bot, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./dialog";
+import { MessageCircle, Send, X, Bot, User, Settings } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 interface Message {
@@ -15,6 +16,11 @@ interface Message {
 
 export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState(() => {
+    return localStorage.getItem('ai-webhook-url') || 'https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook-test/Qrmenuresturantsupportbot';
+  });
+  const [tempWebhookUrl, setTempWebhookUrl] = useState(webhookUrl);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -35,6 +41,21 @@ export default function AIChatWidget() {
     scrollToBottom();
   }, [messages]);
 
+  const saveWebhookUrl = () => {
+    setWebhookUrl(tempWebhookUrl);
+    localStorage.setItem('ai-webhook-url', tempWebhookUrl);
+    setIsSettingsOpen(false);
+    
+    // Add confirmation message
+    const confirmMessage: Message = {
+      id: Date.now().toString(),
+      text: "Webhook URL updated successfully! Ab aap apne n8n se connected hain.",
+      sender: "ai",
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, confirmMessage]);
+  };
+
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
 
@@ -53,8 +74,7 @@ export default function AIChatWidget() {
     try {
       console.log("🤖 Sending message to AI webhook:", currentMessage);
       
-      // Call n8n webhook for AI response
-      const webhookUrl = "https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook-test/Qrmenuresturantsupportbot";
+      // Call n8n webhook for AI response - use configured URL
       const payload = {
         message: currentMessage,
         timestamp: new Date().toISOString(),
@@ -146,15 +166,62 @@ export default function AIChatWidget() {
                   <Bot className="h-5 w-5" />
                   <CardTitle className="text-lg font-semibold">AI Support Assistant</CardTitle>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsOpen(false)}
-                  className="h-8 w-8 p-0 hover:bg-white/20 text-white"
-                  data-testid="ai-chat-close-button"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 hover:bg-white/20 text-white"
+                        data-testid="ai-chat-settings-button"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>AI Webhook Settings</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium">Webhook URL</label>
+                          <Input
+                            value={tempWebhookUrl}
+                            onChange={(e) => setTempWebhookUrl(e.target.value)}
+                            placeholder="Enter your n8n webhook URL"
+                            className="mt-1"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Apna n8n webhook URL yahan paste kariye
+                          </p>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setTempWebhookUrl(webhookUrl);
+                              setIsSettingsOpen(false);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button onClick={saveWebhookUrl}>
+                            Save URL
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsOpen(false)}
+                    className="h-8 w-8 p-0 hover:bg-white/20 text-white"
+                    data-testid="ai-chat-close-button"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <p className="text-sm text-blue-100">
                 Restaurant support ke liye yahan message kariye
