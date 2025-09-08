@@ -37,6 +37,7 @@ export default function AIChatWidget() {
   ]);
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -137,20 +138,24 @@ export default function AIChatWidget() {
       let responseText = "";
       
       if (isConfigIssue) {
-        // No webhook configured - provide setup message
-        responseText = "Maaf kariye, abhi AI assistant ka n8n connection setup nahi hua hai. \n\n" +
-                     "Complete AI support ke liye:\n" +
-                     "📱 WhatsApp pe contact kariye: +92-XXX-XXXXXXX\n" +
-                     "📧 Email kariye: support@qrmenu.com\n\n" +
-                     "Admin setup kar dega n8n webhook URL settings mein.";
+        // No webhook configured - provide setup message with URL input option
+        responseText = "N8N webhook URL configure nahi hai! \n\n" +
+                     "Abhi ke liye:\n" +
+                     "📱 WhatsApp: +92-XXX-XXXXXXX\n" +
+                     "📧 Email: support@qrmenu.com\n\n" +
+                     "Ya niche 'Configure N8N URL' button pe click kar ke apna webhook URL add kariye!";
+        
+        // Show URL configuration option
+        setShowUrlInput(true);
       } else {
         // Connection failed - provide error message
-        responseText = "Sorry! Abhi AI assistant se rabta nahi ho pa raha, koi technical error hai. \n\n" +
-                     "Is waqt aap ye kar sakte hain:\n" +
-                     "📱 WhatsApp pe contact kariye: +92-XXX-XXXXXXX\n" +
-                     "📧 Email support: support@qrmenu.com\n" +
-                     "⏰ Thodi der baad phir try kariye\n\n" +
-                     "Hum jaldi hi issue fix kar denge!";
+        responseText = "Sorry! N8N se connection nahi ho pa raha. \n\n" +
+                     "Possible solutions:\n" +
+                     "📱 WhatsApp: +92-XXX-XXXXXXX\n" +
+                     "📧 Email: support@qrmenu.com\n" +
+                     "⚙️ URL check kariye settings se\n" +
+                     "⏰ Thodi der baad try kariye\n\n" +
+                     "N8N workflow running hai na?";
       }
       
       const errorMessage: Message = {
@@ -329,6 +334,55 @@ export default function AIChatWidget() {
                 <div ref={messagesEndRef} />
               </ScrollArea>
 
+              {/* URL Configuration Section */}
+              {showUrlInput && (
+                <div className="p-3 border-t bg-blue-50 dark:bg-blue-900/20">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                      N8N Webhook URL:
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={tempWebhookUrl}
+                        onChange={(e) => setTempWebhookUrl(e.target.value)}
+                        placeholder="https://your-n8n-instance.com/webhook/your-id"
+                        className="flex-1 text-sm"
+                        data-testid="webhook-url-input"
+                      />
+                      <Button
+                        onClick={() => {
+                          saveWebhookUrl();
+                          setShowUrlInput(false);
+                          // Add confirmation message
+                          const confirmMsg: Message = {
+                            id: (Date.now() + 2).toString(),
+                            text: "✅ N8N URL saved! Ab aap message kar sakte hain.",
+                            sender: "ai",
+                            timestamp: new Date(),
+                          };
+                          setMessages(prev => [...prev, confirmMsg]);
+                        }}
+                        size="sm"
+                        disabled={!tempWebhookUrl.trim()}
+                        data-testid="save-webhook-url-button"
+                      >
+                        Save
+                      </Button>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        onClick={() => setShowUrlInput(false)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-6 px-2"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Input Area */}
               <div className="border-t bg-white dark:bg-gray-900 p-4">
                 <div className="flex gap-2">
@@ -350,6 +404,22 @@ export default function AIChatWidget() {
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
+                
+                {/* Quick Actions */}
+                {!webhookUrl && (
+                  <div className="mt-2 flex justify-center">
+                    <Button
+                      onClick={() => setShowUrlInput(!showUrlInput)}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-7"
+                      data-testid="configure-n8n-button"
+                    >
+                      ⚙️ Configure N8N URL
+                    </Button>
+                  </div>
+                )}
+                
                 <p className="text-xs text-gray-500 mt-2 text-center">
                   AI assistant se restaurant management help liye
                 </p>
