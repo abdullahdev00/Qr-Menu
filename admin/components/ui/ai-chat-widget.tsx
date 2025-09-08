@@ -46,20 +46,57 @@ export default function AIChatWidget() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputText;
     setInputText("");
     setIsTyping(true);
 
-    // Simulate AI response - later connect to n8n workflow
-    setTimeout(() => {
+    try {
+      // Call n8n webhook for AI response
+      const response = await fetch("https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook/Qrmenuresturantsupportbot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: currentMessage,
+          timestamp: new Date().toISOString(),
+          userType: "restaurant_owner",
+          platform: "qr_menu_admin_panel"
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Extract AI response from webhook
+      const aiResponseText = data.response || data.message || data.output || "Maaf kariye, abhi main jawab nahi de sakta. Kripaya thodi der baad try kariye.";
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Main aapka message samjh gaya hun. Abhi main detailed response prepare kar raha hun. Thora sa wait kariye...",
+        text: aiResponseText,
         sender: "ai",
         timestamp: new Date(),
       };
+
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("AI Chat Error:", error);
+      
+      // Fallback error message
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "Maaf kariye, abhi technical issue hai. Kripaya thodi der baad try kariye ya support team se contact kariye.",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
