@@ -18,7 +18,7 @@ export default function AIChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState(() => {
-    return localStorage.getItem('ai-webhook-url') || 'https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook-test/Qrmenuresturantsupportbot';
+    return localStorage.getItem('ai-webhook-url') || '';
   });
   const [tempWebhookUrl, setTempWebhookUrl] = useState(webhookUrl);
   const [messages, setMessages] = useState<Message[]>([
@@ -85,6 +85,11 @@ export default function AIChatWidget() {
       console.log("🌐 Webhook URL:", webhookUrl);
       console.log("📦 Payload:", payload);
       
+      // Check if webhook URL is available
+      if (!webhookUrl || webhookUrl.includes('ngrok-free.app')) {
+        throw new Error('External webhook service not available');
+      }
+
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
@@ -119,10 +124,35 @@ export default function AIChatWidget() {
     } catch (error) {
       console.error("❌ AI Chat Error:", error);
       
-      // Fallback error message
+      // Provide helpful local responses instead of external webhook
+      const localResponses = {
+        "hello": "Salam! Main aapka restaurant support assistant hun. Restaurant management, menu setup, orders ya payments ke bare mein koi bhi sawal puch sakte hain.",
+        "menu": "Menu management ke liye sidebar se 'Menu Management' section mein jaye. Wahan aap categories, items add kar sakte hain aur prices set kar sakte hain.",
+        "qr": "QR codes generate karne ke liye 'QR Codes' section mein jaye. Har table ke liye unique QR code mil jayega.",
+        "orders": "Orders dekhne ke liye 'Orders' section check kariye. Real-time notifications bhi milte rahenge.",
+        "payment": "Payment setup ke liye 'Payments' section mein jaye. Pakistani payment methods like JazzCash, EasyPaisa support kiya jata hai.",
+        "default": "Main aapki restaurant management mein madad kar sakta hun. Menu setup, QR codes, orders, payments - koi bhi sawal ho toh puchiye!"
+      };
+      
+      const userQuery = currentMessage.toLowerCase();
+      let responseText = localResponses.default;
+      
+      // Simple keyword matching for local responses
+      if (userQuery.includes('hello') || userQuery.includes('hi') || userQuery.includes('salam')) {
+        responseText = localResponses.hello;
+      } else if (userQuery.includes('menu')) {
+        responseText = localResponses.menu;
+      } else if (userQuery.includes('qr')) {
+        responseText = localResponses.qr;
+      } else if (userQuery.includes('order')) {
+        responseText = localResponses.orders;
+      } else if (userQuery.includes('payment') || userQuery.includes('pay')) {
+        responseText = localResponses.payment;
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Maaf kariye, abhi technical issue hai. Kripaya thodi der baad try kariye ya support team se contact kariye.",
+        text: responseText,
         sender: "ai",
         timestamp: new Date(),
       };
