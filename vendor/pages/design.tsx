@@ -73,43 +73,6 @@ const ColorPicker = ({ label, value, onChange, description }: {
   );
 };
 
-// Theme preset card component
-const ThemePresetCard = ({ 
-  name, 
-  colors, 
-  isActive, 
-  onClick 
-}: {
-  name: string;
-  colors: string[];
-  isActive: boolean;
-  onClick: () => void;
-}) => {
-  return (
-    <div 
-      className={`p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
-        isActive 
-          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-      }`}
-      onClick={onClick}
-    >
-      <div className="text-sm font-medium mb-2 text-gray-900 dark:text-white">{name}</div>
-      <div className="flex gap-1 mb-3">
-        {colors.map((color, index) => (
-          <div
-            key={index}
-            className="w-4 h-4 rounded-full border border-gray-200"
-            style={{ backgroundColor: color }}
-          />
-        ))}
-      </div>
-      <button className="w-full text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded transition-colors">
-        Apply Theme
-      </button>
-    </div>
-  );
-};
 
 // Typography control component
 const TypographyControl = ({ 
@@ -184,7 +147,6 @@ const TypographyControl = ({
 export default function DesignPage() {
   const [activeTab, setActiveTab] = useState('colors');
   const [previewDevice, setPreviewDevice] = useState('desktop');
-  const [activeTheme, setActiveTheme] = useState('custom');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -228,99 +190,7 @@ export default function DesignPage() {
     letterSpacing: 0
   });
 
-  const themePresets = [
-    {
-      name: 'Fast Food',
-      colors: ['#dc2626', '#fbbf24', '#f59e0b', '#ffffff'],
-      theme: {
-        primaryAccent: '#dc2626',
-        secondaryAccent: '#fbbf24',
-        primaryBg: '#ffffff',
-        cardBg: '#fef3c7'
-      }
-    },
-    {
-      name: 'Fine Dining',
-      colors: ['#000000', '#fbbf24', '#374151', '#f3f4f6'],
-      theme: {
-        primaryAccent: '#000000',
-        secondaryAccent: '#fbbf24',
-        primaryBg: '#f9fafb',
-        cardBg: '#ffffff'
-      }
-    },
-    {
-      name: 'Cafe',
-      colors: ['#92400e', '#fef3c7', '#d97706', '#ffffff'],
-      theme: {
-        primaryAccent: '#92400e',
-        secondaryAccent: '#d97706',
-        primaryBg: '#fefdf8',
-        cardBg: '#ffffff'
-      }
-    },
-    {
-      name: 'Traditional',
-      colors: ['#059669', '#fbbf24', '#dc2626', '#ffffff'],
-      theme: {
-        primaryAccent: '#059669',
-        secondaryAccent: '#fbbf24',
-        primaryBg: '#f0fdf4',
-        cardBg: '#ffffff'
-      }
-    },
-    {
-      name: 'Modern',
-      colors: ['#1f2937', '#6b7280', '#3b82f6', '#ffffff'],
-      theme: {
-        primaryAccent: '#1f2937',
-        secondaryAccent: '#3b82f6',
-        primaryBg: '#ffffff',
-        cardBg: '#f9fafb'
-      }
-    },
-    {
-      name: 'Seasonal',
-      colors: ['#7c3aed', '#a855f7', '#ec4899', '#ffffff'],
-      theme: {
-        primaryAccent: '#7c3aed',
-        secondaryAccent: '#a855f7',
-        primaryBg: '#faf5ff',
-        cardBg: '#ffffff'
-      }
-    }
-  ];
 
-  const applyTheme = async (theme: any, themeName: string) => {
-    // Update local state
-    const newDesignState = { ...designState, ...theme };
-    setDesignState(newDesignState);
-    
-    // Auto-save to database
-    if (restaurantId) {
-      try {
-        setIsSaving(true);
-        const response = await fetch(`/api/restaurants/${restaurantId}/branding`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newDesignState),
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-          setShowSuccessPopup(true);
-          setTimeout(() => setShowSuccessPopup(false), 3000);
-        }
-      } catch (error) {
-        console.error('Auto-save error:', error);
-      } finally {
-        setIsSaving(false);
-      }
-    }
-  };
 
   // Load restaurant branding on component mount
   useEffect(() => {
@@ -480,24 +350,6 @@ export default function DesignPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Panel - Quick Actions & Presets */}
         <div className="lg:col-span-3 space-y-6">
-          {/* Theme Presets */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Quick Start Themes</h3>
-            <div className="grid grid-cols-1 gap-3">
-              {themePresets.map((preset) => (
-                <ThemePresetCard
-                  key={preset.name}
-                  name={preset.name}
-                  colors={preset.colors}
-                  isActive={activeTheme === preset.name}
-                  onClick={() => {
-                    setActiveTheme(preset.name);
-                    applyTheme(preset.theme, preset.name);
-                  }}
-                />
-              ))}
-            </div>
-          </div>
 
           {/* Brand Guidelines Helper */}
           <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
@@ -527,7 +379,7 @@ export default function DesignPage() {
                 <div>2 minutes ago</div>
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                <div className="font-medium">Applied Fast Food theme</div>
+                <div className="font-medium">Typography updated</div>
                 <div>5 minutes ago</div>
               </div>
             </div>
