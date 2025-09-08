@@ -1,12 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "../ui/card";
-import { Store, TrendingUp, UserPlus, Headphones } from "lucide-react";
+import { Store, TrendingUp, UserPlus, Headphones, Eye } from "lucide-react";
 
 export default function KpiCards() {
   const { data: metrics, isLoading } = useQuery<{
     totalRestaurants: number;
+    totalQrScans: number;
+    qrScanGrowth: number;
     monthlyRevenue: number;
+    revenueGrowth: number;
     newSignups: number;
+    signupGrowth: number;
     pendingTickets: number;
   }>({
     queryKey: ["/api/dashboard/metrics"],
@@ -51,6 +55,16 @@ export default function KpiCards() {
 
   const kpis = [
     {
+      title: "QR Code Scans",
+      value: (metrics?.totalQrScans || 0).toLocaleString(),
+      change: `+${metrics?.qrScanGrowth || 0}% from last month`,
+      icon: Eye,
+      cardBg: "bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-600",
+      iconColor: "bg-white/20 text-white backdrop-blur-sm",
+      textColor: "text-white",
+      shadowColor: "shadow-cyan-200"
+    },
+    {
       title: "Active Restaurants",
       value: metrics?.totalRestaurants || 0,
       change: "+12% from last month",
@@ -63,7 +77,7 @@ export default function KpiCards() {
     {
       title: "Monthly Revenue",
       value: `PKR ${(metrics?.monthlyRevenue || 0).toLocaleString()}`,
-      change: "+8% from last month",
+      change: `${metrics?.revenueGrowth > 0 ? '+' : ''}${metrics?.revenueGrowth || 0}% from last month`,
       icon: TrendingUp,
       cardBg: "bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600",
       iconColor: "bg-white/20 text-white backdrop-blur-sm",
@@ -71,19 +85,9 @@ export default function KpiCards() {
       shadowColor: "shadow-green-200"
     },
     {
-      title: "New Signups",
-      value: metrics?.newSignups || 0,
-      change: "+5% from last month",
-      icon: UserPlus,
-      cardBg: "bg-gradient-to-br from-purple-500 via-violet-500 to-purple-600",
-      iconColor: "bg-white/20 text-white backdrop-blur-sm",
-      textColor: "text-white",
-      shadowColor: "shadow-purple-200"
-    },
-    {
       title: "Pending Tickets",
       value: metrics?.pendingTickets || 0,
-      change: "3 urgent",
+      change: "Support tickets",
       icon: Headphones,
       cardBg: "bg-gradient-to-br from-orange-500 via-red-500 to-pink-500",
       iconColor: "bg-white/20 text-white backdrop-blur-sm",
