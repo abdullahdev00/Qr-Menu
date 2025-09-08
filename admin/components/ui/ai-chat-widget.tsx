@@ -51,28 +51,41 @@ export default function AIChatWidget() {
     setIsTyping(true);
 
     try {
+      console.log("🤖 Sending message to AI webhook:", currentMessage);
+      
       // Call n8n webhook for AI response
-      const response = await fetch("https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook/Qrmenuresturantsupportbot", {
+      const webhookUrl = "https://unvindicable-nongrievously-dedra.ngrok-free.app/webhook/Qrmenuresturantsupportbot";
+      const payload = {
+        message: currentMessage,
+        timestamp: new Date().toISOString(),
+        userType: "restaurant_owner",
+        platform: "qr_menu_admin_panel"
+      };
+      
+      console.log("🌐 Webhook URL:", webhookUrl);
+      console.log("📦 Payload:", payload);
+      
+      const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
-        body: JSON.stringify({
-          message: currentMessage,
-          timestamp: new Date().toISOString(),
-          userType: "restaurant_owner",
-          platform: "qr_menu_admin_panel"
-        }),
+        body: JSON.stringify(payload),
       });
+
+      console.log("📡 Response status:", response.status);
+      console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log("📨 Webhook response data:", data);
       
       // Extract AI response from webhook
-      const aiResponseText = data.response || data.message || data.output || "Maaf kariye, abhi main jawab nahi de sakta. Kripaya thodi der baad try kariye.";
+      const aiResponseText = data.response || data.message || data.output || data.text || "Maaf kariye, abhi main jawab nahi de sakta. Kripaya thodi der baad try kariye.";
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -82,8 +95,9 @@ export default function AIChatWidget() {
       };
 
       setMessages(prev => [...prev, aiMessage]);
+      console.log("✅ AI response added to chat");
     } catch (error) {
-      console.error("AI Chat Error:", error);
+      console.error("❌ AI Chat Error:", error);
       
       // Fallback error message
       const errorMessage: Message = {
