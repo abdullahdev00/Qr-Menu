@@ -462,9 +462,6 @@ export default function QRCodesPage() {
                     alt="QR Code Preview"
                     className="w-32 h-32 border-2 border-gray-200 dark:border-gray-700 rounded object-cover"
                   />
-                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 bg-white/90 px-2 py-1 rounded text-xs font-bold">
-                    Preview
-                  </div>
                 </div>
               </div>
               
@@ -741,14 +738,6 @@ export default function QRCodesPage() {
                   Copy URL
                 </Button>
                 
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => window.open(qrCode.url, '_blank')}
-                >
-                  <Eye className="w-4 h-4 mr-1" />
-                  Preview
-                </Button>
                 
                 <Button 
                   size="sm" 
@@ -806,51 +795,6 @@ export default function QRCodesPage() {
         </CardContent>
       </Card>
 
-      {/* QR Code Preview Modal */}
-      {showGeneratedQR && (
-        <Dialog open={!!showGeneratedQR} onOpenChange={() => {
-          setShowGeneratedQR(null);
-          if (showGeneratedQR) {
-            URL.revokeObjectURL(showGeneratedQR);
-          }
-        }}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Generated QR Code</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <img 
-                  src={showGeneratedQR} 
-                  alt="Generated QR Code"
-                  className="w-64 h-auto border-2 border-gray-200 dark:border-gray-700 rounded"
-                />
-              </div>
-              <div className="flex gap-2 justify-center">
-                <Button 
-                  variant="outline"
-                  onClick={handleDownloadQR}
-                  disabled={!generatedQRData}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => {
-                    setShowGeneratedQR(null);
-                    if (showGeneratedQR) {
-                      URL.revokeObjectURL(showGeneratedQR);
-                    }
-                  }}
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
 
       {/* Settings Dialog */}
       <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
