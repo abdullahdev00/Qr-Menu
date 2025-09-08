@@ -8,7 +8,10 @@ export const adminUsers = pgTable("admin_users", {
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
-  role: text("role").notNull().default("admin"), // super_admin, admin, support
+  role: text("role").notNull().default("admin"), // super_admin, admin, support, chef, delivery_boy
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id), // For chef and delivery_boy roles
+  phone: text("phone"), // For mobile access
+  isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -178,7 +181,7 @@ export const orders = pgTable("orders", {
   customerName: text("customer_name"),
   customerPhone: text("customer_phone"),
   orderNumber: integer("order_number").notNull(),
-  status: text("status").notNull().default("pending"), // pending, confirmed, preparing, ready, delivered, completed, cancelled
+  status: text("status").notNull().default("pending"), // pending, confirmed, preparing, ready, out_for_delivery, delivered, served, completed, cancelled
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   currency: text("currency").notNull().default("PKR"),
   deliveryType: text("delivery_type").notNull().default("dine_in"), // dine_in, takeaway, delivery
