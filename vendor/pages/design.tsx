@@ -325,7 +325,6 @@ export default function DesignPage() {
         {[
           { id: 'colors', label: 'Brand Colors', icon: Palette },
           { id: 'typography', label: 'Typography', icon: Type },
-          { id: 'layout', label: 'Layout', icon: Settings },
           { id: 'preview', label: 'Preview', icon: Eye }
         ].map((tab) => {
           const Icon = tab.icon;
@@ -563,16 +562,6 @@ export default function DesignPage() {
             </div>
           )}
 
-          {activeTab === 'layout' && (
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Layout Settings</h3>
-              <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-                <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>Layout customization coming soon...</p>
-                <p className="text-sm">لے آؤٹ کسٹمائزیشن جلد آرہی ہے...</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right Panel - Live Preview */}
