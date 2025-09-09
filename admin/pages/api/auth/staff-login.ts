@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '../../../lib/storage';
-import { adminUsers, restaurants } from '@shared/schema';
-import { eq, and } from 'drizzle-orm';
+import { staff, restaurants } from '@shared/schema';
+import { eq, and, or } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -19,52 +20,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Email or phone is required' });
     }
 
-    // Find staff member (chef or delivery_boy)
+    console.log(`🔍 Staff login attempt: ${email || phone} with role: ${role}`);
+
+    // Find staff member using staff table
     const staffQuery = db
-      .select({
-        id: adminUsers.id,
-        name: adminUsers.name,
-        email: adminUsers.email,
-        phone: adminUsers.phone,
-        role: adminUsers.role,
-        restaurantId: adminUsers.restaurantId,
-        isActive: adminUsers.isActive,
-        password: adminUsers.password
-      })
-      .from(adminUsers)
+      .select()
+      .from(staff)
       .where(
         and(
-          email ? eq(adminUsers.email, email) : eq(adminUsers.phone, phone || ''),
-          role ? eq(adminUsers.role, role) : undefined
+          email ? eq(staff.email, email) : eq(staff.phone, phone || ''),
+          role ? eq(staff.role, role) : undefined
         )
       );
 
     const staffMembers = await staffQuery;
-    const staff = staffMembers[0];
+    const staffMember = staffMembers[0];
     
-    if (!staff || staff.password !== password) {
+    console.log(`📋 Staff found: ${staffMember ? 'Yes' : 'No'}`);
+    
+    if (!staffMember) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    if (!staff.isActive) {
+    // Compare hashed password
+    const isPasswordValid = await bcrypt.compare(password, staffMember.password);
+    
+    if (!isPasswordValid) {
+      console.log('❌ Password validation failed');
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    console.log('✅ Password validation successful');
+
+    if (!staffMember.isActive) {
       return res.status(401).json({ error: 'Account is inactive' });
     }
 
-    // Verify role is chef or delivery_boy
-    if (staff.role !== 'chef' && staff.role !== 'delivery_boy') {
-      return res.status(401).json({ error: 'Invalid role for staff login' });
-    }
-
-    // Get restaurant info if assigned
+    // Get restaurant info
     let restaurantInfo = null;
-    if (staff.restaurantId) {
+    if (staffMember.restaurantId) {
       const restaurantData = await db
         .select({
           name: restaurants.name,
           slug: restaurants.slug
         })
         .from(restaurants)
-        .where(eq(restaurants.id, staff.restaurantId))
+        .where(eq(restaurants.id, staffMember.restaurantId))
         .limit(1);
       
       restaurantInfo = restaurantData[0] || null;
@@ -72,15 +73,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Return staff user data
     const userData = {
-      id: staff.id,
-      name: staff.name,
-      email: staff.email,
-      phone: staff.phone,
-      role: staff.role,
-      restaurantId: staff.restaurantId,
+      id: staffMember.id,
+      name: staffMember.name,
+      email: staffMember.email,
+      phone: staffMember.phone,
+      role: staffMember.role,
+      restaurantId: staffMember.restaurantId,
       restaurantName: restaurantInfo?.name,
       restaurantSlug: restaurantInfo?.slug
     };
+
+    console.log(`✅ Staff login successful: ${userData.name} (${userData.role})`);
 
     res.json({ 
       success: true,
