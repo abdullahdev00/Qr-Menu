@@ -147,6 +147,14 @@ function App() {
                             if (userData.role === 'super_admin' || userData.role === 'admin' || userData.role === 'support') {
                               return <Redirect to="/dashboard" />;
                             }
+                            // If chef user, redirect to kitchen dashboard
+                            if (userData.role === 'chef') {
+                              return <Redirect to={userData.restaurantSlug ? `/${userData.restaurantSlug}/kitchen` : '/kitchen'} />;
+                            }
+                            // If delivery boy, redirect to delivery dashboard
+                            if (userData.role === 'delivery_boy') {
+                              return <Redirect to={userData.restaurantSlug ? `/${userData.restaurantSlug}/delivery` : '/delivery'} />;
+                            }
                           } catch (error) {
                             console.error('Error parsing user data:', error);
                             localStorage.removeItem('user');
