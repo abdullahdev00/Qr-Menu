@@ -14,7 +14,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-x-hidden">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <Header onMenuClick={() => setSidebarOpen(true)} />
-      <main className="lg:ml-64 pt-16 overflow-x-hidden">
+      <main className="lg:ml-64 pt-4 overflow-x-hidden">
         <div className="p-2 sm:p-4 overflow-x-hidden">
           {children}
         </div>
