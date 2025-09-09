@@ -352,6 +352,26 @@ export type InsertPaymentHistory = z.infer<typeof insertPaymentHistorySchema>;
 export type PlanUpgrade = typeof planUpgrades.$inferSelect;
 export type InsertPlanUpgrade = z.infer<typeof insertPlanUpgradeSchema>;
 
+// Staff Management - Separate table for restaurant staff
+export const staff = pgTable("staff", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  restaurantId: varchar("restaurant_id").references(() => restaurants.id).notNull(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+  phone: text("phone").notNull(),
+  role: text("role").notNull().default("staff"), // staff, chef, manager, delivery_boy, cashier
+  isActive: boolean("is_active").notNull().default(true),
+  permissions: jsonb("permissions"), // Store specific permissions for each staff member
+  hireDate: timestamp("hire_date").defaultNow(),
+  salary: decimal("salary", { precision: 10, scale: 2 }),
+  workingHours: text("working_hours"), // e.g., "9AM-6PM" or "Night Shift"
+  emergencyContact: text("emergency_contact"),
+  notes: text("notes"), // Admin notes about the staff member
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Customer User Management for Mobile Authentication
 export const customerUsers = pgTable("customer_users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -391,6 +411,27 @@ export const otpVerifications = pgTable("otp_verifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Staff Insert Schemas
+export const insertStaffSchema = createInsertSchema(staff, {
+  salary: z.union([z.string(), z.number()]).transform(val => String(val)).optional(),
+}).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true,
+  hireDate: true
+});
+
+export const updateStaffSchema = createInsertSchema(staff, {
+  password: z.string().min(6, "Password must be at least 6 characters").optional(),
+  salary: z.union([z.string(), z.number()]).transform(val => String(val)).optional(),
+}).omit({ 
+  id: true, 
+  restaurantId: true,
+  createdAt: true, 
+  updatedAt: true,
+  hireDate: true
+}).partial();
+
 // Customer Insert Schemas
 export const insertCustomerUserSchema = createInsertSchema(customerUsers, {
   password: z.string().min(6, "Password must be at least 6 characters").optional()
@@ -423,6 +464,11 @@ export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).
   id: true, 
   createdAt: true 
 });
+
+// Staff Types
+export type Staff = typeof staff.$inferSelect;
+export type InsertStaff = z.infer<typeof insertStaffSchema>;
+export type UpdateStaff = z.infer<typeof updateStaffSchema>;
 
 // Customer Types
 export type CustomerUser = typeof customerUsers.$inferSelect;

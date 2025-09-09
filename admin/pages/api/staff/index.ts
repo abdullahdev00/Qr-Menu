@@ -1,114 +1,75 @@
 import { Request, Response } from 'express';
 import { db } from '../../../lib/storage';
-import { adminUsers } from '../../../../shared/schema';
+import { staff, insertStaffSchema } from '../../../../shared/schema';
 import { eq, and } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 
 export default async function handler(req: Request, res: Response) {
+  console.log(`🏢 Staff API: ${req.method} request received`);
+
   if (req.method === 'GET') {
     try {
       const { restaurantId } = req.query;
-
-      if (!restaurantId) {
-        return res.status(400).json({ error: 'Restaurant ID is required' });
+      
+      let staffData;
+      if (restaurantId) {
+        // Get staff for specific restaurant
+        console.log(`🔍 Fetching staff for restaurant: ${restaurantId}`);
+        staffData = await db.select().from(staff).where(eq(staff.restaurantId, restaurantId as string));
+      } else {
+        // Get all staff
+        console.log('🔍 Fetching all staff');
+        staffData = await db.select().from(staff);
       }
 
-      const staff = await db
-        .select({
-          id: adminUsers.id,
-          name: adminUsers.name,
-          email: adminUsers.email,
-          phone: adminUsers.phone,
-          role: adminUsers.role,
-          isActive: adminUsers.isActive,
-          createdAt: adminUsers.createdAt
-        })
-        .from(adminUsers)
-        .where(
-          and(
-            eq(adminUsers.restaurantId, restaurantId as string),
-            eq(adminUsers.role, 'chef')
-          )
-        );
-
-      const deliveryStaff = await db
-        .select({
-          id: adminUsers.id,
-          name: adminUsers.name,
-          email: adminUsers.email,
-          phone: adminUsers.phone,
-          role: adminUsers.role,
-          isActive: adminUsers.isActive,
-          createdAt: adminUsers.createdAt
-        })
-        .from(adminUsers)
-        .where(
-          and(
-            eq(adminUsers.restaurantId, restaurantId as string),
-            eq(adminUsers.role, 'delivery_boy')
-          )
-        );
-
-      const allStaff = [...staff, ...deliveryStaff];
-      res.json(allStaff);
+      console.log(`✅ Staff fetched successfully: ${staffData.length} records`);
+      res.json(staffData);
     } catch (error) {
-      console.error('Error fetching staff:', error);
-      res.status(500).json({ error: 'Failed to fetch staff members' });
+      console.error('❌ Error fetching staff:', error);
+      res.status(500).json({ error: 'Failed to fetch staff' });
     }
   } else if (req.method === 'POST') {
     try {
-      const { name, email, phone, password, role, restaurantId } = req.body;
-
-      if (!name || !email || !password || !role || !restaurantId) {
-        return res.status(400).json({ error: 'Name, email, password, role, and restaurant ID are required' });
-      }
-
-      if (role !== 'chef' && role !== 'delivery_boy') {
-        return res.status(400).json({ error: 'Role must be chef or delivery_boy' });
-      }
-
+      console.log('📝 Creating new staff member:', req.body);
+      
+      const validatedData = insertStaffSchema.parse(req.body);
+      
       // Check if email already exists
-      const existingUser = await db
+      const existingStaff = await db
         .select()
-        .from(adminUsers)
-        .where(eq(adminUsers.email, email))
+        .from(staff)
+        .where(eq(staff.email, validatedData.email))
         .limit(1);
 
-      if (existingUser.length > 0) {
-        return res.status(400).json({ error: 'Email already exists' });
+      if (existingStaff.length > 0) {
+        return res.status(409).json({ error: 'Email already exists' });
       }
+      
+      // Hash password before storing
+      const hashedPassword = await bcrypt.hash(validatedData.password, 12);
+      
+      const newStaff = await db.insert(staff).values({
+        ...validatedData,
+        password: hashedPassword,
+      }).returning();
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create staff member
-      const newStaff = await db
-        .insert(adminUsers)
-        .values({
-          name,
-          email,
-          phone: phone || null,
-          password: hashedPassword,
-          role,
-          restaurantId,
-          isActive: true
-        })
-        .returning({
-          id: adminUsers.id,
-          name: adminUsers.name,
-          email: adminUsers.email,
-          phone: adminUsers.phone,
-          role: adminUsers.role,
-          isActive: adminUsers.isActive,
-          createdAt: adminUsers.createdAt
-        });
-
+      console.log('✅ Staff member created successfully:', newStaff[0].id);
       res.status(201).json(newStaff[0]);
     } catch (error) {
-      console.error('Error creating staff:', error);
-      res.status(500).json({ error: 'Failed to create staff member' });
+      console.error('❌ Error creating staff member:', error);
+      if (error instanceof Error) {
+        // Check for unique constraint violation (duplicate email)
+        if (error.message.includes('unique constraint')) {
+          res.status(409).json({ error: 'Email already exists' });
+        } else {
+          res.status(400).json({ error: error.message });
+        }
+      } else {
+        res.status(500).json({ error: 'Failed to create staff member' });
+      }
     }
   } else {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Allow', ['GET', 'POST']);
+    res.status(405).json({ error: `Method ${req.method} not allowed` });
   }
 }
