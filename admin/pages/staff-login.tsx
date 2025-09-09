@@ -46,11 +46,11 @@ export default function StaffLoginPage() {
           description: `Welcome back, ${result.user.name}!`,
         });
 
-        // Redirect based on role
+        // Redirect based on role - use window.location for staff to force proper navigation
         if (result.user.role === 'chef') {
-          setLocation(result.user.restaurantSlug ? `/${result.user.restaurantSlug}/kitchen` : '/kitchen');
+          window.location.href = result.user.restaurantSlug ? `/${result.user.restaurantSlug}/kitchen` : '/kitchen';
         } else if (result.user.role === 'delivery_boy') {
-          setLocation(result.user.restaurantSlug ? `/${result.user.restaurantSlug}/delivery` : '/delivery');
+          window.location.href = result.user.restaurantSlug ? `/${result.user.restaurantSlug}/delivery` : '/delivery';
         } else {
           setLocation('/dashboard');
         }
